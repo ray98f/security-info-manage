@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.OrganizationMapper">
+
+    <insert id="syncOrg" parameterType="com.security.info.manage.dto.res.VxDeptResDTO">
+        TRUNCATE TABLE sys_dept;
+        insert into sys_dept(id, parent_id, org_code, org_name, sort, user_ids, create_by) values
+        <foreach collection="list" index="index" item="dept" separator=",">
+            (#{dept.id}, #{dept.parentid}, #{dept.name_en}, #{dept.name}, #{dept.order},
+            <foreach collection="dept.department_leader" index="index" item="leader" separator=",">
+                ${leader}
+            </foreach>
+            #{userId})
+        </foreach>
+        ;
+    </insert>
+
+    <select id="getBody" resultType="com.security.info.manage.dto.res.DeptTreeResDTO">
+        select id, parent_id, org_code, org_name, sort, user_ids, create_date from sys_dept where id!='1' and status=0 and is_delete=0
+    </select>
+
+    <select id="getRoot" resultType="com.security.info.manage.dto.res.DeptTreeResDTO">
+        select id, parent_id, org_code, org_name, sort, user_ids, create_date from sys_dept where id='1' and status=0 and is_delete=0
+    </select>
+
+    <select id="listCompanyList" resultType="com.security.info.manage.dto.res.DeptTreeResDTO">
+        select id, parent_id, org_name from SYS_OFFICE
+        where parent_id='1' and is_delete=0 and status=0
+        order by sort
+    </select>
+</mapper>

@@ -11,6 +11,25 @@ import java.util.regex.Pattern;
  */
 public class Constants {
 
+    public static final String ERR_CODE = "errcode";
+
+    public static final String ERR_MSG = "errmsg";
+
+    public static final String VX_GET_ACCESS_TOKEN = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
+
+    public static final String VX_GET_ORG_IDS = "https://qyapi.weixin.qq.com/cgi-bin/department/simplelist";
+
+    public static final String VX_GET_ORG_LIST = "https://qyapi.weixin.qq.com/cgi-bin/department/list";
+
+    public static final String VX_GET_ORG_DETAIL = "https://qyapi.weixin.qq.com/cgi-bin/department/get";
+
+    public static final String VX_GET_USER_SIMPLE_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/simplelist";
+
+    public static final String VX_GET_USER_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/list";
+
+
+
+
     public static final long DAY_MILL = 86400000L;
 
     public static final String EMAIL_PATTERN = "[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?";
@@ -21,7 +40,7 @@ public class Constants {
 
     public static final long PER_MINUTE_MILLS = 60000;
 
-    public static final int SUCCESS = 0;
+    public static final String SUCCESS = "0";
 
     public static final Pattern SMS_CONTENT_PATTERN_1 = Pattern.compile("\\{(.*?)}");
 

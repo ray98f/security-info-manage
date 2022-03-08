@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author frp
  */
-public class TreeToolUtils {
+public class CompanyStructureTreeToolUtils {
     /**
      * 根节点对象
      */
@@ -21,7 +21,7 @@ public class TreeToolUtils {
      */
     private List<DeptTreeResDTO> bodyList;
 
-    public TreeToolUtils(List<DeptTreeResDTO> rootList, List<DeptTreeResDTO> bodyList) {
+    public CompanyStructureTreeToolUtils(List<DeptTreeResDTO> rootList, List<DeptTreeResDTO> bodyList) {
         this.rootList = rootList;
         this.bodyList = bodyList;
     }
@@ -31,18 +31,17 @@ public class TreeToolUtils {
             //声明一个map，用来过滤已操作过的数据
             Map<String, String> map = Maps.newHashMapWithExpectedSize(bodyList.size());
             rootList.forEach(beanTree -> getChild(beanTree, map));
-            return rootList;
         }
-        return null;
+        return rootList;
     }
 
     public void getChild(DeptTreeResDTO deptTreeResDTO, Map<String, String> map) {
         List<DeptTreeResDTO> childList = Lists.newArrayList();
         bodyList.stream()
-                .filter(c -> !map.containsKey(c.getOrgCode()))
-                .filter(c -> c.getParentId().equals(deptTreeResDTO.getOrgCode()))
+                .filter(c -> !map.containsKey(c.getId()))
+                .filter(c -> c.getParentId().equals(deptTreeResDTO.getId()))
                 .forEach(c -> {
-                    map.put(c.getOrgCode(), c.getParentId());
+                    map.put(c.getId(), c.getParentId());
                     getChild(c, map);
                     childList.add(c);
                 });

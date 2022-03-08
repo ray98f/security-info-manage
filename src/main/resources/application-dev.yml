@@ -62,3 +62,7 @@ logging:
 
 excluded:
   pages: /securityInfo/manage/login,/securityInfo/manage/logout
+
+vx-business:
+  corpid: aaa
+  corpsecret: bbb

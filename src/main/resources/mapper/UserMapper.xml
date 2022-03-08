@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.UserMapper">
+    <select id="selectUserInfo" resultType="com.security.info.manage.dto.req.UserReqDTO">
+        select su.id, su.user_name, su.user_real_name, su.password, su.phone, su.mail, su.status, su.remark,
+        su.open_userid, su.leave_time, su.create_date, sue.user_no, sue.age from sys_user as su
+        left join sys_user_ext as sue on sue.user_id=su.id and sue.is_delete=0
+        where su.user_name=#{userName} and su.is_delete=0
+        <if test="id!=null and id!=''">
+            and su.id!=#{id}
+        </if>
+    </select>
+
+    <select id="selectUserRoles" resultType="java.lang.String">
+        select ar.role_id from sys_user_role as ar left join sys_role as r on r.id=ar.role_id and r.is_delete=0
+        where ar.user_id=#{userId} and ar.is_delete=0 and r.status=0
+    </select>
+
+    <insert id="insertUser" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
+        TRUNCATE TABLE sys_user;
+        insert into sys_user(id, name, mobile, telephone, email, biz_mail, status,
+        open_userid, main_dept, avatar, thumb_avatar, qr_code, address, gender, create_by)
+        values
+        <foreach collection="list" index="index" item="user" separator=",">
+            (#{user.userid}, #{user.name}, #{user.mobile}, #{user.telephone}, #{user.email}, #{user.biz_mail}, #{user.status},
+            #{user.open_userid}, #{user.main_department}, #{user.avatar}, #{user.thumb_avatar}, #{user.qr_code}, #{user.address},
+            #{user.gender}, #{doName})
+        </foreach>
+        ;
+    </insert>
+
+    <insert id="insertPost" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
+        TRUNCATE TABLE sys_post;
+        <foreach collection="list" index="index" item="user" separator="">
+            <if test="user.department!=null and user.department.size()>0">
+                <foreach collection="user.department" index="index" item="dept" separator=";">
+                    INSERT INTO sys_post (id, org_id, post_name, create_by)
+                    SELECT replace(uuid(),"-",""), #{dept}, #{user.position}, #{doName}
+                    FROM DUAL
+                    WHERE not exists (SELECT id FROM sys_post WHERE org_id=#{dept} and post_name=#{user.position})
+                </foreach>
+            </if>
+        </foreach>
+        ;
+    </insert>
+
+    <insert id="insertUserPost" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
+        TRUNCATE TABLE sys_user_post;
+        INSERT INTO sys_user_post (id, user_id, post_id) values
+        <foreach collection="list" index="index" item="user" separator="">
+            <if test="user.department!=null and user.department.size()>0">
+                <foreach collection="user.department" index="index" item="dept" separator=",">
+                    (replace(uuid(),"-",""), #{user.userid}, (select id from sys_post where org_id=#{dept} and post_name=#{user.position} and is_delete=0 and status=0))
+                </foreach>
+            </if>
+        </foreach>
+        ;
+    </insert>
+
+    <insert id="insertUserRole">
+        insert into user_role(user_id,role_id,created_by,updated_by) values
+        <foreach collection="roleIds" index="index" item="roleId" separator=",">
+            (#{userId},#{roleId},#{doName},#{doName})
+        </foreach>
+    </insert>
+
+    <update id="changePwd" parameterType="com.security.info.manage.dto.req.PasswordReqDTO">
+        update sys_user set password=#{passwordReqDTO.newPwd},update_by=#{updateBy}
+        where user_name=#{passwordReqDTO.userName} and password=#{passwordReqDTO.oldPwd}
+    </update>
+
+    <update id="editUser">
+        update user
+        <set>
+            <if test="userReqDTO.userRealName!=null">
+                user_real_name=#{userReqDTO.userRealName},
+            </if>
+            <if test="userReqDTO.phone!=null">
+                phone=#{userReqDTO.phone},
+            </if>
+            <if test="userReqDTO.mail!=null">
+                mail=#{userReqDTO.mail},
+            </if>
+            <if test="userReqDTO.status!=null">
+                status=#{userReqDTO.status},
+            </if>
+            <if test="userReqDTO.remark!=null">
+                remark=#{userReqDTO.remark},
+            </if>
+            updated_by=#{updateBy}
+        </set>
+        where id=#{userReqDTO.id}
+    </update>
+
+    <select id="listAllUser" resultType="com.security.info.manage.entity.User">
+        select * from user where is_deleted=0
+    </select>
+
+    <select id="listUser" resultType="com.security.info.manage.entity.User">
+        select u.*,GROUP_CONCAT(ur.role_id) as user_roles from user as u left join user_role as ur on u.id=ur.user_id and ur.is_deleted=0
+        where u.is_deleted=0
+        <if test="status!=null">
+            and u.status=#{status}
+        </if>
+        <if test="userRealName!=null and userRealName!=''">
+            and u.user_real_name like CONCAT('%',#{userRealName},'%')
+        </if>
+        group by u.id
+    </select>
+
+    <select id="selectUserId" resultType="java.lang.Long">
+        select id from user where user_name=#{userName} and is_deleted=0
+    </select>
+</mapper>
