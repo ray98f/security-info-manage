@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.security.info.manage.mapper.OrganizationMapper">
+<mapper namespace="com.security.info.manage.mapper.DeptMapper">
 
     <insert id="syncOrg" parameterType="com.security.info.manage.dto.res.VxDeptResDTO">
         TRUNCATE TABLE sys_dept;

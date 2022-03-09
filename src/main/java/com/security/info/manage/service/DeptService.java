@@ -7,9 +7,9 @@ import java.util.List;
 /**
  * @author frp
  */
-public interface OrganizationService {
+public interface DeptService {
 
-    void syncOrg(String orgId);
+    void syncDept(String orgId);
 
     List<DeptTreeResDTO> listTree();
 

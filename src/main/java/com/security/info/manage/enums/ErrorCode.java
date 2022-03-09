@@ -177,7 +177,8 @@ public enum ErrorCode {
     IMPORT_DATA_EXIST(3210007, "import.data.exist"),
     RESOURCE_USE(3210008, "resource.use"),
     TIME_WRONG(3210009, "time.wrong"),
-    VX_ERROR(3999999, "vx.error");
+    VX_ERROR(3999999, "vx.error"),
+    IMPORT_ERROR(3999998, "import.error");
 
     private Integer code;
 

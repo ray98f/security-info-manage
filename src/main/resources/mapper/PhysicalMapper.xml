@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.PhysicalMapper">
+    <select id="listPhysical" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
+        select id, no, hospital_no, type, start_time, end_time, remark, create_date, create_by,
+        file_word, file_pdf, estimate_num, actual_num from t_physical
+        where is_delete=0
+        <if test="type!=null">
+            and type=#{type}
+        </if>
+        <if test="sStartTime!=null and sStartTime!=''">
+            and start_time>=#{sStartTime}
+        </if>
+        <if test="sEndTime!=null and sEndTime!=''">
+            and #{sEndTime}>=start_time
+        </if>
+        <if test="eStartTime!=null and eStartTime!=''">
+            and end_time>=#{eStartTime}
+        </if>
+        <if test="eEndTime!=null and eEndTime!=''">
+            and #{eEndTime}>=end_time
+        </if>
+        order by create_date desc
+    </select>
+
+    <insert id="addPhysical">
+        insert into t_physical(id, no,
+        <if test="hospitalNo!=null and hospitalNo!=''">
+            hospital_no,
+        </if>
+        type, start_time, end_time,
+        <if test="remark!=null and remark!=''">
+            remark,
+        </if>
+        <if test="fileWord!=null and fileWord!=''">
+            file_word,
+        </if>
+        <if test="filePdf!=null and filePdf!=''">
+            file_pdf,
+        </if>
+        <if test="estimateNum!=null">
+            estimate_num,
+        </if>
+        <if test="actualNum!=null">
+            actual_num,
+        </if>
+        create_by) value (#{id}, #{no},
+        <if test="hospitalNo!=null and hospitalNo!=''">
+            #{hospitalNo},
+        </if>
+        #{type}, #{startTime}, #{endTime},
+        <if test="remark!=null and remark!=''">
+            #{remark},
+        </if>
+        <if test="fileWord!=null and fileWord!=''">
+            #{fileWord},
+        </if>
+        <if test="filePdf!=null and filePdf!=''">
+            #{filePdf},
+        </if>
+        <if test="estimateNum!=null">
+            #{estimateNum},
+        </if>
+        <if test="actualNum!=null">
+            #{actualNum},
+        </if>
+        #{createBy})
+    </insert>
+
+    <update id="modifyPhysical">
+        update t_physical set
+        <if test="hospitalNo!=null">
+            hospital_no=#{hospitalNo},
+        </if>
+        start_time=#{startTime}, end_time=#{endTime},
+        <if test="remark!=null">
+            remark=#{remark},
+        </if>
+        <if test="fileWord!=null">
+            file_word=#{fileWord},
+        </if>
+        <if test="filePdf!=null">
+            file_pdf=#{filePdf},
+        </if>
+        <if test="estimateNum!=null">
+            estimate_num=#{estimateNum},
+        </if>
+        <if test="actualNum!=null">
+            actual_num=#{actualNum},
+        </if>
+        update_by=#{createBy}
+        where id=#{id} and no=#{no} and is_delete=0
+    </update>
+
+    <update id="modifyPhysicalUser">
+        update t_physical_user set is_delete=1, update_by=#{createBy}
+        where physical_id=#{id} and physical_no=#{no} and is_delete=0;
+        insert into t_physical_user(id, physical_id, physical_no,
+        <if test="type==1">
+            user_id,
+        </if>
+        <if test="type==2">
+            new_user_id,
+        </if>
+        user_name, create_by)
+        values
+        <foreach collection="users" index="index" item="user" separator=",">
+            (replace(uuid(),"-",""), #{id}, #{no},
+            <if test="type==1">
+                #{user.id},
+            </if>
+            <if test="type==2">
+                #{user.id},
+            </if>
+            #{user.name}, #{createBy})
+        </foreach>
+        ;
+    </update>
+
+    <update id="deletePhysical">
+        update t_physical set
+        is_delete=1, update_by=#{createBy}
+        where id=#{id} and no=#{no} and is_delete=0;
+        update t_physical_user set is_delete=1, update_by=#{createBy}
+        where physical_id=#{id} and physical_no=#{no} and is_delete=0;
+    </update>
+
+    <insert id="addNewUser">
+        <foreach collection="list" index="index" item="newUser" separator=";">
+            insert into t_new_user(id,
+            <if test="newUser.name!=null and newUser.name!=''">
+                name,
+            </if>
+            <if test="newUser.age!=null">
+                age,
+            </if>
+            <if test="newUser.sex!=null">
+                sex,
+            </if>
+            <if test="newUser.phone!=null and newUser.phone!=''">
+                phone,
+            </if>
+            create_by) value (#{newUser.id},
+            <if test="newUser.name!=null and newUser.name!=''">
+                #{newUser.name},
+            </if>
+            <if test="newUser.age!=null">
+                #{newUser.age},
+            </if>
+            <if test="newUser.sex!=null">
+                #{newUser.sex},
+            </if>
+            <if test="newUser.phone!=null and newUser.phone!=''">
+                #{newUser.phone},
+            </if>
+            #{newUser.createBy})
+        </foreach>
+    </insert>
+</mapper>

@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Mapper
 @Repository
-public interface OrganizationMapper {
+public interface DeptMapper {
 
     void syncOrg(List<VxDeptResDTO> list, String userId);
 

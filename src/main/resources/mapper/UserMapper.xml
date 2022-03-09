@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.security.info.manage.mapper.UserMapper">
     <select id="selectUserInfo" resultType="com.security.info.manage.dto.req.UserReqDTO">
-        select su.id, su.user_name, su.user_real_name, su.password, su.phone, su.mail, su.status, su.remark,
-        su.open_userid, su.leave_time, su.create_date, sue.user_no, sue.age from sys_user as su
+        select su.id, su.name, su.mobile, su.telephone, su.email, su.biz_mail, su.status, su.open_userid, su.main_dept, su.avatar,
+        su.thumb_avatar, su.qr_code, su.address, su.gender, su.create_date, sue.user_name, sue.password, sue.user_no, sue.age
+        from sys_user as su
         left join sys_user_ext as sue on sue.user_id=su.id and sue.is_delete=0
         where su.user_name=#{userName} and su.is_delete=0
         <if test="id!=null and id!=''">
@@ -29,34 +30,6 @@
         ;
     </insert>
 
-    <insert id="insertPost" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
-        TRUNCATE TABLE sys_post;
-        <foreach collection="list" index="index" item="user" separator="">
-            <if test="user.department!=null and user.department.size()>0">
-                <foreach collection="user.department" index="index" item="dept" separator=";">
-                    INSERT INTO sys_post (id, org_id, post_name, create_by)
-                    SELECT replace(uuid(),"-",""), #{dept}, #{user.position}, #{doName}
-                    FROM DUAL
-                    WHERE not exists (SELECT id FROM sys_post WHERE org_id=#{dept} and post_name=#{user.position})
-                </foreach>
-            </if>
-        </foreach>
-        ;
-    </insert>
-
-    <insert id="insertUserPost" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
-        TRUNCATE TABLE sys_user_post;
-        INSERT INTO sys_user_post (id, user_id, post_id) values
-        <foreach collection="list" index="index" item="user" separator="">
-            <if test="user.department!=null and user.department.size()>0">
-                <foreach collection="user.department" index="index" item="dept" separator=",">
-                    (replace(uuid(),"-",""), #{user.userid}, (select id from sys_post where org_id=#{dept} and post_name=#{user.position} and is_delete=0 and status=0))
-                </foreach>
-            </if>
-        </foreach>
-        ;
-    </insert>
-
     <insert id="insertUserRole">
         insert into user_role(user_id,role_id,created_by,updated_by) values
         <foreach collection="roleIds" index="index" item="roleId" separator=",">
@@ -70,45 +43,44 @@
     </update>
 
     <update id="editUser">
-        update user
+        update sys_user_ext
         <set>
-            <if test="userReqDTO.userRealName!=null">
-                user_real_name=#{userReqDTO.userRealName},
+            <if test="userReqDTO.userName!=null">
+                user_name=#{userReqDTO.userName},
             </if>
-            <if test="userReqDTO.phone!=null">
-                phone=#{userReqDTO.phone},
+            <if test="userReqDTO.password!=null">
+                password=#{userReqDTO.password},
             </if>
-            <if test="userReqDTO.mail!=null">
-                mail=#{userReqDTO.mail},
+            <if test="userReqDTO.userNo!=null">
+                user_no=#{userReqDTO.userNo},
             </if>
-            <if test="userReqDTO.status!=null">
-                status=#{userReqDTO.status},
-            </if>
-            <if test="userReqDTO.remark!=null">
-                remark=#{userReqDTO.remark},
+            <if test="userReqDTO.age!=null">
+                age=#{userReqDTO.age},
             </if>
             updated_by=#{updateBy}
         </set>
-        where id=#{userReqDTO.id}
+        where user_id=#{userReqDTO.id} and is_delete=0
     </update>
 
     <select id="listAllUser" resultType="com.security.info.manage.entity.User">
-        select * from user where is_deleted=0
+        select * from sys_user where is_delete=0 and status=0
     </select>
 
     <select id="listUser" resultType="com.security.info.manage.entity.User">
-        select u.*,GROUP_CONCAT(ur.role_id) as user_roles from user as u left join user_role as ur on u.id=ur.user_id and ur.is_deleted=0
-        where u.is_deleted=0
+        select u.*, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+        left join sys_user_role as ur on u.id=ur.user_id
+        where u.is_delete=0
         <if test="status!=null">
             and u.status=#{status}
         </if>
-        <if test="userRealName!=null and userRealName!=''">
-            and u.user_real_name like CONCAT('%',#{userRealName},'%')
+        <if test="name!=null and name!=''">
+            and u.name like CONCAT('%',#{name},'%')
         </if>
         group by u.id
     </select>
 
     <select id="selectUserId" resultType="java.lang.Long">
-        select id from user where user_name=#{userName} and is_deleted=0
+        select u.id from sys_user as u left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        where ue.user_name=#{userName} and u.is_delete=0
     </select>
 </mapper>

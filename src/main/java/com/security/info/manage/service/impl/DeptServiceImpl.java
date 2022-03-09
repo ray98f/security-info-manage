@@ -7,8 +7,8 @@ import com.security.info.manage.dto.VxAccessToken;
 import com.security.info.manage.dto.res.VxDeptResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
-import com.security.info.manage.mapper.OrganizationMapper;
-import com.security.info.manage.service.OrganizationService;
+import com.security.info.manage.mapper.DeptMapper;
+import com.security.info.manage.service.DeptService;
 import com.security.info.manage.utils.CompanyStructureTreeToolUtils;
 import com.security.info.manage.utils.Constants;
 import com.security.info.manage.utils.TokenUtil;
@@ -30,10 +30,10 @@ import java.util.Objects;
  */
 @Service
 @Slf4j
-public class OrganizationServiceImpl implements OrganizationService {
+public class DeptServiceImpl implements DeptService {
 
     @Autowired
-    private OrganizationMapper organizationMapper;
+    private DeptMapper deptMapper;
 
     @Value("${vx-business.corpid}")
     private String corpid;
@@ -45,7 +45,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     private RestTemplate restTemplate;
 
     @Override
-    public void syncOrg(String orgId) {
+    public void syncDept(String orgId) {
         VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, corpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
@@ -68,23 +68,23 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         List<VxDeptResDTO> list = JSONArray.parseArray(res.getJSONArray("department").toJSONString(), VxDeptResDTO.class);
         if (list != null && !list.isEmpty()) {
-            organizationMapper.syncOrg(list, TokenUtil.getCurrentPersonNo());
+            deptMapper.syncOrg(list, TokenUtil.getCurrentPersonNo());
         }
     }
 
     @Override
     public List<DeptTreeResDTO> listTree() {
-        List<DeptTreeResDTO> extraRootList = organizationMapper.getRoot();
+        List<DeptTreeResDTO> extraRootList = deptMapper.getRoot();
         if (Objects.isNull(extraRootList)) {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
-        List<DeptTreeResDTO> extraBodyList = organizationMapper.getBody();
+        List<DeptTreeResDTO> extraBodyList = deptMapper.getBody();
         CompanyStructureTreeToolUtils extraTree = new CompanyStructureTreeToolUtils(extraRootList, extraBodyList);
         return extraTree.getTree();
     }
 
     @Override
     public List<DeptTreeResDTO> listFirst() {
-        return organizationMapper.listCompanyList();
+        return deptMapper.listCompanyList();
     }
 }

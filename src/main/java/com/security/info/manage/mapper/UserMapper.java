@@ -23,7 +23,7 @@ public interface UserMapper {
      * @param userName
      * @return
      */
-    UserReqDTO selectUserInfo(Long id, String userName);
+    UserReqDTO selectUserInfo(String id, String userName);
 
     /**
      * 获取用户权限id
@@ -31,7 +31,7 @@ public interface UserMapper {
      * @param userId
      * @return
      */
-    List<Long> selectUserRoles(Long userId);
+    List<String> selectUserRoles(String userId);
 
     /**
      * 新增用户
@@ -42,10 +42,6 @@ public interface UserMapper {
      */
     void insertUser(List<VxUserResDTO> list, String doName);
 
-    void insertPost(List<VxUserResDTO> list, String doName);
-
-    void insertUserPost(List<VxUserResDTO> list);
-
     /**
      * 新增用户权限
      *
@@ -54,7 +50,7 @@ public interface UserMapper {
      * @param doName
      * @return
      */
-    int insertUserRole(Long userId, List<Long> roleIds, String doName);
+    Integer insertUserRole(String userId, List<String> roleIds, String doName);
 
     /**
      * 修改密码
@@ -63,7 +59,7 @@ public interface UserMapper {
      * @param updateBy
      * @return
      */
-    int changePwd(PasswordReqDTO passwordReqDTO, String updateBy);
+    Integer changePwd(PasswordReqDTO passwordReqDTO, String updateBy);
 
     /**
      * 修改用户
@@ -72,13 +68,13 @@ public interface UserMapper {
      * @param updateBy
      * @return
      */
-    int editUser(UserReqDTO userReqDTO, String updateBy);
+    Integer editUser(UserReqDTO userReqDTO, String updateBy);
 
     /**
      * 删除用户的所有角色
      * @param userId
      */
-    void deleteUserRole(Long userId);
+    void deleteUserRole(String userId);
 
     /**
      * 获取所有用户列表
@@ -91,10 +87,10 @@ public interface UserMapper {
      * 查询用户列表
      * @param page
      * @param status
-     * @param userRealName
+     * @param name
      * @return
      */
-    Page<User> listUser(Page<User> page, Integer status,String userRealName);
+    Page<User> listUser(Page<User> page, Integer status, String name);
 
     /**
      * 根据用户名获取用户id

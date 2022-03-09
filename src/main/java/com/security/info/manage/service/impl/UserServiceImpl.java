@@ -14,6 +14,7 @@ import com.security.info.manage.dto.res.VxUserResDTO;
 import com.security.info.manage.entity.User;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
+import com.security.info.manage.mapper.PostMapper;
 import com.security.info.manage.mapper.UserMapper;
 import com.security.info.manage.service.UserService;
 import com.security.info.manage.utils.AesUtils;
@@ -36,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private PostMapper postMapper;
 
     @Value("${vx-business.corpid}")
     private String corpid;
@@ -90,8 +94,8 @@ public class UserServiceImpl implements UserService {
                 List<VxUserResDTO> userList = JSONArray.parseArray(res.getJSONArray("userlist").toJSONString(), VxUserResDTO.class);
                 if (userList != null && !userList.isEmpty()) {
                     userMapper.insertUser(userList, TokenUtil.getCurrentPersonNo());
-                    userMapper.insertPost(userList, TokenUtil.getCurrentPersonNo());
-                    userMapper.insertUserPost(userList);
+//                    postMapper.insertPost(userList, TokenUtil.getCurrentPersonNo());
+//                    postMapper.insertUserPost(userList);
                 }
             }
         }
@@ -162,9 +166,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> listUser(Integer status, String userRealName, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        if (userRealName != null && userRealName.contains(Constants.PERCENT_SIGN)) {
-            userRealName = "尼玛死了";
-        }
         return userMapper.listUser(pageReqDTO.of(), status, userRealName);
     }
 }

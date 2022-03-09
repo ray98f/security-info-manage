@@ -2,7 +2,7 @@ package com.security.info.manage.controller;
 
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.security.info.manage.dto.DataResponse;
-import com.security.info.manage.service.OrganizationService;
+import com.security.info.manage.service.DeptService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,30 +21,30 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/org")
+@RequestMapping("/dept")
 @Api(tags = "组织机构管理")
 @Validated
-public class OrganizationController {
+public class DeptController {
 
     @Resource
-    private OrganizationService organizationService;
+    private DeptService deptService;
 
     @GetMapping("/sync")
     @ApiOperation(value = "同步企业微信组织机构")
-    public DataResponse<T> syncOrg(@RequestParam(required = false) String orgId) {
-        organizationService.syncOrg(orgId);
+    public DataResponse<T> syncDept(@RequestParam(required = false) String orgId) {
+        deptService.syncDept(orgId);
         return DataResponse.success();
     }
 
     @GetMapping("/listTree")
     @ApiOperation(value = "公司层级结构获取")
     public DataResponse<List<DeptTreeResDTO>> listTree() {
-        return DataResponse.of(organizationService.listTree());
+        return DataResponse.of(deptService.listTree());
     }
 
     @GetMapping("/listFirst")
     @ApiOperation(value = "获取一级目录列表")
     public DataResponse<List<DeptTreeResDTO>> listFirst() {
-        return DataResponse.of(organizationService.listFirst());
+        return DataResponse.of(deptService.listFirst());
     }
 }
