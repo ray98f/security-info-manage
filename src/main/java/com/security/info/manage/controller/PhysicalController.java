@@ -1,6 +1,5 @@
 package com.security.info.manage.controller;
 
-import com.security.info.manage.dto.AttachmentFile;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -8,25 +7,17 @@ import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.res.PhysicalResDTO;
 import com.security.info.manage.dto.res.PhysicalUserResDTO;
-import com.security.info.manage.enums.ErrorCode;
-import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.service.PhysicalService;
-import com.security.info.manage.utils.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import net.coobird.thumbnailator.Thumbnails;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.imageio.ImageIO;
 import javax.validation.Valid;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.List;
 
 /**
