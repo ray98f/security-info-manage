@@ -46,6 +46,12 @@ public class PhysicalResDTO {
     @ApiModelProperty(value = "受检人数")
     private Integer actualNum;
 
+    @ApiModelProperty(value = "职业禁忌证人数")
+    private Integer dangerNum;
+
+    @ApiModelProperty(value = "需要复检人数")
+    private Integer reviewNum;
+
     @ApiModelProperty(value = "创建时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(

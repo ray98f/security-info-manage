@@ -66,3 +66,9 @@ excluded:
 vx-business:
   corpid: aaa
   corpsecret: bbb
+
+minio:
+  url: http://zxgd.softether.net:9000
+  imgPath: http://zxgd.softether.net:9000
+  accessKey: minio
+  secretKey: minio123

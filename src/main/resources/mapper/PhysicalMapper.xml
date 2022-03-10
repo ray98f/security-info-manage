@@ -23,6 +23,14 @@
         order by create_date desc
     </select>
 
+    <select id="getPhysicalDetail" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
+        select p.id, p.no, p.hospital_no, p.type, p.start_time, p.end_time, p.remark, p.create_date, p.create_by,
+        p.file_word, p.file_pdf, p.estimate_num, p.actual_num,
+        sum(if(pu.result=1,1,0)) as danger_num, sum(if(pu.result=2,1,0)) as review_num from t_physical as p
+        left join t_physical_user as pu on pu.physical_id=p.id and pu.is_delete=0
+        where is_delete=0 and id=#{id}
+    </select>
+
     <insert id="addPhysical">
         insert into t_physical(id, no,
         <if test="hospitalNo!=null and hospitalNo!=''">
@@ -102,7 +110,7 @@
         <if test="type==2">
             new_user_id,
         </if>
-        user_name, create_by)
+        user_name, mobile, create_by)
         values
         <foreach collection="users" index="index" item="user" separator=",">
             (replace(uuid(),"-",""), #{id}, #{no},
@@ -112,7 +120,7 @@
             <if test="type==2">
                 #{user.id},
             </if>
-            #{user.name}, #{createBy})
+            #{user.name}, #{mobile} #{createBy})
         </foreach>
         ;
     </update>
@@ -156,4 +164,71 @@
             #{newUser.createBy})
         </foreach>
     </insert>
+
+    <select id="listPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile,
+        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        where pu.physical_id=#{id} and pu.is_delete=0
+        order by pu.create_date desc
+    </select>
+
+    <select id="selectPhysicalUserById" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile,
+        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        where pu.id=#{id} and pu.is_delete=0
+    </select>
+
+    <insert id="userReview">
+        insert into t_physical_user(id, physical_id, physical_no, user_id, new_user_id, is_review, last_physical_user_id, create_by)
+        values (replace(uuid(),"-",""), #{physicalId}, #{physicalNo}, #{userId}, #{newUserId}, 1, #{id}, #{createBy});
+        update t_physical_user set
+        is_review=1, update_by=#{createBy}
+        where id=#{id} and is_delete=0;
+    </insert>
+
+    <update id="editPhysical">
+        update t_physical_user set
+        hospital_no=#{hospitalNo}, estimate_num=#{estimateNum}, actual_num=#{actualNum}, update_by=#{userId}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="physicalResultImport">
+        <foreach collection="users" index="index" item="user" separator="">
+            update t_physical_user set
+            status=3, result=#{user.result}, update_by=#{userId}, physical_time=#{physicalTime}
+            where user_name=#{user.name} and physical_id=#{id} and is_delete=0 and mobile=#{user.phone};
+            insert into t_physical_result(id, physical_user_id, name, age, sex, phone, work_year, work_type,
+            hazard_factor_name, warning_index, conclusion, handling_opinions, medical_advice, create_by)
+            value (#{user.id}, (select id from t_physical_user where user_name=#{user.name} and mobile=#{user.phone} and physical_id=#{id} and is_delete=0),
+            #{user.name}, #{user.age}, #{user.sex}, #{user.phone}, #{user.workYear}, #{user.workType}, #{user.hazardFactorName},
+            #{user.warningIndex}, #{user.conclusion}, #{user.handlingOpinions}, #{user.medicalAdvice}, #{userId});
+        </foreach>
+    </update>
+
+    <update id="uploadFilePhysical">
+        update t_physical set
+        <if test="type==1">
+            file_word=#{url},
+        </if>
+        <if test="type==2">
+            file_pdf=#{url},
+        </if>
+        update_by=#{userId}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="uploadFilePhysicalUser">
+        update t_physical_user set
+        <if test="type==1">
+            file_word=#{url},
+        </if>
+        <if test="type==2">
+            file_pdf=#{url},
+        </if>
+        update_by=#{userId}
+        where id=#{id} and is_delete=0
+    </update>
+
 </mapper>
