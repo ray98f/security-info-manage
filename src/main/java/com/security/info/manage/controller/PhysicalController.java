@@ -84,6 +84,12 @@ public class PhysicalController {
         return PageResponse.of(physicalService.listPhysicalUser(id, pageReqDTO));
     }
 
+    @GetMapping("/user/detail")
+    @ApiOperation(value = "获取体检用户详情")
+    public DataResponse<PhysicalUserResDTO> getPhysicalUserDetail(@RequestParam String id) {
+        return DataResponse.of(physicalService.getPhysicalUserDetail(id));
+    }
+
     @GetMapping("/user/review")
     @ApiOperation(value = "体检用户发起复检")
     public DataResponse<T> userReview(@RequestParam String id) {

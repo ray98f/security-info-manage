@@ -1,6 +1,7 @@
 package com.security.info.manage.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.security.info.manage.entity.PhysicalResult;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -72,4 +73,7 @@ public class PhysicalUserResDTO {
 
     @ApiModelProperty(value = "新增人")
     private String createBy;
+
+    @ApiModelProperty(value = "体检结果")
+    private PhysicalResult physicalResult;
 }

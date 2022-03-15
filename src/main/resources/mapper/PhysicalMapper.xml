@@ -180,11 +180,17 @@
         where pu.id=#{id} and pu.is_delete=0
     </select>
 
+    <select id="getPhysicalResult" resultType="com.security.info.manage.entity.PhysicalResult">
+        select id, physical_user_id, name, age, sex, phone, work_year, work_type, hazard_factor_name, warning_index, conclusion,
+        handling_opinions, medical_advice, create_date, update_date, create_by, update_by, is_delete from t_physical_result
+        where physical_user_id=#{id} and is_delete=0
+    </select>
+
     <insert id="userReview">
         insert into t_physical_user(id, physical_id, physical_no, user_id, new_user_id, is_review, last_physical_user_id, create_by)
         values (replace(uuid(),"-",""), #{physicalId}, #{physicalNo}, #{userId}, #{newUserId}, 1, #{id}, #{createBy});
         update t_physical_user set
-        is_review=1, update_by=#{createBy}
+        is_review=1, update_by=#{createBy}, status=5
         where id=#{id} and is_delete=0;
     </insert>
 

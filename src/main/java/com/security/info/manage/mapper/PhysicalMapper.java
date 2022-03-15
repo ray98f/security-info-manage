@@ -8,6 +8,7 @@ import com.security.info.manage.dto.req.PhysicalResultImportReqDTO;
 import com.security.info.manage.dto.res.PhysicalResDTO;
 import com.security.info.manage.dto.res.PhysicalUserResDTO;
 import com.security.info.manage.dto.res.PostResDTO;
+import com.security.info.manage.entity.PhysicalResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -36,13 +37,15 @@ public interface PhysicalMapper {
 
     Page<PhysicalUserResDTO> listPhysicalUser(Page<PhysicalUserResDTO> page, String id);
 
+    PhysicalResult getPhysicalResult(String id);
+
     PhysicalUserResDTO selectPhysicalUserById(String id);
 
     Integer userReview(PhysicalUserResDTO physicalUserResDTO);
 
-    Integer editPhysical(PhysicalResultImportReqDTO physicalResultImportReqDTO);
+    void editPhysical(PhysicalResultImportReqDTO physicalResultImportReqDTO);
 
-    Integer physicalResultImport(PhysicalResultImportReqDTO physicalResultImportReqDTO);
+    void physicalResultImport(PhysicalResultImportReqDTO physicalResultImportReqDTO);
 
     Integer uploadFilePhysical(String url, String id, String userId, Integer type);
 

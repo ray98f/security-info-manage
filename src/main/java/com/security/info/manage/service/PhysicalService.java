@@ -29,6 +29,8 @@ public interface PhysicalService {
 
     Page<PhysicalUserResDTO> listPhysicalUser(String id, PageReqDTO pageReqDTO);
 
+    PhysicalUserResDTO getPhysicalUserDetail(String id);
+
     void userReview(String id);
 
     void uploadWord(MultipartFile file, String bizCode, String id) throws Exception;

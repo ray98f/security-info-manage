@@ -72,3 +72,12 @@ minio:
   imgPath: http://zxgd.softether.net:9000
   accessKey: minio
   secretKey: minio123
+
+#jodconverter配置
+jodconverter:
+  local:
+    enabled: true
+    #home:安装地址
+    office-home: C:\\Program Files (x86)\OpenOffice 4
+    max-tasks-per-process: 10
+    port-numbers: 8100

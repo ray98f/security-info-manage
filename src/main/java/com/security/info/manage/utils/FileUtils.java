@@ -1,13 +1,41 @@
 package com.security.info.manage.utils;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.converter.WordToHtmlConverter;
+import org.apache.poi.poifs.filesystem.DirectoryEntry;
+import org.apache.poi.poifs.filesystem.DocumentEntry;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.util.XMLHelper;
+import org.apache.poi.xwpf.converter.core.BasicURIResolver;
+import org.apache.poi.xwpf.converter.core.FileImageExtractor;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.HtmlUtils;
+import org.w3c.dom.Document;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FileUtils {
 
@@ -329,6 +357,37 @@ public class FileUtils {
             e.printStackTrace();
         }
         return file;
+    }
+
+    public static String docToHtml(FileInputStream fileInputStream) {
+        HWPFDocument wordDocument;
+        try {
+            wordDocument = new HWPFDocument(fileInputStream);
+            Document newDocument = XMLHelper.getDocumentBuilderFactory().newDocumentBuilder().newDocument();
+            WordToHtmlConverter wordToHtmlConverter = new WordToHtmlConverter(newDocument);
+            wordToHtmlConverter.processDocument(wordDocument);
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+            transformer.setOutputProperty(OutputKeys.METHOD, "html");
+
+            StringWriter stringWriter = new StringWriter();
+            transformer.transform(new DOMSource(wordToHtmlConverter.getDocument()), new StreamResult(stringWriter));
+            return stringWriter.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String docxToHtml(File file) throws Exception {
+        FileInputStream fileInputStream = new FileInputStream(file);
+        XWPFDocument docxDocument = new XWPFDocument(fileInputStream);
+        XHTMLOptions options = XHTMLOptions.create();
+        ByteArrayOutputStream htmlStream = new ByteArrayOutputStream();
+        XHTMLConverter.getInstance().convert(docxDocument, htmlStream, options);
+        return htmlStream.toString();
     }
 
 }
