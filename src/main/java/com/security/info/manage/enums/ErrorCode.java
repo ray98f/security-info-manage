@@ -127,6 +127,7 @@ public enum ErrorCode {
     USER_DISABLE(32000060, "user.disable"),
     LOGIN_PASSWORD_ERROR(32000061, "login.password.error"),
     USER_PWD_CHANGE_FAIL(32000062, "user.pwd.change.fail"),
+    PWD_ERROR(32000062, "pwd.error"),
     APP_ROLE_EDIT_ERROR(32000063, "app.role.edit.error"),
     USER_NO_ROLE(32000064, "user.no.role"),
     USER_LOGIN_CANT_DELETE(32000065, "user.login.cant.delete"),

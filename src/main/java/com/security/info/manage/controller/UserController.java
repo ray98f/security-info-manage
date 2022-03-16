@@ -5,6 +5,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.PasswordReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.User;
 import com.security.info.manage.service.UserService;
 import io.swagger.annotations.Api;
@@ -23,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-@Api(tags = "用户")
+@Api(tags = "用户管理")
 @Validated
 public class UserController {
 
@@ -35,7 +36,7 @@ public class UserController {
      *
      * @return
      */
-    @PostMapping("/sync")
+    @GetMapping("/sync")
     @ApiOperation(value = "同步员工")
     public DataResponse<T> syncUser() {
         userService.syncUser();
@@ -78,17 +79,32 @@ public class UserController {
     }
 
     /**
+     * 查询用户列表
+     * @param status
+     * @param userRealName
+     * @return
+     */
+    @GetMapping("/list")
+    @ApiOperation(value = "查询用户列表")
+    public DataResponse<List<UserResDTO>> listUser(@RequestParam(required = false) @ApiParam("状态") Integer status,
+                                                   @RequestParam(required = false) @ApiParam("姓名") String userRealName,
+                                                   @RequestParam(required = false) @ApiParam("组织机构id列表") List<String> deptIds) {
+        return DataResponse.of(userService.listUser(status, userRealName, deptIds));
+    }
+
+    /**
      * 分页查询用户列表
      * @param status
      * @param userRealName
      * @param pageReqDTO
      * @return
      */
-    @GetMapping("/list")
+    @GetMapping("/page")
     @ApiOperation(value = "分页查询用户列表")
-    public PageResponse<User> listUser(@RequestParam(required = false) @ApiParam("状态") Integer status,
-                                       @RequestParam(required = false) @ApiParam("姓名") String userRealName,
-                                       @Valid PageReqDTO pageReqDTO){
-        return PageResponse.of(userService.listUser(status, userRealName, pageReqDTO));
+    public PageResponse<UserResDTO> pageUser(@RequestParam(required = false) @ApiParam("状态") Integer status,
+                                             @RequestParam(required = false) @ApiParam("姓名") String userRealName,
+                                             @RequestParam(required = false) @ApiParam("组织机构id列表") List<String> deptIds,
+                                             @Valid PageReqDTO pageReqDTO){
+        return PageResponse.of(userService.pageUser(status, userRealName, deptIds, pageReqDTO));
     }
 }

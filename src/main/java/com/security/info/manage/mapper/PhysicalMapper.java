@@ -3,11 +3,13 @@ package com.security.info.manage.mapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.NewUserReqDTO;
+import com.security.info.manage.dto.req.PhysicalNoticeReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.req.PhysicalResultImportReqDTO;
 import com.security.info.manage.dto.res.PhysicalResDTO;
 import com.security.info.manage.dto.res.PhysicalUserResDTO;
 import com.security.info.manage.dto.res.PostResDTO;
+import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.entity.PhysicalResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -41,6 +43,8 @@ public interface PhysicalMapper {
 
     PhysicalUserResDTO selectPhysicalUserById(String id);
 
+    List<PhysicalUserResDTO> selectPhysicalUserByPhysicalId(String id);
+
     Integer userReview(PhysicalUserResDTO physicalUserResDTO);
 
     void editPhysical(PhysicalResultImportReqDTO physicalResultImportReqDTO);
@@ -50,4 +54,10 @@ public interface PhysicalMapper {
     Integer uploadFilePhysical(String url, String id, String userId, Integer type);
 
     Integer uploadFilePhysicalUser(String url, String id, String userId, Integer type);
+
+    Integer insertPhysicalNotice(PhysicalNoticeReqDTO physicalNoticeReqDTO);
+
+    Integer insertPhysicalFeedback(PhysicalFeedback physicalFeedback);
+
+    Integer modifyPhysicalFeedback(PhysicalFeedback physicalFeedback);
 }

@@ -18,27 +18,39 @@
     </select>
 
     <insert id="insertUser" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
-        TRUNCATE TABLE sys_user;
-        insert into sys_user(id, name, mobile, telephone, email, biz_mail, status,
-        open_userid, main_dept, avatar, thumb_avatar, qr_code, address, gender, create_by)
-        values
-        <foreach collection="list" index="index" item="user" separator=",">
-            (#{user.userid}, #{user.name}, #{user.mobile}, #{user.telephone}, #{user.email}, #{user.biz_mail}, #{user.status},
-            #{user.open_userid}, #{user.main_department}, #{user.avatar}, #{user.thumb_avatar}, #{user.qr_code}, #{user.address},
-            #{user.gender}, #{doName})
-        </foreach>
-        ;
+        <if test="list.size()>0">
+            TRUNCATE TABLE sys_user;
+            insert into sys_user(id, name, mobile, telephone, email, biz_mail, status,
+            open_userid, main_dept, avatar, thumb_avatar, qr_code, address, gender, create_by)
+            values
+            <foreach collection="list" index="index" item="user" separator=",">
+                (#{user.userid}, #{user.name}, #{user.mobile}, #{user.telephone}, #{user.email}, #{user.biz_mail}, #{user.status},
+                #{user.open_userid}, #{user.main_department}, #{user.avatar}, #{user.thumb_avatar}, #{user.qr_code}, #{user.address},
+                #{user.gender}, #{doName})
+            </foreach>
+            ;
+            <foreach collection="list" index="index" item="user" separator=";">
+                insert into sys_user_ext(id, user_id, create_by)
+                SELECT replace(uuid(),"-",""), #{user.userid}, #{doName}
+                FROM DUAL
+                WHERE not exists (SELECT id FROM sys_user_ext WHERE user_id=#{user.userid} and is_delete=0)
+            </foreach>
+        </if>
     </insert>
 
     <insert id="insertUserRole">
-        insert into user_role(user_id,role_id,created_by,updated_by) values
+        insert into user_role(user_id,role_id,create_by,update_by) values
         <foreach collection="roleIds" index="index" item="roleId" separator=",">
             (#{userId},#{roleId},#{doName},#{doName})
         </foreach>
     </insert>
 
+    <select id="selectOldPassword" resultType="java.lang.String">
+        select password from sys_user_ext where user_name=#{userName}
+    </select>
+
     <update id="changePwd" parameterType="com.security.info.manage.dto.req.PasswordReqDTO">
-        update sys_user set password=#{passwordReqDTO.newPwd},update_by=#{updateBy}
+        update sys_user_ext set password=#{passwordReqDTO.newPwd}, update_by=#{updateBy}
         where user_name=#{passwordReqDTO.userName} and password=#{passwordReqDTO.oldPwd}
     </update>
 
@@ -57,7 +69,7 @@
             <if test="userReqDTO.age!=null">
                 age=#{userReqDTO.age},
             </if>
-            updated_by=#{updateBy}
+            update_by=#{updateBy}
         </set>
         where user_id=#{userReqDTO.id} and is_delete=0
     </update>
@@ -66,15 +78,52 @@
         select * from sys_user where is_delete=0 and status=0
     </select>
 
-    <select id="listUser" resultType="com.security.info.manage.entity.User">
-        select u.*, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+    <select id="listUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
         left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
         where u.is_delete=0
         <if test="status!=null">
             and u.status=#{status}
         </if>
         <if test="name!=null and name!=''">
             and u.name like CONCAT('%',#{name},'%')
+        </if>
+        <if test="deptIds!=null and deptIds.size()>0">
+            and d.id in (
+            <foreach collection="deptIds" index="index" item="deptId" separator=",">
+                #{deptId}
+            </foreach>
+            )
+        </if>
+        group by u.id
+    </select>
+
+    <select id="pageUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where u.is_delete=0
+        <if test="status!=null">
+            and u.status=#{status}
+        </if>
+        <if test="name!=null and name!=''">
+            and u.name like CONCAT('%',#{name},'%')
+        </if>
+        <if test="deptIds!=null and deptIds.size()>0">
+            and d.id in (
+            <foreach collection="deptIds" index="index" item="deptId" separator=",">
+                #{deptId}
+            </foreach>
+            )
         </if>
         group by u.id
     </select>

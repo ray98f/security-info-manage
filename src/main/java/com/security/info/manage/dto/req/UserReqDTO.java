@@ -30,5 +30,8 @@ public class UserReqDTO extends User {
     private Integer age;
 
     @ApiModelProperty(value = "年龄")
+    private Integer status;
+
+    @ApiModelProperty(value = "年龄")
     private List<String> roleIds;
 }

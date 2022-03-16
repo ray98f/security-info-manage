@@ -2,6 +2,14 @@ package com.security.info.manage.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.security.info.manage.dto.VxAccessToken;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
 
 /**
  * 企业微信
@@ -17,11 +25,22 @@ public class VxApiUtils {
      */
     public static VxAccessToken getAccessToken(String corpid, String corpsecret) {
         VxAccessToken accessToken = new VxAccessToken();
-        JSONObject jsonObject = JSONObject.parseObject(HttpRequestUtil.sendGet(Constants.VX_GET_ACCESS_TOKEN + "?corpid=" + corpid + "&corpsecret=" + corpsecret, null));
-        if (jsonObject != null) {
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet getToken = new HttpGet(Constants.VX_GET_ACCESS_TOKEN + "?corpid=" + corpid + "&corpsecret=" + corpsecret);
+        HttpResponse response;
+        JSONObject tokenJson = new JSONObject();
+        try {
+            response = client.execute(getToken);
+            HttpEntity result = response.getEntity();
+            String tokenMessage = EntityUtils.toString(result);
+            tokenJson = JSONObject.parseObject(tokenMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (tokenJson != null) {
             try {
-                accessToken.setToken(jsonObject.getString("access_token"));
-                accessToken.setExpiresIn(jsonObject.getInteger("expires_in"));
+                accessToken.setToken(tokenJson.getString("access_token"));
+                accessToken.setExpiresIn(tokenJson.getInteger("expires_in"));
             } catch (Exception e) {
                 accessToken = null;
             }

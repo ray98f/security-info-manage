@@ -7,6 +7,7 @@ import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.res.PhysicalResDTO;
 import com.security.info.manage.dto.res.PhysicalUserResDTO;
+import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.service.PhysicalService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,13 +67,13 @@ public class PhysicalController {
     }
 
     @PostMapping("/newUser")
-    @ApiOperation(value = "新增体检流程")
+    @ApiOperation(value = "新入职人员导入")
     public DataResponse<List<NewUserReqDTO>> addNewUser(@RequestParam MultipartFile file) {
         return DataResponse.of(physicalService.addNewUser(file));
     }
 
     @GetMapping("/detail")
-    @ApiOperation(value = "体检用户列表")
+    @ApiOperation(value = "获取体检流程详情")
     public DataResponse<PhysicalResDTO> getPhysicalDetail(@RequestParam String id) {
         return DataResponse.of(physicalService.getPhysicalDetail(id));
     }
@@ -91,7 +92,7 @@ public class PhysicalController {
     }
 
     @GetMapping("/user/review")
-    @ApiOperation(value = "体检用户发起复检")
+    @ApiOperation(value = "发起复检")
     public DataResponse<T> userReview(@RequestParam String id) {
         physicalService.userReview(id);
         return DataResponse.success();
@@ -108,6 +109,20 @@ public class PhysicalController {
     @ApiOperation(value = "检查结果pdf文件上传")
     public DataResponse<T> uploadPdf(@RequestParam MultipartFile file, String bizCode, String id) throws Exception {
         physicalService.uploadPdf(file, bizCode, id);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/feedback/add")
+    @ApiOperation(value = "新增体检反馈")
+    public DataResponse<T> addFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
+        physicalService.addFeedback(physicalFeedback);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/feedback/modify")
+    @ApiOperation(value = "审批体检反馈")
+    public DataResponse<T> modifyFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
+        physicalService.modifyFeedback(physicalFeedback);
         return DataResponse.success();
     }
 }

@@ -9,6 +9,7 @@ import com.security.info.manage.dto.VxAccessToken;
 import com.security.info.manage.dto.req.LoginReqDTO;
 import com.security.info.manage.dto.req.PasswordReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.dto.res.VxDeptResDTO;
 import com.security.info.manage.dto.res.VxUserResDTO;
 import com.security.info.manage.entity.User;
@@ -29,8 +30,10 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -74,6 +77,7 @@ public class UserServiceImpl implements UserService {
         if (res.getJSONArray("department_id") == null) {
             return;
         }
+        List<VxUserResDTO> userAllList = new ArrayList<>();
         List<VxDeptResDTO> list = JSONArray.parseArray(res.getJSONArray("department_id").toJSONString(), VxDeptResDTO.class);
         if (list != null && !list.isEmpty()) {
             for (VxDeptResDTO vxDeptResDTO : list) {
@@ -91,12 +95,15 @@ public class UserServiceImpl implements UserService {
                 if (resUser.getJSONArray("userlist") == null) {
                     continue;
                 }
-                List<VxUserResDTO> userList = JSONArray.parseArray(res.getJSONArray("userlist").toJSONString(), VxUserResDTO.class);
-                if (userList != null && !userList.isEmpty()) {
-                    userMapper.insertUser(userList, TokenUtil.getCurrentPersonNo());
+                List<VxUserResDTO> userList = JSONArray.parseArray(resUser.getJSONArray("userlist").toJSONString(), VxUserResDTO.class);
+                userAllList.addAll(userList);
+            }
+            if (!userAllList.isEmpty()) {
+                userAllList = userAllList.stream().collect(collectingAndThen(
+                        toCollection(() -> new TreeSet<>(Comparator.comparing(VxUserResDTO::getUserid))), ArrayList::new));
+                userMapper.insertUser(userAllList, TokenUtil.getCurrentPersonNo());
 //                    postMapper.insertPost(userList, TokenUtil.getCurrentPersonNo());
 //                    postMapper.insertUserPost(userList);
-                }
             }
         }
     }
@@ -125,6 +132,9 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(passwordReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
+        if (!AesUtils.encrypt(passwordReqDTO.getOldPwd()).equals(userMapper.selectOldPassword(passwordReqDTO))) {
+            throw new CommonException(ErrorCode.PWD_ERROR);
+        }
         passwordReqDTO.setOldPwd(AesUtils.encrypt(passwordReqDTO.getOldPwd()));
         passwordReqDTO.setNewPwd(AesUtils.encrypt(passwordReqDTO.getNewPwd()));
         int result = userMapper.changePwd(passwordReqDTO, TokenUtil.getCurrentUserName());
@@ -138,18 +148,9 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(userReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        UserReqDTO userInfo = userMapper.selectUserInfo(userReqDTO.getId(), userReqDTO.getUserName());
-        if (!Objects.isNull(userInfo)) {
-            throw new CommonException(ErrorCode.USER_EXIST);
-        }
-        int result = userMapper.editUser(userReqDTO, TokenUtil.getCurrentUserName());
-        if (result > 0) {
-            userMapper.deleteUserRole(userReqDTO.getId());
-            result = userMapper.insertUserRole(userReqDTO.getId(), userReqDTO.getRoleIds(), TokenUtil.getCurrentUserName());
-            if (result < 0) {
-                throw new CommonException(ErrorCode.UPDATE_ERROR);
-            }
-        } else {
+        userReqDTO.setPassword(AesUtils.encrypt(userReqDTO.getPassword()));
+        Integer result = userMapper.editUser(userReqDTO, TokenUtil.getCurrentUserName());
+        if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
     }
@@ -164,8 +165,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> listUser(Integer status, String userRealName, PageReqDTO pageReqDTO) {
+    public List<UserResDTO> listUser(Integer status, String userRealName, List<String> deptIds) {
+        return userMapper.listUser(status, userRealName, deptIds);
+    }
+
+    @Override
+    public Page<UserResDTO> pageUser(Integer status, String userRealName, List<String> deptIds, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return userMapper.listUser(pageReqDTO.of(), status, userRealName);
+        return userMapper.pageUser(pageReqDTO.of(), status, userRealName, deptIds);
     }
 }

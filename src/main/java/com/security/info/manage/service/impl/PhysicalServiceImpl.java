@@ -10,6 +10,7 @@ import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.req.PhysicalResultImportReqDTO;
 import com.security.info.manage.dto.res.PhysicalResDTO;
 import com.security.info.manage.dto.res.PhysicalUserResDTO;
+import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.PhysicalMapper;
@@ -179,18 +180,21 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void userReview(String id) {
         if (Objects.isNull(id)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        PhysicalUserResDTO physicalUserResDTO = physicalMapper.selectPhysicalUserById(id);
-        if (Objects.isNull(physicalUserResDTO)) {
+        List<PhysicalUserResDTO> list = physicalMapper.selectPhysicalUserByPhysicalId(id);
+        if (list == null || list.isEmpty()) {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
-        physicalUserResDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-        Integer result = physicalMapper.userReview(physicalUserResDTO);
-        if (result < 0) {
-            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        for (PhysicalUserResDTO physicalUserResDTO : list) {
+            physicalUserResDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+            Integer result = physicalMapper.userReview(physicalUserResDTO);
+            if (result < 0) {
+                throw new CommonException(ErrorCode.UPDATE_ERROR);
+            }
         }
     }
 
@@ -268,6 +272,31 @@ public class PhysicalServiceImpl implements PhysicalService {
         } else if ("physicalUserPdf".equals(bizCode)) {
             result = physicalMapper.uploadFilePhysicalUser(url, id, TokenUtil.getCurrentPersonNo(), 2);
         }
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void addFeedback(PhysicalFeedback physicalFeedback) {
+        if (Objects.isNull(physicalFeedback)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        physicalFeedback.setId(TokenUtil.getUuId());
+        physicalFeedback.setCreateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = physicalMapper.insertPhysicalFeedback(physicalFeedback);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void modifyFeedback(PhysicalFeedback physicalFeedback) {
+        if (Objects.isNull(physicalFeedback)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        physicalFeedback.setUpdateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = physicalMapper.modifyPhysicalFeedback(physicalFeedback);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

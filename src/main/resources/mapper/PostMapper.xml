@@ -3,7 +3,7 @@
 <mapper namespace="com.security.info.manage.mapper.PostMapper">
 
     <select id="listPost" resultType="com.security.info.manage.dto.res.PostResDTO">
-        select p.org_id, d.org_name, p.post_name, p.status, p.create_date
+        select p.id, p.org_id, d.org_name, p.post_name, p.status, p.create_date
         from sys_post as p left join sys_dept as d on d.id=p.org_id and d.is_delete=0
         where p.is_delete=0
         <if test="status!=null">

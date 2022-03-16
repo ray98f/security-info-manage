@@ -6,6 +6,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.LoginReqDTO;
 import com.security.info.manage.dto.req.PasswordReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.User;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,8 +57,17 @@ public interface UserService {
      *
      * @param status
      * @param userRealName
+     * @return
+     */
+    List<UserResDTO> listUser(Integer status, String userRealName, List<String> deptIds);
+
+    /**
+     * 查询用户列表
+     *
+     * @param status
+     * @param userRealName
      * @param pageReqDTO
      * @return
      */
-    Page<User> listUser(Integer status, String userRealName, PageReqDTO pageReqDTO);
+    Page<UserResDTO> pageUser(Integer status, String userRealName, List<String> deptIds, PageReqDTO pageReqDTO);
 }

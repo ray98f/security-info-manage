@@ -3,6 +3,7 @@ package com.security.info.manage.mapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.req.PasswordReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.dto.res.VxUserResDTO;
 import com.security.info.manage.entity.User;
 import org.apache.ibatis.annotations.Mapper;
@@ -42,15 +43,7 @@ public interface UserMapper {
      */
     void insertUser(List<VxUserResDTO> list, String doName);
 
-    /**
-     * 新增用户权限
-     *
-     * @param userId
-     * @param roleIds
-     * @param doName
-     * @return
-     */
-    Integer insertUserRole(String userId, List<String> roleIds, String doName);
+    String selectOldPassword(PasswordReqDTO passwordReqDTO);
 
     /**
      * 修改密码
@@ -71,12 +64,6 @@ public interface UserMapper {
     Integer editUser(UserReqDTO userReqDTO, String updateBy);
 
     /**
-     * 删除用户的所有角色
-     * @param userId
-     */
-    void deleteUserRole(String userId);
-
-    /**
      * 获取所有用户列表
      *
      * @return
@@ -85,12 +72,20 @@ public interface UserMapper {
 
     /**
      * 查询用户列表
+     * @param status
+     * @param name
+     * @return
+     */
+    List<UserResDTO> listUser(Integer status, String name, List<String> deptIds);
+
+    /**
+     * 查询用户列表
      * @param page
      * @param status
      * @param name
      * @return
      */
-    Page<User> listUser(Page<User> page, Integer status, String name);
+    Page<UserResDTO> pageUser(Page<UserResDTO> page, Integer status, String name, List<String> deptIds);
 
     /**
      * 根据用户名获取用户id

@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class PostResDTO {
 
-    @ApiModelProperty(value = "组织id")
+    @ApiModelProperty(value = "岗位id")
     private String id;
 
     @ApiModelProperty(value = "组织id")

@@ -73,7 +73,7 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("EIP短信推送 API")
+                .title("安全管理信息系统 API")
                 .description("后端 接口文档")
                 .version("1.0")
                 .build();

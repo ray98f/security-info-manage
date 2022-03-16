@@ -64,20 +64,11 @@ excluded:
   pages: /securityInfo/manage/login,/securityInfo/manage/logout
 
 vx-business:
-  corpid: aaa
-  corpsecret: bbb
+  corpid: wwa4f0efd40d4a303d
+  corpsecret: b5BBvNZPyp1DkneaNVzy2NHCxo2ITTL_AJqMeXEAmzU
 
 minio:
   url: http://zxgd.softether.net:9000
   imgPath: http://zxgd.softether.net:9000
   accessKey: minio
   secretKey: minio123
-
-#jodconverter配置
-jodconverter:
-  local:
-    enabled: true
-    #home:安装地址
-    office-home: C:\\Program Files (x86)\OpenOffice 4
-    max-tasks-per-process: 10
-    port-numbers: 8100

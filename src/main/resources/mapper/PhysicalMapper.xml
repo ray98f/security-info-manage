@@ -180,6 +180,14 @@
         where pu.id=#{id} and pu.is_delete=0
     </select>
 
+    <select id="selectPhysicalUserByPhysicalId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile,
+        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
+        where p.id=#{id} and pu.is_delete=0
+    </select>
+
     <select id="getPhysicalResult" resultType="com.security.info.manage.entity.PhysicalResult">
         select id, physical_user_id, name, age, sex, phone, work_year, work_type, hazard_factor_name, warning_index, conclusion,
         handling_opinions, medical_advice, create_date, update_date, create_by, update_by, is_delete from t_physical_result
@@ -196,7 +204,10 @@
 
     <update id="editPhysical">
         update t_physical_user set
-        hospital_no=#{hospitalNo}, estimate_num=#{estimateNum}, actual_num=#{actualNum}, update_by=#{userId}
+        <if test="hospitalNo!=null and hospitalNo!=''">
+            hospital_no=#{hospitalNo},
+        </if>
+        estimate_num=#{estimateNum}, actual_num=#{actualNum}, update_by=#{userId}
         where id=#{id} and is_delete=0
     </update>
 
@@ -204,11 +215,27 @@
         <foreach collection="users" index="index" item="user" separator="">
             update t_physical_user set
             status=3, result=#{user.result}, update_by=#{userId}, physical_time=#{physicalTime}
-            where user_name=#{user.name} and physical_id=#{id} and is_delete=0 and mobile=#{user.phone};
-            insert into t_physical_result(id, physical_user_id, name, age, sex, phone, work_year, work_type,
+            where user_name=#{user.name}
+            <if test="user.phone!=null">
+                and mobile=#{user.phone}
+            </if>
+            and physical_id=#{id} and is_delete=0;
+            insert into t_physical_result(id, physical_user_id, name, age, sex,
+            <if test="user.phone!=null">
+                phone,
+            </if>
+            work_year, work_type,
             hazard_factor_name, warning_index, conclusion, handling_opinions, medical_advice, create_by)
-            value (#{user.id}, (select id from t_physical_user where user_name=#{user.name} and mobile=#{user.phone} and physical_id=#{id} and is_delete=0),
-            #{user.name}, #{user.age}, #{user.sex}, #{user.phone}, #{user.workYear}, #{user.workType}, #{user.hazardFactorName},
+            value (#{user.id}, (select id from t_physical_user where user_name=#{user.name}
+            <if test="user.phone!=null">
+                and mobile=#{user.phone}
+            </if>
+            and physical_id=#{id} and is_delete=0),
+            #{user.name}, #{user.age}, #{user.sex},
+            <if test="user.phone!=null">
+                #{user.phone},
+            </if>
+            #{user.workYear}, #{user.workType}, #{user.hazardFactorName},
             #{user.warningIndex}, #{user.conclusion}, #{user.handlingOpinions}, #{user.medicalAdvice}, #{userId});
         </foreach>
     </update>
@@ -236,5 +263,44 @@
         update_by=#{userId}
         where id=#{id} and is_delete=0
     </update>
+
+    <insert id="insertPhysicalNotice">
+        <if test="type==1 and users.size()>0">
+            insert into t_physical_notice(id, user_id, physical_id, physical_user_id) values
+            <foreach collection="users" index="index" item="user" separator=",">
+                (replace(uuid(),"-",""), #{user.userId}, #{physicalId}, #{user.physicalUserId})
+            </foreach>
+        </if>
+        <if test="type==2 and users.size()>0">
+            insert into t_physical_notice(id, physical_id, physical_user_id, new_user_id) values
+            <foreach collection="users" index="index" item="user" separator=",">
+                (replace(uuid(),"-",""), #{physicalId}, #{user.physicalUserId}, #{user.userId})
+            </foreach>
+        </if>
+    </insert>
+
+    <insert id="insertPhysicalFeedback">
+        insert into t_physical_feedback(id, physical_id, user_name, feedback_info, create_by)
+        value (#{id}, #{physicalId}, #{userName}, #{feedbackInfo}, #{createBy})
+    </insert>
+
+    <update id="modifyPhysicalFeedback">
+        update t_physical_feedback set
+        <if test="applyOpinions!=null and applyOpinions!=''">
+            apply_opinions=#{applyOpinions},
+        </if>
+        <if test="applyTime!=null and applyTime!=''">
+            apply_time=#{applyTime},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{updateBy}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <insert id="">
+        insert into t_physical_warning
+    </insert>
 
 </mapper>
