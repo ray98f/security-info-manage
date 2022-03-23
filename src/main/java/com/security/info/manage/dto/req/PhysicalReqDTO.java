@@ -1,8 +1,10 @@
 package com.security.info.manage.dto.req;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.security.info.manage.entity.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -26,9 +28,19 @@ public class PhysicalReqDTO {
     private Integer type;
 
     @ApiModelProperty(value = "体检起始时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date startTime;
 
     @ApiModelProperty(value = "体检结束时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date endTime;
 
     @ApiModelProperty(value = "备注")

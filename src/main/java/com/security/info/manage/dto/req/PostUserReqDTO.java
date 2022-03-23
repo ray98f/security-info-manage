@@ -15,5 +15,5 @@ public class PostUserReqDTO {
     private String postId;
 
     @ApiModelProperty(value = "用户id")
-    private List<String> userId;
+    private List<String> userIds;
 }

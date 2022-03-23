@@ -22,6 +22,9 @@ public class PhysicalUserResDTO {
     @ApiModelProperty(value = "体检流程id")
     private String physicalId;
 
+    @ApiModelProperty(value = "医院流水号")
+    private String hospitalNo;
+
     @ApiModelProperty(value = "所属体检批次号")
     private String physicalNo;
 
@@ -30,6 +33,9 @@ public class PhysicalUserResDTO {
 
     @ApiModelProperty(value = "姓名")
     private String userName;
+
+    @ApiModelProperty(value = "工号")
+    private String userNo;
 
     @ApiModelProperty(value = "成员手机号")
     private String mobile;

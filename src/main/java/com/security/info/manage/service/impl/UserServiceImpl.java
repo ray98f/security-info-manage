@@ -25,6 +25,7 @@ import com.security.info.manage.utils.VxApiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -59,6 +60,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void syncUser() {
         VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, corpsecret);
         if (accessToken == null) {
@@ -101,6 +103,11 @@ public class UserServiceImpl implements UserService {
             if (!userAllList.isEmpty()) {
                 userAllList = userAllList.stream().collect(collectingAndThen(
                         toCollection(() -> new TreeSet<>(Comparator.comparing(VxUserResDTO::getUserid))), ArrayList::new));
+                List<String> userIds = userMapper.selectUserIds();
+                if (userIds != null && !userIds.isEmpty()) {
+                    userIds.removeAll(userAllList.stream().map(VxUserResDTO::getUserid).collect(Collectors.toList()));
+                    userMapper.deleteUser(userIds, TokenUtil.getCurrentPersonNo());
+                }
                 userMapper.insertUser(userAllList, TokenUtil.getCurrentPersonNo());
 //                    postMapper.insertPost(userList, TokenUtil.getCurrentPersonNo());
 //                    postMapper.insertUserPost(userList);

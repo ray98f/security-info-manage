@@ -26,9 +26,19 @@ public class PhysicalResDTO {
     private Integer type;
 
     @ApiModelProperty(value = "体检起始时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date startTime;
 
     @ApiModelProperty(value = "体检结束时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
     private Date endTime;
 
     @ApiModelProperty(value = "备注")
@@ -62,5 +72,8 @@ public class PhysicalResDTO {
 
     @ApiModelProperty(value = "创建人")
     private String createBy;
+
+    @ApiModelProperty(value = "检查结果")
+    private PhysicalUserCountResDTO result;
 
 }

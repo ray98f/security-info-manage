@@ -64,8 +64,8 @@ excluded:
   pages: /securityInfo/manage/login,/securityInfo/manage/logout
 
 vx-business:
-  corpid: wwa4f0efd40d4a303d
-  corpsecret: b5BBvNZPyp1DkneaNVzy2NHCxo2ITTL_AJqMeXEAmzU
+  corpid: ww56aa612b390c11d2
+  corpsecret: B9L_KTNLvjUtrqnn6A1A0fAeN8PdDtlpMivmHZ1kd2Y
 
 minio:
   url: http://zxgd.softether.net:9000

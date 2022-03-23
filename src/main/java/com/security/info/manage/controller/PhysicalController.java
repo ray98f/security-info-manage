@@ -5,8 +5,10 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
+import com.security.info.manage.dto.res.PhysicalFeedbackResDTO;
 import com.security.info.manage.dto.res.PhysicalResDTO;
 import com.security.info.manage.dto.res.PhysicalUserResDTO;
+import com.security.info.manage.dto.res.UserArchivesResDTO;
 import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.service.PhysicalService;
 import io.swagger.annotations.Api;
@@ -112,6 +114,13 @@ public class PhysicalController {
         return DataResponse.success();
     }
 
+    @GetMapping("/feedback/list")
+    @ApiOperation(value = "体检反馈列表")
+    public PageResponse<PhysicalFeedbackResDTO> listFeedback(@RequestParam(required = false) String name,
+                                                             @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(physicalService.listFeedback(name, pageReqDTO));
+    }
+
     @PostMapping("/feedback/add")
     @ApiOperation(value = "新增体检反馈")
     public DataResponse<T> addFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
@@ -124,5 +133,11 @@ public class PhysicalController {
     public DataResponse<T> modifyFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
         physicalService.modifyFeedback(physicalFeedback);
         return DataResponse.success();
+    }
+
+    @GetMapping("/user/archives")
+    @ApiOperation(value = "获取员工档案")
+    public DataResponse<UserArchivesResDTO> userArchives(@RequestParam String id) {
+        return DataResponse.of(physicalService.userArchives(id));
     }
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author frp
  */
-public class CompanyStructureTreeToolUtils {
+public class DeptTreeToolUtils {
     /**
      * 根节点对象
      */
@@ -21,7 +21,7 @@ public class CompanyStructureTreeToolUtils {
      */
     private List<DeptTreeResDTO> bodyList;
 
-    public CompanyStructureTreeToolUtils(List<DeptTreeResDTO> rootList, List<DeptTreeResDTO> bodyList) {
+    public DeptTreeToolUtils(List<DeptTreeResDTO> rootList, List<DeptTreeResDTO> bodyList) {
         this.rootList = rootList;
         this.bodyList = bodyList;
     }

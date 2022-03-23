@@ -26,10 +26,13 @@ public class UserReqDTO extends User {
     @ApiModelProperty(value = "用户工号")
     private String userNo;
 
+    @ApiModelProperty(value = "用户真实姓名")
+    private String realName;
+
     @ApiModelProperty(value = "年龄")
     private Integer age;
 
-    @ApiModelProperty(value = "年龄")
+    @ApiModelProperty(value = "用户账号状态 0 正常 1 锁定")
     private Integer status;
 
     @ApiModelProperty(value = "年龄")

@@ -9,7 +9,7 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.DeptMapper;
 import com.security.info.manage.service.DeptService;
-import com.security.info.manage.utils.CompanyStructureTreeToolUtils;
+import com.security.info.manage.utils.DeptTreeToolUtils;
 import com.security.info.manage.utils.Constants;
 import com.security.info.manage.utils.TokenUtil;
 import com.security.info.manage.utils.VxApiUtils;
@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -45,6 +46,7 @@ public class DeptServiceImpl implements DeptService {
     private RestTemplate restTemplate;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void syncDept(String orgId) {
         VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, corpsecret);
         if (accessToken == null) {
@@ -68,6 +70,9 @@ public class DeptServiceImpl implements DeptService {
         }
         List<VxDeptResDTO> list = JSONArray.parseArray(res.getJSONArray("department").toJSONString(), VxDeptResDTO.class);
         if (list != null && !list.isEmpty()) {
+            for (VxDeptResDTO vxDeptResDTO : list) {
+                vxDeptResDTO.setDepartment_leaders(String.join(",", vxDeptResDTO.getDepartment_leader()));
+            }
             deptMapper.syncOrg(list, TokenUtil.getCurrentPersonNo());
         }
     }
@@ -79,7 +84,7 @@ public class DeptServiceImpl implements DeptService {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
         List<DeptTreeResDTO> extraBodyList = deptMapper.getBody();
-        CompanyStructureTreeToolUtils extraTree = new CompanyStructureTreeToolUtils(extraRootList, extraBodyList);
+        DeptTreeToolUtils extraTree = new DeptTreeToolUtils(extraRootList, extraBodyList);
         return extraTree.getTree();
     }
 

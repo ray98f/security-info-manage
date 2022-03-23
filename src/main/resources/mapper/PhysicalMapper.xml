@@ -20,15 +20,28 @@
         <if test="eEndTime!=null and eEndTime!=''">
             and #{eEndTime}>=end_time
         </if>
+        <if test="type==null">
+            and file_word is not null and estimate_num is not null and actual_num is not null
+        </if>
         order by create_date desc
+    </select>
+
+    <select id="countPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserCountResDTO">
+        select
+        sum(case when result=1 then 1 else 0 end ) as taboo_num,
+        sum(case when result=2 then 1 else 0 end ) as review_num,
+        sum(case when result=3 then 1 else 0 end ) as normal_num
+        from t_physical_user
+        where physical_id=#{id} and is_delete=0
+        group by physical_id
     </select>
 
     <select id="getPhysicalDetail" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
         select p.id, p.no, p.hospital_no, p.type, p.start_time, p.end_time, p.remark, p.create_date, p.create_by,
         p.file_word, p.file_pdf, p.estimate_num, p.actual_num,
-        sum(if(pu.result=1,1,0)) as danger_num, sum(if(pu.result=2,1,0)) as review_num from t_physical as p
-        left join t_physical_user as pu on pu.physical_id=p.id and pu.is_delete=0
-        where is_delete=0 and id=#{id}
+        sum(case when pu.result=1 then 1 else 0 end) as danger_num, sum(case when pu.result=2 then 1 else 0 end) as review_num
+        from t_physical as p left join t_physical_user as pu on pu.physical_id=p.id and pu.is_delete=0
+        where p.is_delete=0 and p.id=#{id}
     </select>
 
     <insert id="addPhysical">
@@ -120,7 +133,7 @@
             <if test="type==2">
                 #{user.id},
             </if>
-            #{user.name}, #{mobile} #{createBy})
+            #{user.name}, #{user.mobile}, #{createBy})
         </foreach>
         ;
     </update>
@@ -167,25 +180,49 @@
 
     <select id="listPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
-        pu.last_physical_user_id, pu.status, pu.result, pu.mobile,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
         pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
         where pu.physical_id=#{id} and pu.is_delete=0
         order by pu.create_date desc
     </select>
 
     <select id="selectPhysicalUserById" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
-        pu.last_physical_user_id, pu.status, pu.result, pu.mobile,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
         pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
         where pu.id=#{id} and pu.is_delete=0
+    </select>
+
+    <select id="selectLatestPhysicalUserByUserId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.physical_no, p.hospital_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
+        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
+        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
+        order by pu.physical_time desc
+        limit 1
+    </select>
+
+    <select id="selectPhysicalUserByUserId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.physical_no, p.hospital_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
+        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
+        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
+        order by pu.physical_time desc
     </select>
 
     <select id="selectPhysicalUserByPhysicalId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
-        pu.last_physical_user_id, pu.status, pu.result, pu.mobile,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
         pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
-        where p.id=#{id} and pu.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        where p.id=#{id} and pu.is_delete=0 and pu.result=2
     </select>
 
     <select id="getPhysicalResult" resultType="com.security.info.manage.entity.PhysicalResult">
@@ -195,15 +232,18 @@
     </select>
 
     <insert id="userReview">
-        insert into t_physical_user(id, physical_id, physical_no, user_id, new_user_id, is_review, last_physical_user_id, create_by)
-        values (replace(uuid(),"-",""), #{physicalId}, #{physicalNo}, #{userId}, #{newUserId}, 1, #{id}, #{createBy});
+        insert into t_physical_user(id, physical_id, physical_no, user_name, mobile, user_id, new_user_id,
+        is_review, last_physical_user_id, create_by)
+        select replace(uuid(),"-",""), #{physicalId}, #{physicalNo}, #{userName}, #{mobile}, #{userId}, #{newUserId}, 1, #{id}, #{createBy}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_physical_user WHERE last_physical_user_id=#{id} and is_review=1 and is_delete=0);
         update t_physical_user set
         is_review=1, update_by=#{createBy}, status=5
         where id=#{id} and is_delete=0;
     </insert>
 
     <update id="editPhysical">
-        update t_physical_user set
+        update t_physical set
         <if test="hospitalNo!=null and hospitalNo!=''">
             hospital_no=#{hospitalNo},
         </if>
@@ -279,9 +319,25 @@
         </if>
     </insert>
 
+    <select id="listFeedback" resultType="com.security.info.manage.dto.res.PhysicalFeedbackResDTO">
+        select pf.id, pf.physical_id, pf.physical_user_id, p.no as physical_no, p.type, pu.physical_time,
+        pf.feedback_info, pf.apply_opinions, pf.apply_time, pf.status, ue.user_no, u.name as user_name
+        from t_physical_feedback as pf
+        left join t_physical as p on pf.physical_id=p.id and p.is_delete=0
+        left join t_physical_user as pu on pu.id=pf.physical_user_id and pu.is_delete=0
+        left join sys_user as u on u.id=pu.user_id and u.is_delete=0
+        left join sys_user_ext as ue on u.id=ue.user_id and ue.is_delete=0 and ue.status=0
+        where pf.is_delete=0
+        <if test="name!=null and name!=''">
+            and u.name like CONCAT('%',#{name},'%')
+        </if>
+        order by pf.create_date desc
+    </select>
+
     <insert id="insertPhysicalFeedback">
-        insert into t_physical_feedback(id, physical_id, user_name, feedback_info, create_by)
-        value (#{id}, #{physicalId}, #{userName}, #{feedbackInfo}, #{createBy})
+        insert into t_physical_feedback(id, physical_id, physical_user_id, feedback_info, create_by)
+        value (#{id}, #{physicalId}, #{physicalUserId}, #{feedbackInfo}, #{createBy});
+        update t_physical_user set status=1 where id=#{physicalUserId};
     </insert>
 
     <update id="modifyPhysicalFeedback">
@@ -290,17 +346,14 @@
             apply_opinions=#{applyOpinions},
         </if>
         <if test="applyTime!=null and applyTime!=''">
-            apply_time=#{applyTime},
+            apply_time=now(),
         </if>
         <if test="status!=null">
             status=#{status},
         </if>
         update_by=#{updateBy}
-        where id=#{id} and is_delete=0
+        where id=#{id} and is_delete=0;
+        update t_physical_user set status=2 where id=(select physical_user_id from t_physical_feedback where id=#{id} and is_delete=0);
     </update>
-
-    <insert id="">
-        insert into t_physical_warning
-    </insert>
 
 </mapper>

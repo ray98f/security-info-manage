@@ -19,24 +19,41 @@
 
     <insert id="insertUser" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
         <if test="list.size()>0">
-            TRUNCATE TABLE sys_user;
-            insert into sys_user(id, name, mobile, telephone, email, biz_mail, status,
-            open_userid, main_dept, avatar, thumb_avatar, qr_code, address, gender, create_by)
-            values
-            <foreach collection="list" index="index" item="user" separator=",">
-                (#{user.userid}, #{user.name}, #{user.mobile}, #{user.telephone}, #{user.email}, #{user.biz_mail}, #{user.status},
-                #{user.open_userid}, #{user.main_department}, #{user.avatar}, #{user.thumb_avatar}, #{user.qr_code}, #{user.address},
-                #{user.gender}, #{doName})
-            </foreach>
-            ;
             <foreach collection="list" index="index" item="user" separator=";">
-                insert into sys_user_ext(id, user_id, create_by)
-                SELECT replace(uuid(),"-",""), #{user.userid}, #{doName}
+                insert into sys_user(id, name, mobile, telephone, email, biz_mail, status,
+                open_userid, main_dept, avatar, thumb_avatar, qr_code, address, gender, create_by)
+                SELECT
+                #{user.userid}, #{user.name}, #{user.mobile}, #{user.telephone}, #{user.email}, #{user.biz_mail}, #{user.status},
+                #{user.open_userid}, #{user.main_department}, #{user.avatar}, #{user.thumb_avatar}, #{user.qr_code}, #{user.address},
+                #{user.gender}, #{doName}
+                FROM DUAL
+                WHERE not exists (SELECT id FROM sys_user WHERE id=#{user.userid} and is_delete=0);
+                insert into sys_user_ext(id, user_id, real_name, create_by)
+                SELECT replace(uuid(),"-",""), #{user.userid}, #{user.name}, #{doName}
                 FROM DUAL
                 WHERE not exists (SELECT id FROM sys_user_ext WHERE user_id=#{user.userid} and is_delete=0)
             </foreach>
         </if>
     </insert>
+
+    <select id="selectUserIds" resultType="java.lang.String">
+        select id from sys_user where is_delete=0
+    </select>
+
+    <update id="deleteUser">
+        <if test="list.size()>0">
+            update sys_user set is_delete=1, update_by=#{doName} where id in (
+            <foreach collection="list" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+            );
+            update sys_user_ext set is_delete=1, update_by=#{doName} where user_id in (
+            <foreach collection="list" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+            );
+        </if>
+    </update>
 
     <insert id="insertUserRole">
         insert into user_role(user_id,role_id,create_by,update_by) values
@@ -63,11 +80,17 @@
             <if test="userReqDTO.password!=null">
                 password=#{userReqDTO.password},
             </if>
+            <if test="userReqDTO.realName!=null">
+                real_name=#{userReqDTO.realName},
+            </if>
             <if test="userReqDTO.userNo!=null">
                 user_no=#{userReqDTO.userNo},
             </if>
             <if test="userReqDTO.age!=null">
                 age=#{userReqDTO.age},
+            </if>
+            <if test="userReqDTO.status!=null">
+                status=#{userReqDTO.status},
             </if>
             update_by=#{updateBy}
         </set>
@@ -131,5 +154,16 @@
     <select id="selectUserId" resultType="java.lang.Long">
         select u.id from sys_user as u left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
         where ue.user_name=#{userName} and u.is_delete=0
+    </select>
+
+    <select id="selectUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where u.is_delete=0 and u.id=#{id}
     </select>
 </mapper>

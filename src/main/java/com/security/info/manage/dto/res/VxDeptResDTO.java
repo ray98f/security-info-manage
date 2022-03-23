@@ -20,6 +20,8 @@ public class VxDeptResDTO {
 
     private List<String> department_leader;
 
+    private String department_leaders;
+
     private Long parentid;
 
     private Integer order;

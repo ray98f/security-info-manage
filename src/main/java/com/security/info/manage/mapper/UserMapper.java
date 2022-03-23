@@ -43,6 +43,10 @@ public interface UserMapper {
      */
     void insertUser(List<VxUserResDTO> list, String doName);
 
+    List<String> selectUserIds();
+
+    void deleteUser(List<String> list, String doName);
+
     String selectOldPassword(PasswordReqDTO passwordReqDTO);
 
     /**
@@ -93,4 +97,6 @@ public interface UserMapper {
      * @return
      */
     Long selectUserId(String userName);
+
+    UserResDTO selectUser(String id);
 }

@@ -6,9 +6,7 @@ import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalNoticeReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.req.PhysicalResultImportReqDTO;
-import com.security.info.manage.dto.res.PhysicalResDTO;
-import com.security.info.manage.dto.res.PhysicalUserResDTO;
-import com.security.info.manage.dto.res.PostResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.entity.PhysicalResult;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,6 +22,8 @@ import java.util.List;
 public interface PhysicalMapper {
 
     Page<PhysicalResDTO> listPhysical(Page<PostResDTO> page, String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type);
+
+    PhysicalUserCountResDTO countPhysicalUser(String id);
 
     Integer addPhysical(PhysicalReqDTO physicalReqDTO);
 
@@ -43,6 +43,10 @@ public interface PhysicalMapper {
 
     PhysicalUserResDTO selectPhysicalUserById(String id);
 
+    PhysicalUserResDTO selectLatestPhysicalUserByUserId(String id);
+
+    List<PhysicalUserResDTO> selectPhysicalUserByUserId(String id);
+
     List<PhysicalUserResDTO> selectPhysicalUserByPhysicalId(String id);
 
     Integer userReview(PhysicalUserResDTO physicalUserResDTO);
@@ -56,6 +60,8 @@ public interface PhysicalMapper {
     Integer uploadFilePhysicalUser(String url, String id, String userId, Integer type);
 
     Integer insertPhysicalNotice(PhysicalNoticeReqDTO physicalNoticeReqDTO);
+
+    Page<PhysicalFeedbackResDTO> listFeedback(Page<PhysicalFeedback> page, String name);
 
     Integer insertPhysicalFeedback(PhysicalFeedback physicalFeedback);
 

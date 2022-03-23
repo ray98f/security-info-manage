@@ -1,6 +1,7 @@
-package com.security.info.manage.entity;
+package com.security.info.manage.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.security.info.manage.entity.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,10 +13,9 @@ import java.util.Date;
 /**
  * @author frp
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel
-public class PhysicalFeedback extends BaseEntity {
+public class PhysicalFeedbackResDTO {
 
     @ApiModelProperty(value = "体检反馈id")
     private String id;
@@ -23,8 +23,28 @@ public class PhysicalFeedback extends BaseEntity {
     @ApiModelProperty(value = "体检流程id")
     private String physicalId;
 
+    @ApiModelProperty(value = "体检流程流水号")
+    private String physicalNo;
+
     @ApiModelProperty(value = "体检用户id")
     private String physicalUserId;
+
+    @ApiModelProperty(value = "姓名")
+    private String userName;
+
+    @ApiModelProperty(value = "工号")
+    private String userNo;
+
+    @ApiModelProperty(value = "体检流程id")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
+    private Date physicalTime;
+
+    @ApiModelProperty(value = "体检类型 1 岗中体检 2 新人入职体检")
+    private Integer type;
 
     @ApiModelProperty(value = "反馈信息")
     private String feedbackInfo;

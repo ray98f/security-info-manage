@@ -6,17 +6,7 @@
         TRUNCATE TABLE sys_dept;
         insert into sys_dept(id, parent_id, org_code, org_name, sort, user_ids, create_by) values
         <foreach collection="list" index="index" item="dept" separator=",">
-            (#{dept.id}, #{dept.parentid}, #{dept.name_en}, #{dept.name}, #{dept.order},
-            <if test="dept.department_leader.size()>0">
-                <foreach collection="dept.department_leader" index="index" item="leader" separator=",">
-                    ${leader}
-                </foreach>
-                ,
-            </if>
-            <if test="dept.department_leader.size()==0">
-                null,
-            </if>
-            #{userId})
+            (#{dept.id}, #{dept.parentid}, #{dept.name_en}, #{dept.name}, #{dept.order}, #{dept.department_leaders}, #{userId})
         </foreach>
         ;
     </insert>
