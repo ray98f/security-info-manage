@@ -15,6 +15,13 @@
         order by p.create_date desc
     </select>
 
+    <select id="listAllPost" resultType="com.security.info.manage.dto.res.PostResDTO">
+        select p.id, p.org_id, d.org_name, p.post_name, p.status, p.create_date
+        from sys_post as p left join sys_dept as d on d.id=p.org_id and d.is_delete=0
+        where p.is_delete=0 and p.status=0
+        order by p.create_date desc
+    </select>
+
     <update id="modifyPost">
         update sys_post set
         <if test="orgId!=null and orgId!=''">
@@ -79,4 +86,21 @@
         </foreach>
         ;
     </insert>
+
+    <insert id="addPostChangeWarn">
+        insert into t_post_change_warning(id, user_id, info, ring_time)
+        value (replace(uuid(),"-",""), #{userId},
+        CONCAT((select real_name from sys_user_ext where user_id=#{userId} and status=0 and is_delete=0),"从",
+        (select post_name from sys_post where id=#{postId} and status=0 and is_delete=0),"岗位变更,需要更新其危害因素关联信息"), now())
+    </insert>
+
+    <select id="listPostWarn" resultType="com.security.info.manage.dto.res.PostWarnResDTO">
+        select id, user_id, status, info, ring_time from t_post_change_warning
+        where is_delete=0
+        order by create_date desc
+    </select>
+
+    <update id="handlePostWarn">
+        update t_post_change_warning set status=1 where id=#{id} and is_delete=0
+    </update>
 </mapper>

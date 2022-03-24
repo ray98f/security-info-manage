@@ -356,4 +356,37 @@
         update t_physical_user set status=2 where id=(select physical_user_id from t_physical_feedback where id=#{id} and is_delete=0);
     </update>
 
+    <select id="listExpiredPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.user_name from t_physical_user as pu
+        left join t_physical as p on pu.physical_id=p.id and p.is_delete=0
+        where now()>p.end_time and 3>pu.status and pu.is_delete=0
+    </select>
+
+    <insert id="addPhysicalWarning">
+        insert into t_physical_warning(id, type, physical_id, physical_user_id, warning_time, info)
+        values
+        <foreach collection="list" index="index" item="warn" separator=",">
+            (replace(uuid(),"-",""), 1, #{warn.physicalId}, #{warn.id}, now(), #{userName})
+        </foreach>
+    </insert>
+
+    <select id="listPhysicalWarn" resultType="com.security.info.manage.dto.res.PhysicalWarnResDTO">
+        SELECT pw.id, pw.type, pw.info, pw.physical_id, pw.physical_user_id, pw.warning_time, pw.status, pu.user_name,
+        ifnull(pu.user_id, pu.new_user_id) as user_id, p.type as physical_type, ue.user_no, sp.post_name,
+        TIMESTAMPDIFF(DAY, p.end_time, now()) as day
+        FROM t_physical_warning as pw
+        left join t_physical as p on p.id=pw.physical_id and p.is_delete=0
+        left join t_physical_user as pu on pu.id=pw.physical_user_id and pu.is_delete=0
+        left join sys_user as u on u.id=pu.user_id and u.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        left join sys_user_post as up on up.user_id=pu.user_id
+        left join sys_post as sp on sp.id=up.post_id and sp.is_delete=0 and sp.status=0
+        where pw.is_delete=0
+        order by pw.create_date desc
+    </select>
+
+    <update id="handlePhysicalWarn">
+        update t_physical_warning set status=1 where id=#{id} and is_delete=0
+    </update>
 </mapper>

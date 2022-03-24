@@ -6,6 +6,7 @@ import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.res.ApplianceConfigResDTO;
 import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
+import com.security.info.manage.dto.res.ApplianceWarnResDTO;
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,12 @@ public interface ApplianceService {
 
     Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO);
 
+    ApplianceConfigResDTO getApplianceConfigDetail(String id);
+
     void changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO);
+
+    Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO);
+
+    void handleApplianceWarn(String id);
 
 }

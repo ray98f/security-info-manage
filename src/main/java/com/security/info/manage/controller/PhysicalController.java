@@ -5,10 +5,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
-import com.security.info.manage.dto.res.PhysicalFeedbackResDTO;
-import com.security.info.manage.dto.res.PhysicalResDTO;
-import com.security.info.manage.dto.res.PhysicalUserResDTO;
-import com.security.info.manage.dto.res.UserArchivesResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.service.PhysicalService;
 import io.swagger.annotations.Api;
@@ -139,5 +136,18 @@ public class PhysicalController {
     @ApiOperation(value = "获取员工档案")
     public DataResponse<UserArchivesResDTO> userArchives(@RequestParam String id) {
         return DataResponse.of(physicalService.userArchives(id));
+    }
+
+    @GetMapping("/warn/list")
+    @ApiOperation(value = "获取体检预警列表")
+    public PageResponse<PhysicalWarnResDTO> listPhysicalWarn(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(physicalService.listPhysicalWarn(pageReqDTO));
+    }
+
+    @PostMapping("/warn/handle")
+    @ApiOperation(value = "处理体检预警")
+    public DataResponse<T> handlePhysicalWarn(@RequestBody PhysicalWarnResDTO physicalWarnResDTO) {
+        physicalService.handlePhysicalWarn(physicalWarnResDTO.getId());
+        return DataResponse.success();
     }
 }

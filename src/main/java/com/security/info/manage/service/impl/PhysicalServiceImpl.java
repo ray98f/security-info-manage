@@ -7,10 +7,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.req.PhysicalResultImportReqDTO;
-import com.security.info.manage.dto.res.PhysicalFeedbackResDTO;
-import com.security.info.manage.dto.res.PhysicalResDTO;
-import com.security.info.manage.dto.res.PhysicalUserResDTO;
-import com.security.info.manage.dto.res.UserArchivesResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
@@ -331,6 +328,23 @@ public class PhysicalServiceImpl implements PhysicalService {
         }
         userArchivesResDTO.setUserPhysicalList(list);
         return userArchivesResDTO;
+    }
+
+    @Override
+    public Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return physicalMapper.listPhysicalWarn(pageReqDTO.of());
+    }
+
+    @Override
+    public void handlePhysicalWarn(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = physicalMapper.handlePhysicalWarn(id);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
     }
 
     public String uploadFile(MultipartFile file, String bizCode) throws IOException, ServerException, InsufficientDataException, InternalException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, XmlParserException, ErrorResponseException {

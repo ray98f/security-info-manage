@@ -2,7 +2,9 @@ package com.security.info.manage.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.req.PasswordReqDTO;
+import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.dto.res.VxUserResDTO;
 import com.security.info.manage.entity.User;
@@ -99,4 +101,10 @@ public interface UserMapper {
     Long selectUserId(String userName);
 
     UserResDTO selectUser(String id);
+
+    List<PostResDTO> selectPostByUserId(String userId);
+
+    Integer selectUserPostIsExist(PostReqDTO postReqDTO);
+
+    Integer modifyUserPost(PostReqDTO postReqDTO);
 }

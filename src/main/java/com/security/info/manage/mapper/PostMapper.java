@@ -5,6 +5,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
 import com.security.info.manage.dto.res.PostResDTO;
+import com.security.info.manage.dto.res.PostWarnResDTO;
 import com.security.info.manage.dto.res.VxUserResDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,8 @@ public interface PostMapper {
 
     Page<PostResDTO> listPost(Page<PostResDTO> page, String name, Integer status);
 
+    List<PostResDTO> listAllPost();
+
     Integer modifyPost(PostReqDTO postReqDTO);
 
     Integer addPost(PostReqDTO postReqDTO);
@@ -31,5 +34,11 @@ public interface PostMapper {
     void insertPost(List<VxUserResDTO> list, String doName);
 
     void insertUserPost(List<VxUserResDTO> list);
+
+    Integer addPostChangeWarn(PostReqDTO postReqDTO);
+
+    Page<PostWarnResDTO> listPostWarn(Page<PostWarnResDTO> page);
+
+    Integer handlePostWarn(String id);
 
 }

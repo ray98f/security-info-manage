@@ -7,6 +7,7 @@ import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.res.ApplianceConfigResDTO;
 import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
+import com.security.info.manage.dto.res.ApplianceWarnResDTO;
 import com.security.info.manage.service.ApplianceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,10 +80,29 @@ public class ApplianceController {
         return PageResponse.of(applianceService.listApplianceConfig(pageReqDTO));
     }
 
+    @GetMapping("/detail")
+    @ApiOperation(value = "劳保用品配备详情")
+    public DataResponse<ApplianceConfigResDTO> getApplianceConfigDetail(@RequestParam String id) {
+        return DataResponse.of(applianceService.getApplianceConfigDetail(id));
+    }
+
     @PostMapping("/change")
-    @ApiOperation(value = "劳保用品配备列表")
+    @ApiOperation(value = "更换劳保用品")
     public DataResponse<T> changeAppliance(@RequestBody ApplianceConfigReqDTO applianceConfigReqDTO) {
         applianceService.changeAppliance(applianceConfigReqDTO);
+        return DataResponse.success();
+    }
+
+    @GetMapping("/warn/list")
+    @ApiOperation(value = "获取劳保到期预警列表")
+    public PageResponse<ApplianceWarnResDTO> listApplianceWarn(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(applianceService.listApplianceWarn(pageReqDTO));
+    }
+
+    @PostMapping("/warn/handle")
+    @ApiOperation(value = "处理劳保到期预警")
+    public DataResponse<T> handleApplianceWarn(@RequestBody ApplianceWarnResDTO applianceWarnResDTO) {
+        applianceService.handleApplianceWarn(applianceWarnResDTO.getId());
         return DataResponse.success();
     }
 }

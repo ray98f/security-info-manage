@@ -5,8 +5,10 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
+import com.security.info.manage.dto.res.ApplianceWarnResDTO;
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.security.info.manage.dto.res.PostResDTO;
+import com.security.info.manage.dto.res.PostWarnResDTO;
 import com.security.info.manage.service.PostService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author frp
@@ -37,6 +40,12 @@ public class PostController {
                                              @RequestParam(required = false) Integer status,
                                              @Valid PageReqDTO pageReqDTO) {
         return PageResponse.of(postService.listPost(name, status, pageReqDTO));
+    }
+
+    @GetMapping("/listAll")
+    @ApiOperation(value = "获取所有岗位列表")
+    public DataResponse<List<PostResDTO>> listAllPost() {
+        return DataResponse.of(postService.listAllPost());
     }
 
     @PostMapping("/modify")
@@ -64,6 +73,19 @@ public class PostController {
     @ApiOperation(value = "岗位人员绑定")
     public DataResponse<T> bindingPost(@RequestBody PostUserReqDTO postUserReqDTO) {
         postService.bindingPost(postUserReqDTO);
+        return DataResponse.success();
+    }
+
+    @GetMapping("/warn/list")
+    @ApiOperation(value = "获取岗位异动预警列表")
+    public PageResponse<PostWarnResDTO> listPostWarn(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(postService.listPostWarn(pageReqDTO));
+    }
+
+    @PostMapping("/warn/handle")
+    @ApiOperation(value = "处理岗位异动预警")
+    public DataResponse<T> handlePostWarn(@RequestBody PostWarnResDTO postWarnResDTO) {
+        postService.handlePostWarn(postWarnResDTO.getId());
         return DataResponse.success();
     }
 

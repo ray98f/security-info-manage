@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.HazardFactorMapper">
+
+    <select id="listHazardFactor" resultType="com.security.info.manage.entity.HazardFactor">
+        select id, name, before_check_proj, on_check_proj, after_check_proj, check_cycle, health_check, after_check,
+        contraindication, create_date, update_date, create_by, update_by, is_delete from t_hazard_factor
+        where is_delete=0
+        order by create_date desc
+    </select>
+
+    <select id="listAllHazardFactor" resultType="com.security.info.manage.entity.HazardFactor">
+        select id, name, before_check_proj, on_check_proj, after_check_proj, check_cycle, health_check, after_check,
+        contraindication, create_date, update_date, create_by, update_by, is_delete from t_hazard_factor
+        where is_delete=0
+        order by create_date desc
+    </select>
+
+    <insert id="importHazardFactor">
+        <if test="list.size()>0">
+            insert into t_hazard_factor(id, name, before_check_proj, on_check_proj, after_check_proj, check_cycle,
+            health_check, after_check, contraindication, create_by) values
+            <foreach collection="list" index="index" item="hazardFactor" separator=",">
+                (#{hazardFactor.id}, #{hazardFactor.name}, #{hazardFactor.beforeCheckProj}, #{hazardFactor.onCheckProj}, #{hazardFactor.afterCheckProj},
+                #{hazardFactor.checkCycle}, #{hazardFactor.healthCheck}, #{hazardFactor.afterCheck}, #{hazardFactor.contraindication}, #{hazardFactor.createBy})
+            </foreach>
+        </if>
+    </insert>
+
+    <insert id="addHazardFactor">
+        insert into t_hazard_factor(id, name, before_check_proj, on_check_proj, after_check_proj, check_cycle,
+        health_check, after_check, contraindication, create_by) value
+        (#{id}, #{name}, #{beforeCheckProj}, #{onCheckProj}, #{afterCheckProj},
+        #{checkCycle}, #{healthCheck}, #{afterCheck}, #{contraindication}, #{createBy})
+    </insert>
+
+    <select id="selectPostHazardFactorIsExist" resultType="java.lang.Integer">
+        select count(1) from t_post_hazard_config where post_id=#{postId} limit 1
+    </select>
+
+    <insert id="addPostHazardFactor">
+        <if test="hazardFactorIds.size()>0">
+            insert into t_post_hazard_config(id, post_id, hazard_id)
+            values
+            <foreach collection="hazardFactorIds" index="index" item="hazardFactorId" separator=",">
+                (replace(uuid(),"-",""), #{postId}, #{hazardFactorId})
+            </foreach>
+        </if>
+    </insert>
+
+    <delete id="modifyPostHazardFactor">
+        delete from t_post_hazard_config where post_id=#{postId};
+        <if test="hazardFactorIds.size()>0">
+            insert into t_post_hazard_config(id, post_id, hazard_id)
+            values
+            <foreach collection="hazardFactorIds" index="index" item="hazardFactorId" separator=",">
+                (replace(uuid(),"-",""), #{postId}, #{hazardFactorId})
+            </foreach>
+        </if>
+    </delete>
+
+    <select id="listPostHazardFactor" resultType="com.security.info.manage.dto.res.PostHazardFactorResDTO">
+        select phc.post_id, p.post_name, GROUP_CONCAT(phc.hazard_id) as hazard_factor_ids, GROUP_CONCAT(hf.name) as hazard_factor_names
+        from t_post_hazard_config as phc
+        left join sys_post as p on p.id=phc.post_id and p.is_delete=0 and p.status=0
+        left join t_hazard_factor as hf on hf.id=phc.hazard_id and hf.is_delete=0
+        group by phc.post_id
+    </select>
+</mapper>

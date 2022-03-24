@@ -19,6 +19,9 @@ public class ApplianceConfigResDTO {
     private String id;
 
     @ApiModelProperty(value = "工号")
+    private String userId;
+
+    @ApiModelProperty(value = "工号")
     private String userNo;
 
     @ApiModelProperty(value = "姓名")

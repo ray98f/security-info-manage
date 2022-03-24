@@ -13,6 +13,9 @@ import java.util.Date;
 @Data
 public class PostResDTO {
 
+    @ApiModelProperty(value = "用户id")
+    private String userId;
+
     @ApiModelProperty(value = "岗位id")
     private String id;
 
@@ -22,7 +25,10 @@ public class PostResDTO {
     @ApiModelProperty(value = "组织名称")
     private String orgName;
 
-    @ApiModelProperty(value = "上级机构id")
+    @ApiModelProperty(value = "岗位id")
+    private String postId;
+
+    @ApiModelProperty(value = "岗位名称")
     private String postName;
 
     @ApiModelProperty(value = "状态")

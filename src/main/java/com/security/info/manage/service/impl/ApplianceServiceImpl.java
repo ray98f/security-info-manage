@@ -8,6 +8,7 @@ import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.req.TrainDetailReqDTO;
 import com.security.info.manage.dto.res.ApplianceConfigResDTO;
 import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
+import com.security.info.manage.dto.res.ApplianceWarnResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.ApplianceMapper;
@@ -151,12 +152,34 @@ public class ApplianceServiceImpl implements ApplianceService {
     }
 
     @Override
+    public ApplianceConfigResDTO getApplianceConfigDetail(String id) {
+        return applianceMapper.getApplianceConfigDetail(id);
+    }
+
+    @Override
     public void changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO) {
         if (Objects.isNull(applianceConfigReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
         applianceConfigReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
         Integer result = applianceMapper.changeAppliance(applianceConfigReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return applianceMapper.listApplianceWarn(pageReqDTO.of());
+    }
+
+    @Override
+    public void handleApplianceWarn(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = applianceMapper.modifyApplianceWarn(id);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

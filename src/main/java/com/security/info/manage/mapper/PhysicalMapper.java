@@ -66,4 +66,12 @@ public interface PhysicalMapper {
     Integer insertPhysicalFeedback(PhysicalFeedback physicalFeedback);
 
     Integer modifyPhysicalFeedback(PhysicalFeedback physicalFeedback);
+
+    List<PhysicalUserResDTO> listExpiredPhysicalUser();
+
+    void addPhysicalWarning(List<PhysicalUserResDTO> list);
+
+    Page<PhysicalWarnResDTO> listPhysicalWarn(Page<PhysicalWarnResDTO> page);
+
+    Integer handlePhysicalWarn(String id);
 }

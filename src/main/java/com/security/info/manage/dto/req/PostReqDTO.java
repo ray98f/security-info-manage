@@ -15,6 +15,9 @@ public class PostReqDTO {
     @ApiModelProperty(value = "所属机构id")
     private String orgId;
 
+    @ApiModelProperty(value = "岗位id")
+    private String postId;
+
     @ApiModelProperty(value = "岗位名称")
     private String postName;
 

@@ -183,6 +183,7 @@ public enum ErrorCode {
     VX_ERROR(3999999, "vx.error"),
     IMPORT_ERROR(3999998, "import.error"),
     USER_REVIEW_EXIST(32000012, "user.review.exist"),
+    POST_HAZARD_FACTOR_EXIST(32000012, "post.hazard.factor.exist"),
     CANT_DELETE_HAD_CHILD(32000012, "cant.delete.had.child"),
     CANT_UPDATE_HAD_CHILD(32000012, "cant.update.had.child");
 

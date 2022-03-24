@@ -8,7 +8,9 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.VxAccessToken;
 import com.security.info.manage.dto.req.LoginReqDTO;
 import com.security.info.manage.dto.req.PasswordReqDTO;
+import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.dto.res.VxDeptResDTO;
 import com.security.info.manage.dto.res.VxUserResDTO;
@@ -180,5 +182,32 @@ public class UserServiceImpl implements UserService {
     public Page<UserResDTO> pageUser(Integer status, String userRealName, List<String> deptIds, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         return userMapper.pageUser(pageReqDTO.of(), status, userRealName, deptIds);
+    }
+
+    @Override
+    public List<PostResDTO> listUserPost(String userId) {
+        if (Objects.isNull(userId)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        return userMapper.selectPostByUserId(userId);
+    }
+
+    @Override
+    public void modifyUserPost(PostReqDTO postReqDTO) {
+        if (Objects.isNull(postReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = userMapper.selectUserPostIsExist(postReqDTO);
+        if (result > 0) {
+            throw new CommonException(ErrorCode.DATA_EXIST);
+        }
+        result = userMapper.modifyUserPost(postReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+        result = postMapper.addPostChangeWarn(postReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
     }
 }

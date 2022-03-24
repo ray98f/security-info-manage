@@ -6,6 +6,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
 import com.security.info.manage.dto.res.PostResDTO;
+import com.security.info.manage.dto.res.PostWarnResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.PostMapper;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,6 +33,11 @@ public class PostServiceImpl implements PostService {
     public Page<PostResDTO> listPost(String name, Integer status, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         return postMapper.listPost(pageReqDTO.of(), name, status);
+    }
+
+    @Override
+    public List<PostResDTO> listAllPost() {
+        return postMapper.listAllPost();
     }
 
     @Override
@@ -78,6 +85,23 @@ public class PostServiceImpl implements PostService {
         Integer result = postMapper.bindingPost(postUserReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
+    }
+
+    @Override
+    public Page<PostWarnResDTO> listPostWarn(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return postMapper.listPostWarn(pageReqDTO.of());
+    }
+
+    @Override
+    public void handlePostWarn(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = postMapper.handlePostWarn(id);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
     }
 

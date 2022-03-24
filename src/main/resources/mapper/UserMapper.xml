@@ -166,4 +166,21 @@
         left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
         where u.is_delete=0 and u.id=#{id}
     </select>
+
+    <select id="selectPostByUserId" resultType="com.security.info.manage.dto.res.PostResDTO">
+        select sup.id, sup.user_id, sup.post_id, p.post_name
+        from sys_user_post as sup
+        left join sys_post as p on p.id=sup.post_id and p.status=0 and p.is_delete=0
+        where sup.user_id=#{userId}
+    </select>
+
+    <select id="selectUserPostIsExist" resultType="java.lang.Integer">
+        select count(1) from sys_user_post where user_id=#{userId} and post_id=#{postId} limit 1
+    </select>
+
+    <update id="modifyUserPost">
+        update sys_user_post set
+        post_id=#{postId}
+        where id=#{id} and user_id=#{userId}
+    </update>
 </mapper>

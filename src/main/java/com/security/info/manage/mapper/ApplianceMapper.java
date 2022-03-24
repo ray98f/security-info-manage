@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.req.TrainDetailReqDTO;
-import com.security.info.manage.dto.res.ApplianceConfigResDTO;
-import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
-import com.security.info.manage.dto.res.DeptTreeResDTO;
-import com.security.info.manage.dto.res.VxDeptResDTO;
+import com.security.info.manage.dto.res.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -38,7 +35,17 @@ public interface ApplianceMapper {
 
     Page<ApplianceConfigResDTO> listApplianceConfig(Page<ApplianceConfigResDTO> page);
 
+    ApplianceConfigResDTO getApplianceConfigDetail(String id);
+
     Integer changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO);
 
+    List<ApplianceConfigResDTO> listExpiredAppliance();
+
     void taskStatus();
+
+    void addApplianceWarning(List<ApplianceConfigResDTO> list, String userId);
+
+    Page<ApplianceWarnResDTO> listApplianceWarn(Page<ApplianceWarnResDTO> page);
+
+    Integer modifyApplianceWarn(String id);
 }

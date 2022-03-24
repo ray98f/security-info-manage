@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.LoginReqDTO;
 import com.security.info.manage.dto.req.PasswordReqDTO;
+import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.User;
 import io.swagger.annotations.ApiParam;
@@ -70,4 +72,8 @@ public interface UserService {
      * @return
      */
     Page<UserResDTO> pageUser(Integer status, String userRealName, List<String> deptIds, PageReqDTO pageReqDTO);
+
+    List<PostResDTO> listUserPost(String userId);
+
+    void modifyUserPost(PostReqDTO postReqDTO);
 }

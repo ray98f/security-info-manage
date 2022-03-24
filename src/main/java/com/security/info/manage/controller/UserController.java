@@ -4,7 +4,9 @@ import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.PasswordReqDTO;
+import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.UserReqDTO;
+import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.User;
 import com.security.info.manage.service.UserService;
@@ -106,5 +108,18 @@ public class UserController {
                                              @RequestParam(required = false) @ApiParam("组织机构id列表") List<String> deptIds,
                                              @Valid PageReqDTO pageReqDTO){
         return PageResponse.of(userService.pageUser(status, userRealName, deptIds, pageReqDTO));
+    }
+
+    @GetMapping("/post/list")
+    @ApiOperation(value = "查询用户岗位列表")
+    public DataResponse<List<PostResDTO>> listUserPost(@RequestParam String userId){
+        return DataResponse.of(userService.listUserPost(userId));
+    }
+
+    @PostMapping("/post/modify")
+    @ApiOperation(value = "修改用户岗位")
+    public DataResponse<T> modifyUserPost(@RequestBody PostReqDTO postReqDTO){
+        userService.modifyUserPost(postReqDTO);
+        return DataResponse.success();
     }
 }
