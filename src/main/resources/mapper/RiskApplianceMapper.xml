@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.RiskApplianceMapper">
+
+    <select id="listRiskAppliance" resultType="com.security.info.manage.dto.res.RiskApplianceResDTO">
+        select id, name, status, create_date
+        from t_risk_appliance
+        where is_delete=0
+        order by create_date asc
+    </select>
+
+    <select id="listAllRiskAppliance" resultType="com.security.info.manage.dto.res.RiskApplianceResDTO">
+        select id, name, status, create_date
+        from t_risk_appliance
+        where is_delete=0
+        order by create_date asc
+    </select>
+
+    <select id="selectRiskApplianceIsExist" resultType="java.lang.Integer">
+        SELECT count(1) FROM t_risk_appliance WHERE name=#{name} and is_delete=0 limit 1
+    </select>
+
+    <update id="modifyRiskAppliance">
+        update t_risk_appliance set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{userId}, update_date=now()
+        where
+        id=#{id} and is_delete=0
+    </update>
+
+    <insert id="addRiskAppliance">
+        INSERT INTO t_risk_appliance (id, name, create_by, status)
+        select #{id}, #{name}, #{userId}, #{status}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_risk_appliance WHERE name=#{name} and is_delete=0)
+    </insert>
+
+    <update id="deleteRiskAppliance">
+        update t_risk_appliance set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <insert id="importRiskAppliance">
+        <if test="list.size()>0">
+            <foreach collection="list" index="index" item="riskAppliance" separator=";">
+                INSERT INTO t_risk_appliance (id, name, create_by, status)
+                select #{riskAppliance.id}, #{riskAppliance.name}, #{riskAppliance.userId}, #{riskAppliance.status}
+                FROM DUAL
+                WHERE not exists (SELECT id FROM t_risk_appliance WHERE name=#{riskAppliance.name} and is_delete=0)
+            </foreach>
+        </if>
+    </insert>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.SpecialtyMapper">
+
+    <select id="listSpecialty" resultType="com.security.info.manage.dto.res.SpecialtyResDTO">
+        select id, name, status, sort, create_date
+        from t_specialty
+        where is_delete=0
+        order by sort asc
+    </select>
+
+    <select id="listAllSpecialty" resultType="com.security.info.manage.dto.res.SpecialtyResDTO">
+        select id, name, status, sort, create_date
+        from t_specialty
+        where is_delete=0
+        order by sort asc
+    </select>
+
+    <select id="selectSpecialtyIsExist" resultType="java.lang.Integer">
+        SELECT count(1) FROM t_specialty WHERE name=#{name} and is_delete=0 limit 1
+    </select>
+
+    <update id="modifySpecialty">
+        update t_specialty set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="sort!=null">
+            sort=#{sort},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{userId}, update_date=now()
+        where
+        id=#{id} and is_delete=0
+    </update>
+
+    <insert id="addSpecialty">
+        INSERT INTO t_specialty (id, name, sort, create_by, status)
+        select #{id}, #{name}, #{sort}, #{userId}, #{status}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_specialty WHERE name=#{name} and is_delete=0)
+    </insert>
+
+    <update id="deleteSpecialty">
+        update t_specialty set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <insert id="importSpecialty">
+        <if test="list.size()>0">
+            <foreach collection="list" index="index" item="specialty" separator=";">
+                INSERT INTO t_specialty (id, name, sort, create_by, status)
+                select #{specialty.id}, #{specialty.name}, #{specialty.sort}, #{specialty.userId}, #{specialty.status}
+                FROM DUAL
+                WHERE not exists (SELECT id FROM t_specialty WHERE name=#{specialty.name} and is_delete=0)
+            </foreach>
+        </if>
+    </insert>
+</mapper>
