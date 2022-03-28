@@ -17,7 +17,11 @@
     </select>
 
     <select id="selectTransportIsExist" resultType="java.lang.Integer">
-        SELECT count(1) FROM t_transport WHERE name=#{name} and is_delete=0 limit 1
+        SELECT count(1) FROM t_transport WHERE name=#{name} and is_delete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
     </select>
 
     <update id="modifyTransport">
