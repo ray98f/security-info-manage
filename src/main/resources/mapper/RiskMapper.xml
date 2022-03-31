@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.RiskMapper">
+    <select id="listRisk" resultType="com.security.info.manage.dto.res.RiskInfoResDTO">
+        select id, type, modules, risk_points, main_risk_points, describe_text, describe_result, describe_person_factor,
+        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur,
+        describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r, risk_evaluation_l,
+        risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures, education_measures,
+        individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept, responsibility_center,
+        responsibility_post, responsibility_user, create_date, create_by
+        from t_risk_info where is_delete=0
+        <if test="level!=null">
+            and level=#{level}
+        </if>
+        <if test="type!=null">
+            and type=#{type}
+        </if>
+        <if test="module!=null and module!=''">
+            and modules like CONCAT('%',#{module},'%')
+        </if>
+        order by create_date desc
+    </select>
+
+    <select id="getRiskDetail" resultType="com.security.info.manage.dto.res.RiskInfoResDTO">
+        select id, type, modules, risk_points, main_risk_points, describe_text, describe_result, describe_person_factor,
+        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur,
+        describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r, risk_evaluation_l,
+        risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures, education_measures,
+        individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept, responsibility_center,
+        responsibility_post, responsibility_user, create_date, create_by
+        from t_risk_info where is_delete=0 and id=#{id}
+    </select>
+
+    <select id="selectRiskIsExist" resultType="java.lang.Integer">
+        select count(1) from t_risk_info where is_delete=0 and type=#{type} and risk_points=#{riskPoints} and modules=#{modules}
+        <if test="id!=null and id!=''">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="addRisk">
+        insert into t_risk_info(id, type, modules, risk_points, main_risk_points, describe_text, describe_result,
+        describe_person_factor, describe_object_factor, describe_environment_factor, describe_manage_factor,
+        describe_may_occur, describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r,
+        risk_evaluation_l, risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures,
+        education_measures, individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept,
+        responsibility_center, responsibility_post, responsibility_user, create_by)
+        value (#{id}, #{type}, #{modules}, #{riskPoints}, #{mainRiskPoints}, #{describeText}, #{describeResult},
+        #{describePersonFactor}, #{describeObjectFactor}, #{describeEnvironmentFactor}, #{describeManageFactor},
+        #{describeMayOccur}, #{describeOccupationalHazards}, #{riskMatrixL}, #{riskMatrixS}, #{riskMatrixR},
+        #{riskEvaluationL}, #{riskEvaluationC}, #{riskEvaluationD}, #{level}, #{technicalMeasures}, #{manageMeasures},
+        #{educationMeasures}, #{individualProtection}, #{emergencyMeasure}, #{healthProtectMeasures}, #{basis}, #{responsibilityDept},
+        #{responsibilityCenter}, #{responsibilityPost}, #{responsibilityUser}, #{createBy})
+    </insert>
+
+    <update id="modifyRisk">
+        update t_risk_info set
+        <if test="type!=null">
+            type=#{type},
+        </if>
+        <if test="modules!=null">
+            modules=#{modules},
+        </if>
+        <if test="riskPoints!=null">
+            risk_points=#{riskPoints},
+        </if>
+        <if test="mainRiskPoints!=null">
+            main_risk_points=#{mainRiskPoints},
+        </if>
+        <if test="describeText!=null">
+            describe_text=#{describeText},
+        </if>
+        <if test="describeResult!=null">
+            describe_result=#{describeResult},
+        </if>
+        <if test="describePersonFactor!=null">
+            describe_person_factor=#{describePersonFactor},
+        </if>
+        <if test="describeObjectFactor!=null">
+            describe_object_factor=#{describeObjectFactor},
+        </if>
+        <if test="describeEnvironmentFactor!=null">
+            describe_environment_factor=#{describeEnvironmentFactor},
+        </if>
+        <if test="describeManageFactor!=null">
+            describe_manage_factor=#{describeManageFactor},
+        </if>
+        <if test="describeMayOccur!=null">
+            describe_may_occur=#{describeMayOccur},
+        </if>
+        <if test="describeOccupationalHazards!=null">
+            describe_occupational_hazards=#{describeOccupationalHazards},
+        </if>
+        <if test="riskMatrixL!=null">
+            risk_matrix_l=#{riskMatrixL},
+        </if>
+        <if test="riskMatrixS!=null">
+            risk_matrix_s=#{riskMatrixS},
+        </if>
+        <if test="riskMatrixR!=null">
+            risk_matrix_r=#{riskMatrixR},
+        </if>
+        <if test="riskEvaluationL!=null">
+            risk_evaluation_l=#{riskEvaluationL},
+        </if>
+        <if test="riskEvaluationC!=null">
+            risk_evaluation_c=#{riskEvaluationC},
+        </if>
+        <if test="riskEvaluationD!=null">
+            risk_evaluation_d=#{riskEvaluationD},
+        </if>
+        <if test="level!=null">
+            level=#{level},
+        </if>
+        <if test="technicalMeasures!=null">
+            technical_measures=#{technicalMeasures},
+        </if>
+        <if test="manageMeasures!=null">
+            manage_measures=#{manageMeasures},
+        </if>
+        <if test="educationMeasures!=null">
+            education_measures=#{educationMeasures},
+        </if>
+        <if test="individualProtection!=null">
+            individual_protection=#{individualProtection},
+        </if>
+        <if test="emergencyMeasure!=null">
+            emergency_measure=#{emergencyMeasure},
+        </if>
+        <if test="healthProtectMeasures!=null">
+            health_protect_measures=#{healthProtectMeasures},
+        </if>
+        <if test="basis!=null">
+            basis=#{basis},
+        </if>
+        <if test="responsibilityDept!=null">
+            responsibility_dept=#{responsibilityDept},
+        </if>
+        <if test="responsibilityCenter!=null">
+            responsibility_center=#{responsibilityCenter},
+        </if>
+        <if test="responsibilityPost!=null">
+            responsibility_post=#{responsibilityPost},
+        </if>
+        <if test="responsibilityUser!=null">
+            responsibility_user=#{responsibilityUser},
+        </if>
+        update_by=#{createBy}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="deleteRisk">
+        update t_risk_info set
+        is_delete=1, update_by=#{createBy}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+</mapper>

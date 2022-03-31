@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.RegionMapper">
+
+    <select id="listRegionType" resultType="com.security.info.manage.dto.res.RegionTypeResDTO">
+        select id, name, code, status, create_date
+        from t_region_type
+        where is_delete=0
+        order by create_date asc
+    </select>
+
+    <select id="listAllRegionType" resultType="com.security.info.manage.dto.res.RegionTypeResDTO">
+        select id, name, code, status, create_date
+        from t_region_type
+        where is_delete=0
+        order by create_date asc
+    </select>
+
+    <select id="selectRegionTypeIsExist" resultType="java.lang.Integer">
+        SELECT count(1) FROM t_region_type WHERE name=#{name}
+        <if test="code!=null and code!=''">
+            and code=#{code}
+        </if>
+        and is_delete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <update id="modifyRegionType">
+        update t_region_type set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="code!=null">
+            code=#{code},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{userId}, update_date=now()
+        where
+        id=#{id} and is_delete=0
+    </update>
+
+    <insert id="addRegionType">
+        INSERT INTO t_region_type (id, name, create_by, status, code)
+        select #{id}, #{name}, #{userId}, #{status}, #{code}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_region_type WHERE name=#{name}
+        <if test="code!=null and code!=''">
+            and code=#{code}
+        </if>
+        and is_delete=0)
+    </insert>
+
+    <update id="deleteRegionType">
+        update t_region_type set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <select id="listRegion" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
+        where r.is_delete=0
+        order by r.create_date asc
+    </select>
+
+    <select id="listAllRegion" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
+        where r.is_delete=0
+        order by r.create_date asc
+    </select>
+
+    <select id="getRegionDetail" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
+        where r.is_delete=0 and id=#{id}
+        order by r.create_date asc
+    </select>
+
+    <select id="selectParentNames" resultType="java.lang.String">
+        select GROUP_CONCAT(name) from t_region
+        where FIND_IN_SET(id,#{parentIds}) > 0
+        group by id
+    </select>
+
+    <select id="selectRegionIsExist" resultType="java.lang.Integer">
+        SELECT count(1) FROM t_region WHERE name=#{name} and code=#{code} and type_id=#{typeId} and is_delete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="addRegion">
+        insert into t_region(id, type_id, parent_id, parent_ids, name, lng, lat, code, level, remark, pic,
+        qr_code, response_unit, response_work_area, status, create_by) value
+        (#{id}, #{typeId}, #{parentId}, #{parentIds}, #{name}, #{lng}, #{lat}, #{code}, #{level}, #{remark}, #{pic},
+        #{qrCode}, #{responseUnit}, #{responseWorkArea}, #{status}, #{userId})
+    </insert>
+
+    <update id="modifyRegion">
+        update t_region set
+        <if test="typeId!=null">
+            type_id=#{typeId},
+        </if>
+        <if test="parentId!=null">
+            parent_id=#{parentId},
+        </if>
+        <if test="parentIds!=null">
+            parent_ids=#{parentIds},
+        </if>
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="lng!=null">
+            lng=#{lng},
+        </if>
+        <if test="lat!=null">
+            lat=#{lat},
+        </if>
+        <if test="code!=null">
+            code=#{code},
+        </if>
+        <if test="level!=null">
+            level=#{level},
+        </if>
+        <if test="remark!=null">
+            remark=#{remark},
+        </if>
+        <if test="pic!=null">
+            pic=#{pic},
+        </if>
+        <if test="qrCode!=null">
+            qr_code=#{qrCode},
+        </if>
+        <if test="responseUnit!=null">
+            response_unit=#{responseUnit},
+        </if>
+        <if test="responseWorkArea!=null">
+            response_work_area=#{responseWorkArea},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+</mapper>
