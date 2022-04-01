@@ -15,10 +15,7 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.ApplianceMapper;
 import com.security.info.manage.service.ApplianceService;
-import com.security.info.manage.utils.ApplianceTypeTreeToolUtils;
-import com.security.info.manage.utils.DeptTreeToolUtils;
-import com.security.info.manage.utils.FileUtils;
-import com.security.info.manage.utils.TokenUtil;
+import com.security.info.manage.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -30,9 +27,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author frp
@@ -110,8 +110,7 @@ public class ApplianceServiceImpl implements ApplianceService {
             FileInputStream fileInputStream = new FileInputStream(FileUtils.transferToFile(file));
             XSSFWorkbook xssfWorkbook = new XSSFWorkbook(fileInputStream);
             XSSFSheet sheet = xssfWorkbook.getSheetAt(0);
-            List<ApplianceConfigReqDTO> temp1 = new ArrayList<>();
-            List<ApplianceConfigReqDTO> temp2 = new ArrayList<>();
+            List<ApplianceConfigReqDTO> temp = new ArrayList<>();
             for (Row cells : sheet) {
                 if (cells.getRowNum() < 1) {
                     continue;
@@ -134,24 +133,22 @@ public class ApplianceServiceImpl implements ApplianceService {
                 cells.getCell(11).setCellType(1);
                 reqDTO.setNum(cells.getCell(11) == null ? null : Integer.valueOf(cells.getCell(11).getStringCellValue()));
                 reqDTO.setReceivingTime(cells.getCell(13) == null ? null : cells.getCell(13).getDateCellValue());
-                reqDTO.setEffectiveTime(cells.getCell(14) == null ? null : cells.getCell(14).getDateCellValue());
+                cells.getCell(14).setCellType(1);
+                String str = cells.getCell(14) == null ? null : cells.getCell(14).getStringCellValue();
+                Matcher m = Pattern.compile("[^0-9]").matcher(Objects.requireNonNull(str));
+                reqDTO.setEffectiveTime(DateUtils.getMonthNewDate(reqDTO.getReceivingTime(), Integer.valueOf(m.replaceAll("").trim())));
+                cells.getCell(16).setCellType(1);
+                reqDTO.setChangeReason(cells.getCell(16) == null ? null : cells.getCell(16).getStringCellValue());
                 cells.getCell(17).setCellType(1);
-                reqDTO.setChangeReason(cells.getCell(17) == null ? null : cells.getCell(17).getStringCellValue());
-                cells.getCell(18).setCellType(1);
-                reqDTO.setRemark(cells.getCell(18) == null ? null : cells.getCell(18).getStringCellValue());
+                reqDTO.setRemark(cells.getCell(17) == null ? null : cells.getCell(17).getStringCellValue());
                 reqDTO.setId(TokenUtil.getUuId());
                 reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-                if (reqDTO.getChangeReason() == null) {
-                    temp1.add(reqDTO);
-                } else {
-                    temp2.add(reqDTO);
-                }
+                temp.add(reqDTO);
             }
             fileInputStream.close();
+            applianceMapper.importApplianceConfig(temp);
 
-            applianceMapper.importApplianceConfig(temp1);
-
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }
@@ -190,6 +187,14 @@ public class ApplianceServiceImpl implements ApplianceService {
     public Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         return applianceMapper.listApplianceWarn(pageReqDTO.of());
+    }
+
+    @Override
+    public ApplianceWarnResDTO getApplianceWarnDetail(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        return applianceMapper.getApplianceWarnDetail(id);
     }
 
     @Override

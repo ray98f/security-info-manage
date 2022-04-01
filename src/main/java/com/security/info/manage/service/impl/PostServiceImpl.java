@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
+import com.security.info.manage.dto.res.PostChangeListResDTO;
 import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.PostWarnResDTO;
 import com.security.info.manage.enums.ErrorCode;
@@ -103,6 +104,14 @@ public class PostServiceImpl implements PostService {
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
+    }
+
+    @Override
+    public List<PostChangeListResDTO> userArchives(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        return postMapper.userArchives(id);
     }
 
 }

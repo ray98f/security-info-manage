@@ -35,6 +35,8 @@ public interface ApplianceService {
 
     Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO);
 
+    ApplianceWarnResDTO getApplianceWarnDetail(String id);
+
     void handleApplianceWarn(String id);
 
     List<ApplianceConfigResDTO> userArchives(String id);

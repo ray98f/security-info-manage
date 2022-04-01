@@ -5,6 +5,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
 import com.security.info.manage.dto.res.ApplianceWarnResDTO;
+import com.security.info.manage.dto.res.PostChangeListResDTO;
 import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.PostWarnResDTO;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,5 +32,7 @@ public interface PostService {
     Page<PostWarnResDTO> listPostWarn(PageReqDTO pageReqDTO);
 
     void handlePostWarn(String id);
+
+    List<PostChangeListResDTO> userArchives(String id);
 
 }

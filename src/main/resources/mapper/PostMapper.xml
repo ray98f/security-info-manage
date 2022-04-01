@@ -88,10 +88,13 @@
     </insert>
 
     <insert id="addPostChangeWarn">
-        insert into t_post_change_warning(id, user_id, info, ring_time)
+        insert into t_post_change_warning(id, user_id, info, ring_time, old_post_id, new_post_id)
         value (replace(uuid(),"-",""), #{userId},
         CONCAT((select real_name from sys_user_ext where user_id=#{userId} and status=0 and is_delete=0),"从",
-        (select post_name from sys_post where id=#{postId} and status=0 and is_delete=0),"岗位变更,需要更新其危害因素关联信息"), now())
+        (select p.post_name from sys_user_post as up left join sys_post as p on p.id=up.post_id and p.status=0 and p.is_delete=0
+        where up.id=#{id}),"岗位变更,需要更新其危害因素关联信息"), now(),
+        (select p.post_id from sys_user_post as up left join sys_post as p on p.id=up.post_id and p.status=0 and p.is_delete=0
+        where up.id=#{id}), #{postId})
     </insert>
 
     <select id="listPostWarn" resultType="com.security.info.manage.dto.res.PostWarnResDTO">
@@ -103,4 +106,15 @@
     <update id="handlePostWarn">
         update t_post_change_warning set status=1 where id=#{id} and is_delete=0
     </update>
+
+    <select id="userArchives" resultType="com.security.info.manage.dto.res.PostChangeListResDTO">
+        select pcw.id, pcw.user_id, pcw.status, pcw.ring_time, pcw.old_post_id, pcw.new_post_id, p1.post_name as old_post_name,
+        p2.post_name as new_post__name, ue.real_name as user_name
+        from t_post_change_warning as pcw
+        left join sys_user_ext as ue on ue.user_id=pcw.user_id and ue.status=0 and ue.is_delete=0
+        left join sys_post as p1 on p1.id=pcw.old_post_id and p1.status=0 and p1.is_delete=0
+        left join sys_post as p2 on p2.id=pcw.new_post_id and p2.status=0 and p2.is_delete=0
+        where pcw.user_id=#{id} and pcw.is_delete=0
+        order by pcw.create_date desc
+    </select>
 </mapper>

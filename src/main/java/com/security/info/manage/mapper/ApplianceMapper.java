@@ -46,6 +46,8 @@ public interface ApplianceMapper {
 
     Page<ApplianceWarnResDTO> listApplianceWarn(Page<ApplianceWarnResDTO> page);
 
+    ApplianceWarnResDTO getApplianceWarnDetail(String id);
+
     Integer modifyApplianceWarn(String id);
 
     List<ApplianceConfigResDTO> userArchives(String id);

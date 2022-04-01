@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
+import com.security.info.manage.dto.res.PostChangeListResDTO;
 import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.PostWarnResDTO;
 import com.security.info.manage.dto.res.VxUserResDTO;
@@ -40,5 +41,7 @@ public interface PostMapper {
     Page<PostWarnResDTO> listPostWarn(Page<PostWarnResDTO> page);
 
     Integer handlePostWarn(String id);
+
+    List<PostChangeListResDTO> userArchives(String id);
 
 }

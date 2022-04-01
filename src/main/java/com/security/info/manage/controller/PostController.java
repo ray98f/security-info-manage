@@ -5,10 +5,7 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
-import com.security.info.manage.dto.res.ApplianceWarnResDTO;
-import com.security.info.manage.dto.res.DeptTreeResDTO;
-import com.security.info.manage.dto.res.PostResDTO;
-import com.security.info.manage.dto.res.PostWarnResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.service.PostService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -87,6 +84,12 @@ public class PostController {
     public DataResponse<T> handlePostWarn(@RequestBody PostWarnResDTO postWarnResDTO) {
         postService.handlePostWarn(postWarnResDTO.getId());
         return DataResponse.success();
+    }
+
+    @GetMapping("/user/archives")
+    @ApiOperation(value = "获取员工岗位异动记录")
+    public DataResponse<List<PostChangeListResDTO>> userArchives(@RequestParam String id) {
+        return DataResponse.of(postService.userArchives(id));
     }
 
 }

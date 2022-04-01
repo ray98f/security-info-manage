@@ -201,13 +201,13 @@ public class UserServiceImpl implements UserService {
         if (result > 0) {
             throw new CommonException(ErrorCode.DATA_EXIST);
         }
-        result = userMapper.modifyUserPost(postReqDTO);
-        if (result < 0) {
-            throw new CommonException(ErrorCode.UPDATE_ERROR);
-        }
         result = postMapper.addPostChangeWarn(postReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
+        result = userMapper.modifyUserPost(postReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
     }
 

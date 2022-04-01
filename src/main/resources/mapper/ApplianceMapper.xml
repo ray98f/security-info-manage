@@ -14,13 +14,13 @@
         select a.id, a.type, a.code, a.name, a.manufacturer, a.certificate, f.file_name as certificate_name, a.unit
         from t_appliance as a
         left join sys_file as f on f.file_url=a.certificate and f.is_delete=0
-        where a.is_delete=0 where a.id=#{id}
+        where a.is_delete=0 and a.id=#{id}
     </select>
 
     <select id="selectApplianceIsExist" resultType="java.lang.Integer">
         select count(1) from t_appliance where name=#{name} and type=#{type} and is_delete=0
         <if test="id!=null and id!=''">
-            and id=!#{id}
+            and id!=#{id}
         </if>
         limit 1
     </select>
@@ -83,12 +83,12 @@
                 WHERE not exists (SELECT id FROM t_appliance_user_config
                 WHERE dept_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
                 <if test="appliance.userName!='工区工长'">
-                    and user_id=(select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1),
+                    and user_id=(select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1)
                 </if>
                 <if test="appliance.userName=='工区工长'">
                     and user_id=(select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
                     where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
-                    and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1),
+                    and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1)
                 </if>
                 and appliance_id=(select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1)
                 and is_delete=0)
@@ -97,7 +97,7 @@
     </insert>
 
     <select id="listApplianceConfig" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.user_name, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
@@ -110,7 +110,7 @@
     </select>
 
     <select id="getApplianceConfigDetail" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.user_name, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
@@ -165,12 +165,26 @@
         order by aw.create_date desc
     </select>
 
+    <select id="getApplianceWarnDetail" resultType="com.security.info.manage.dto.res.ApplianceWarnResDTO">
+        select aw.id, aw.info, aw.appliance_user_id, aw.status, aw.ring_time, d.org_name as dept_name,
+        p.post_name, ue.user_no, ue.real_name as user_name, a.name as appliance_name
+        from t_appliance_warning as aw
+        left join t_appliance_user_config as auc on auc.id=aw.appliance_user_id and auc.is_delete=0
+        left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
+        left join sys_user as u on u.id=auc.user_id and u.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=auc.user_id and ue.status=0 and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        left join sys_user_post as up on up.user_id=auc.user_id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        where aw.is_delete=0 and aw.id=#{id}
+    </select>
+
     <update id="modifyApplianceWarn">
         update t_appliance_warning set status=1 where id=#{id} and is_delete=0
     </update>
 
     <select id="userArchives" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.user_name, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
