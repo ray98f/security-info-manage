@@ -18,23 +18,26 @@ public class ApplianceConfigReqDTO {
     @ApiModelProperty(value = "id")
     private String id;
 
-    @ApiModelProperty(value = "领取人id")
-    private String userId;
+    @ApiModelProperty(value = "年度")
+    private Integer year;
 
-    @ApiModelProperty(value = "领取人工号")
-    private String userNo;
+    @ApiModelProperty(value = "工区名称")
+    private String deptName;
 
     @ApiModelProperty(value = "领取人姓名")
     private String userName;
+
+    @ApiModelProperty(value = "涉及相关作业类型")
+    private String workType;
+
+    @ApiModelProperty(value = "接触职业病危害因素")
+    private String hazardFactors;
 
     @ApiModelProperty(value = "用品名称")
     private String applianceName;
 
     @ApiModelProperty(value = "用品编号")
     private String applianceCode;
-
-    @ApiModelProperty(value = "用品类别")
-    private String applianceType;
 
     @ApiModelProperty(value = "领取数量")
     private Integer num;
@@ -54,6 +57,9 @@ public class ApplianceConfigReqDTO {
             timezone = "GMT+8"
     )
     private Date effectiveTime;
+
+    @ApiModelProperty(value = "更换原因")
+    private String changeReason;
 
     @ApiModelProperty(value = "备注")
     private String remark;

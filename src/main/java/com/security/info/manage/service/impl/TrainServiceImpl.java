@@ -127,4 +127,9 @@ public class TrainServiceImpl implements TrainService {
         }
     }
 
+    @Override
+    public List<TrainDetailResDTO> userArchives(String id) {
+        return trainMapper.userArchives(id);
+    }
+
 }

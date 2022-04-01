@@ -63,7 +63,7 @@
 
     <select id="listRegion" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
-        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
         from t_region as r
         left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
         where r.is_delete=0
@@ -72,7 +72,7 @@
 
     <select id="listAllRegion" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
-        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
         from t_region as r
         left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
         where r.is_delete=0
@@ -81,7 +81,7 @@
 
     <select id="getRegionDetail" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
-        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
         from t_region as r
         left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
         where r.is_delete=0 and id=#{id}
@@ -104,9 +104,9 @@
 
     <insert id="addRegion">
         insert into t_region(id, type_id, parent_id, parent_ids, name, lng, lat, code, level, remark, pic,
-        qr_code, response_unit, response_work_area, status, create_by) value
+        qr_code, response_unit, response_work_area, status, create_by, main_risk, main_prevent) value
         (#{id}, #{typeId}, #{parentId}, #{parentIds}, #{name}, #{lng}, #{lat}, #{code}, #{level}, #{remark}, #{pic},
-        #{qrCode}, #{responseUnit}, #{responseWorkArea}, #{status}, #{userId})
+        #{qrCode}, #{responseUnit}, #{responseWorkArea}, #{status}, #{userId}, #{mainRisk}, #{mainPrevent})
     </insert>
 
     <update id="modifyRegion">
@@ -137,6 +137,12 @@
         </if>
         <if test="remark!=null">
             remark=#{remark},
+        </if>
+        <if test="mainRisk!=null">
+            main_risk=#{mainRisk},
+        </if>
+        <if test="mainPrevent!=null">
+            main_prevent=#{mainPrevent},
         </if>
         <if test="pic!=null">
             pic=#{pic},

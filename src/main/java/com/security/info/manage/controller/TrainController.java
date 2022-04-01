@@ -10,6 +10,7 @@ import com.security.info.manage.dto.req.TrainReqDTO;
 import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.TrainDetailResDTO;
 import com.security.info.manage.dto.res.TrainResDTO;
+import com.security.info.manage.dto.res.UserArchivesResDTO;
 import com.security.info.manage.service.PostService;
 import com.security.info.manage.service.TrainService;
 import io.swagger.annotations.Api;
@@ -84,6 +85,12 @@ public class TrainController {
     public DataResponse<T> importTrainDetail(@RequestParam MultipartFile file, String trainId) {
         trainService.importTrainDetail(file, trainId);
         return DataResponse.success();
+    }
+
+    @GetMapping("/user/archives")
+    @ApiOperation(value = "获取员工培训记录")
+    public DataResponse<List<TrainDetailResDTO>> userArchives(@RequestParam String id) {
+        return DataResponse.of(trainService.userArchives(id));
     }
 
 }

@@ -4,10 +4,9 @@ import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
+import com.security.info.manage.dto.req.ApplianceReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
-import com.security.info.manage.dto.res.ApplianceConfigResDTO;
-import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
-import com.security.info.manage.dto.res.ApplianceWarnResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.service.ApplianceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,59 +33,59 @@ public class ApplianceController {
     @Resource
     private ApplianceService applianceService;
 
-    @GetMapping("/type/listTree")
-    @ApiOperation(value = "劳保用品类别获取")
-    public DataResponse<List<ApplianceTypeTreeResDTO>> listTypeTree(@RequestParam(required = false) Integer status) {
-        return DataResponse.of(applianceService.listTypeTree(status));
-    }
-
-    @GetMapping("/type/detail")
-    @ApiOperation(value = "劳保用品类别详情")
-    public DataResponse<ApplianceTypeTreeResDTO> getTypeDetail(@RequestParam String id) {
-        return DataResponse.of(applianceService.getTypeDetail(id));
-    }
-
-    @PostMapping("/type/add")
-    @ApiOperation(value = "劳保用品类别新增")
-    public DataResponse<T> addType(@RequestBody ApplianceTypeReqDTO applianceTypeReqDTO) {
-        applianceService.addType(applianceTypeReqDTO);
-        return DataResponse.success();
-    }
-
-    @PostMapping("/type/modify")
-    @ApiOperation(value = "劳保用品类别修改")
-    public DataResponse<T> modifyType(@RequestBody ApplianceTypeReqDTO applianceTypeReqDTO) {
-        applianceService.modifyType(applianceTypeReqDTO);
-        return DataResponse.success();
-    }
-
-    @PostMapping("/type/delete")
-    @ApiOperation(value = "劳保用品类别删除")
-    public DataResponse<T> deleteType(@RequestBody ApplianceTypeReqDTO applianceTypeReqDTO) {
-        applianceService.deleteType(applianceTypeReqDTO);
-        return DataResponse.success();
-    }
-
-    @PostMapping("/import")
-    @ApiOperation(value = "劳保用品配备导入")
-    public DataResponse<T> importAppliance(@RequestParam MultipartFile file) {
-        applianceService.importAppliance(file);
-        return DataResponse.success();
-    }
-
     @GetMapping("/list")
+    @ApiOperation(value = "劳保用品列表")
+    public PageResponse<ApplianceResDTO> listAppliance(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(applianceService.listAppliance(pageReqDTO));
+    }
+
+    @GetMapping("/detail")
+    @ApiOperation(value = "劳保用品详情")
+    public DataResponse<ApplianceResDTO> getApplianceDetail(@RequestParam String id) {
+        return DataResponse.of(applianceService.getApplianceDetail(id));
+    }
+
+    @PostMapping("/add")
+    @ApiOperation(value = "新增劳保用品")
+    public DataResponse<T> insertAppliance(@RequestBody ApplianceReqDTO applianceReqDTO) {
+        applianceService.insertAppliance(applianceReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/modify")
+    @ApiOperation(value = "修改劳保用品")
+    public DataResponse<T> modifyAppliance(@RequestBody ApplianceReqDTO applianceReqDTO) {
+        applianceService.modifyAppliance(applianceReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/delete")
+    @ApiOperation(value = "删除劳保用品")
+    public DataResponse<T> deleteAppliance(@RequestBody ApplianceReqDTO applianceReqDTO) {
+        applianceService.deleteAppliance(applianceReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/user/import")
+    @ApiOperation(value = "劳保用品配备导入")
+    public DataResponse<T> importApplianceConfig(@RequestParam MultipartFile file) {
+        applianceService.importApplianceConfig(file);
+        return DataResponse.success();
+    }
+
+    @GetMapping("/user/list")
     @ApiOperation(value = "劳保用品配备列表")
     public PageResponse<ApplianceConfigResDTO> listApplianceConfig(@Valid PageReqDTO pageReqDTO) {
         return PageResponse.of(applianceService.listApplianceConfig(pageReqDTO));
     }
 
-    @GetMapping("/detail")
+    @GetMapping("/user/detail")
     @ApiOperation(value = "劳保用品配备详情")
     public DataResponse<ApplianceConfigResDTO> getApplianceConfigDetail(@RequestParam String id) {
         return DataResponse.of(applianceService.getApplianceConfigDetail(id));
     }
 
-    @PostMapping("/change")
+    @PostMapping("/user/change")
     @ApiOperation(value = "更换劳保用品")
     public DataResponse<T> changeAppliance(@RequestBody ApplianceConfigReqDTO applianceConfigReqDTO) {
         applianceService.changeAppliance(applianceConfigReqDTO);
@@ -104,5 +103,11 @@ public class ApplianceController {
     public DataResponse<T> handleApplianceWarn(@RequestBody ApplianceWarnResDTO applianceWarnResDTO) {
         applianceService.handleApplianceWarn(applianceWarnResDTO.getId());
         return DataResponse.success();
+    }
+
+    @GetMapping("/user/archives")
+    @ApiOperation(value = "获取员工劳保用品领用记录")
+    public DataResponse<List<ApplianceConfigResDTO>> userArchives(@RequestParam String id) {
+        return DataResponse.of(applianceService.userArchives(id));
     }
 }

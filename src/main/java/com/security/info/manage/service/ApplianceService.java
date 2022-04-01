@@ -3,11 +3,9 @@ package com.security.info.manage.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
+import com.security.info.manage.dto.req.ApplianceReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
-import com.security.info.manage.dto.res.ApplianceConfigResDTO;
-import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
-import com.security.info.manage.dto.res.ApplianceWarnResDTO;
-import com.security.info.manage.dto.res.DeptTreeResDTO;
+import com.security.info.manage.dto.res.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,17 +15,17 @@ import java.util.List;
  */
 public interface ApplianceService {
 
-    List<ApplianceTypeTreeResDTO> listTypeTree(Integer status);
+    Page<ApplianceResDTO> listAppliance(PageReqDTO pageReqDTO);
 
-    ApplianceTypeTreeResDTO getTypeDetail(String id);
+    ApplianceResDTO getApplianceDetail(String id);
 
-    void addType(ApplianceTypeReqDTO applianceTypeReqDTO);
+    void insertAppliance(ApplianceReqDTO applianceReqDTO);
 
-    void modifyType(ApplianceTypeReqDTO applianceTypeReqDTO);
+    void modifyAppliance(ApplianceReqDTO applianceReqDTO);
 
-    void deleteType(ApplianceTypeReqDTO applianceTypeReqDTO);
+    void deleteAppliance(ApplianceReqDTO applianceReqDTO);
 
-    void importAppliance(MultipartFile file);
+    void importApplianceConfig(MultipartFile file);
 
     Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO);
 
@@ -38,5 +36,7 @@ public interface ApplianceService {
     Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO);
 
     void handleApplianceWarn(String id);
+
+    List<ApplianceConfigResDTO> userArchives(String id);
 
 }

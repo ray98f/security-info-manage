@@ -210,4 +210,9 @@ public class UserServiceImpl implements UserService {
             throw new CommonException(ErrorCode.INSERT_ERROR);
         }
     }
+
+    @Override
+    public UserResDTO getUserInfo(String id) {
+        return userMapper.selectUser(id);
+    }
 }

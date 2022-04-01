@@ -31,4 +31,6 @@ public interface TrainMapper {
 
     void importTrainDetail(List<TrainDetailReqDTO> list, String trainId);
 
+    List<TrainDetailResDTO> userArchives(String id);
+
 }

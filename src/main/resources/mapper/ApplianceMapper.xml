@@ -2,104 +2,138 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.security.info.manage.mapper.ApplianceMapper">
 
-    <select id="getTypeBody" resultType="com.security.info.manage.dto.res.ApplianceTypeTreeResDTO">
-        select id, parent_id, parent_code, name, code, status from t_appliance_type where parent_id!="0" and is_delete=0
-        <if test="status!=null">
-            and status=#{status}
+    <select id="listAppliance" resultType="com.security.info.manage.dto.res.ApplianceResDTO">
+        select a.id, a.type, a.code, a.name, a.manufacturer, a.certificate, f.file_name as certificate_name, a.unit
+        from t_appliance as a
+        left join sys_file as f on f.file_url=a.certificate and f.is_delete=0
+        where a.is_delete=0
+        order by a.create_date desc
+    </select>
+
+    <select id="getApplianceDetail" resultType="com.security.info.manage.dto.res.ApplianceResDTO">
+        select a.id, a.type, a.code, a.name, a.manufacturer, a.certificate, f.file_name as certificate_name, a.unit
+        from t_appliance as a
+        left join sys_file as f on f.file_url=a.certificate and f.is_delete=0
+        where a.is_delete=0 where a.id=#{id}
+    </select>
+
+    <select id="selectApplianceIsExist" resultType="java.lang.Integer">
+        select count(1) from t_appliance where name=#{name} and type=#{type} and is_delete=0
+        <if test="id!=null and id!=''">
+            and id=!#{id}
         </if>
+        limit 1
     </select>
 
-    <select id="getTypeRoot" resultType="com.security.info.manage.dto.res.ApplianceTypeTreeResDTO">
-        select id, parent_id, parent_code, name, code, status from t_appliance_type where parent_id="0" and is_delete=0
-        <if test="status!=null">
-            and status=#{status}
-        </if>
-    </select>
-
-    <select id="getTypeDetail" resultType="com.security.info.manage.dto.res.ApplianceTypeTreeResDTO">
-        select id, parent_id, parent_code, name, code, status from t_appliance_type where id=#{id} and is_delete=0
-    </select>
-
-    <select id="selectHadChild" resultType="java.lang.Integer">
-        select count(1) from t_appliance_type where parent_id=#{id} and is_delete=0 and status=0 limit 1
-    </select>
-
-    <insert id="addType">
-        insert into t_appliance_type(id, parent_id, parent_code, name, code, status, create_by)
-        value (#{id}, #{parentId}, #{parentCode}, #{name}, #{code}, #{status}, #{userId})
+    <insert id="insertAppliance">
+        insert into t_appliance(id, type, code, name, manufacturer, certificate, create_by, unit)
+        value (#{id}, #{type}, #{code}, #{name}, #{manufacturer}, #{certificate}, #{userId}, #{unit})
     </insert>
 
-    <update id="modifyType">
-        update t_appliance_type set
-        <if test="parentId!=null">
-            parent_id=#{parentId},
-        </if>
-        <if test="parentCode!=null">
-            parent_code=#{parentCode},
-        </if>
-        <if test="name!=null">
-            name=#{name},
+    <update id="modifyAppliance">
+        update t_appliance set
+        <if test="type!=null">
+            type=#{type},
         </if>
         <if test="code!=null">
             code=#{code},
         </if>
-        <if test="status!=null">
-            status=#{status},
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="manufacturer!=null">
+            manufacturer=#{manufacturer},
+        </if>
+        <if test="certificate!=null">
+            certificate=#{certificate},
+        </if>
+        <if test="unit!=null">
+            unit=#{unit},
         </if>
         update_by=#{userId}
         where id=#{id} and is_delete=0
     </update>
 
-    <update id="deleteType">
-        update t_appliance_type set
+    <update id="deleteAppliance">
+        update t_appliance set
         is_delete=1, update_by=#{userId}
         where id=#{id} and is_delete=0
     </update>
 
-    <insert id="importAppliance">
+    <insert id="importApplianceConfig">
         <if test="list.size()>0">
-            insert into t_appliance_user_config(id, user_name, user_no, appliance_name, appliance_code, appliance_type, user_id, num, receiving_time, effective_time, remark, create_by) values
-            <foreach collection="list" index="index" item="appliance" separator=",">
-                (#{appliance.id}, #{appliance.userName}, #{appliance.userNo}, #{appliance.applianceName}, #{appliance.applianceCode},
-                (select id from t_appliance_type where name=#{appliance.applianceType} and status=0 and is_delete=0 limit 1),
-                (select user_id from sys_user_ext where real_name=#{appliance.userName}
-                <if test="appliance.userNo!=null and appliance.userNo!=''">
-                    and user_no=#{appliance.userNo}
+            <foreach collection="list" index="index" item="appliance" separator=";">
+                insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,
+                hazard_factors, num, receiving_time, effective_time, remark, create_by)
+                 select #{appliance.id}, #{appliance.year},
+                (select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1),
+                <if test="appliance.userName!='工区工长'">
+                    (select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1),
                 </if>
-                and status=0 and is_delete=0),
-                #{appliance.num}, #{appliance.receivingTime}, #{appliance.effectiveTime}, #{appliance.remark}, #{appliance.createBy})
+                <if test="appliance.userName=='工区工长'">
+                    (select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
+                    where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+                    and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1),
+                </if>
+                #{appliance.userName},
+                (select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1),
+                #{appliance.workType}, #{appliance.hazardFactors}, #{appliance.num}, #{appliance.receivingTime},
+                #{appliance.effectiveTime}, #{appliance.remark}, #{appliance.createBy}
+                from dual
+                WHERE not exists (SELECT id FROM t_appliance_user_config
+                WHERE dept_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+                <if test="appliance.userName!='工区工长'">
+                    and user_id=(select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1),
+                </if>
+                <if test="appliance.userName=='工区工长'">
+                    and user_id=(select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
+                    where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+                    and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1),
+                </if>
+                and appliance_id=(select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1)
+                and is_delete=0)
             </foreach>
         </if>
     </insert>
 
     <select id="listApplianceConfig" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.user_id, auc.user_name, auc.user_no, auc.appliance_name, auc.appliance_code, auc.appliance_type as appliance_type_id,
-        auc.num, auc.receiving_time, auc.effective_time, auc.last_id, auc.remark, auc.status, at.name as appliance_type_name from t_appliance_user_config as auc
-        left join t_appliance_type as at on at.id=auc.appliance_type and at.is_delete=0 and at.status=0
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.user_name, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
+        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
+        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        from t_appliance_user_config as auc
+        left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
+        left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
+        left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
         where auc.is_delete=0
         order by auc.create_date desc
     </select>
 
     <select id="getApplianceConfigDetail" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.user_id, auc.user_name, auc.user_no, auc.appliance_name, auc.appliance_code,
-        auc.appliance_type as appliance_type_id, auc.num, auc.receiving_time, auc.effective_time, auc.last_id,
-        auc.remark, auc.status, at.name as appliance_type_name from t_appliance_user_config as auc
-        left join t_appliance_type as at on at.id=auc.appliance_type and at.is_delete=0 and at.status=0
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.user_name, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
+        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
+        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        from t_appliance_user_config as auc
+        left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
+        left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
+        left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
         where auc.is_delete=0 and auc.id=#{id}
     </select>
 
     <update id="changeAppliance">
-        update t_appliance_user_config set remark=#{remark}, status=2 where id=#{id} and is_delete=0;
-        insert into t_appliance_user_config(id, user_id, user_name, user_no, appliance_name, appliance_code,
-        appliance_type, num, receiving_time, effective_time, last_id, create_by)
-        value (replace(uuid(),"-",""), #{userId}, #{userName}, #{userNo}, #{applianceName}, #{applianceCode},
-        #{applianceType}, #{num}, #{receivingTime}, #{effectiveTime}, #{id}, #{createBy});
+        update t_appliance_user_config set change_reason=#{changeReason}, status=2 where id=#{id} and is_delete=0;
+        insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,
+        hazard_factors, num, receiving_time, effective_time, last_id, create_by)
+        value (replace(uuid(),"-",""), #{year}, #{deptId}, #{userId}, #{userName}, #{applianceId},
+        #{workType}, #{hazardFactors}, #{num}, #{receivingTime}, #{effectiveTime}, #{id}, #{createBy});
     </update>
 
     <select id="listExpiredAppliance" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select id, user_name
-        from t_appliance_user_config
-        where now()>effective_time and status=0 and is_delete=0
+        select auc.id, ue.real_name as user_name
+        from t_appliance_user_config as auc
+        left join sys_user_ext as ue on ue.user_id=auc.user_id and ue.status=0 and ue.is_delete=0
+        where now()>auc.effective_time and auc.status=0 and auc.is_delete=0
     </select>
 
     <update id="taskStatus">
@@ -118,10 +152,12 @@
 
     <select id="listApplianceWarn" resultType="com.security.info.manage.dto.res.ApplianceWarnResDTO">
         select aw.id, aw.info, aw.appliance_user_id, aw.status, aw.ring_time, d.org_name as dept_name,
-        p.post_name, auc.user_no, auc.user_name, auc.appliance_name
+        p.post_name, ue.user_no, ue.real_name as user_name, a.name as appliance_name
         from t_appliance_warning as aw
         left join t_appliance_user_config as auc on auc.id=aw.appliance_user_id and auc.is_delete=0
+        left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_user as u on u.id=auc.user_id and u.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=auc.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
         left join sys_user_post as up on up.user_id=auc.user_id
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
@@ -132,4 +168,17 @@
     <update id="modifyApplianceWarn">
         update t_appliance_warning set status=1 where id=#{id} and is_delete=0
     </update>
+
+    <select id="userArchives" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.user_name, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
+        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
+        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        from t_appliance_user_config as auc
+        left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
+        left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
+        left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        where auc.is_delete=0 and auc.user_id=#{id}
+        order by auc.create_date desc
+    </select>
 </mapper>

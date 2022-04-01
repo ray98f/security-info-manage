@@ -8,6 +8,8 @@ import com.security.info.manage.dto.res.TrainResDTO;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * @author frp
  */
@@ -26,5 +28,7 @@ public interface TrainService {
     void deleteTrain(TrainReqDTO trainReqDTO);
 
     void importTrainDetail(MultipartFile file, String trainId);
+
+    List<TrainDetailResDTO> userArchives(String id);
 
 }

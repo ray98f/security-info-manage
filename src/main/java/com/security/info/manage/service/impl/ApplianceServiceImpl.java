@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
+import com.security.info.manage.dto.req.ApplianceReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.req.TrainDetailReqDTO;
 import com.security.info.manage.dto.res.ApplianceConfigResDTO;
+import com.security.info.manage.dto.res.ApplianceResDTO;
 import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
 import com.security.info.manage.dto.res.ApplianceWarnResDTO;
 import com.security.info.manage.enums.ErrorCode;
@@ -43,63 +45,59 @@ public class ApplianceServiceImpl implements ApplianceService {
     private ApplianceMapper applianceMapper;
 
     @Override
-    public List<ApplianceTypeTreeResDTO> listTypeTree(Integer status) {
-        List<ApplianceTypeTreeResDTO> extraRootList = applianceMapper.getTypeRoot(status);
-        if (Objects.isNull(extraRootList)) {
-            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
-        }
-        List<ApplianceTypeTreeResDTO> extraBodyList = applianceMapper.getTypeBody(status);
-        ApplianceTypeTreeToolUtils extraTree = new ApplianceTypeTreeToolUtils(extraRootList, extraBodyList);
-        return extraTree.getTree();
+    public Page<ApplianceResDTO> listAppliance(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return applianceMapper.listAppliance(pageReqDTO.of());
     }
 
     @Override
-    public ApplianceTypeTreeResDTO getTypeDetail(String id) {
-        return applianceMapper.getTypeDetail(id);
-    }
-
-    @Override
-    public void addType(ApplianceTypeReqDTO applianceTypeReqDTO) {
-        if (Objects.isNull(applianceTypeReqDTO)) {
+    public ApplianceResDTO getApplianceDetail(String id) {
+        if (Objects.isNull(id)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        applianceTypeReqDTO.setId(TokenUtil.getUuId());
-        applianceTypeReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
-        Integer result = applianceMapper.addType(applianceTypeReqDTO);
+        return applianceMapper.getApplianceDetail(id);
+    }
+
+    @Override
+    public void insertAppliance(ApplianceReqDTO applianceReqDTO) {
+        if (Objects.isNull(applianceReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = applianceMapper.selectApplianceIsExist(applianceReqDTO);
+        if (result > 0) {
+            throw new CommonException(ErrorCode.DATA_EXIST);
+        }
+        applianceReqDTO.setId(TokenUtil.getUuId());
+        applianceReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
+        result = applianceMapper.insertAppliance(applianceReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
         }
     }
 
     @Override
-    public void modifyType(ApplianceTypeReqDTO applianceTypeReqDTO) {
-        if (Objects.isNull(applianceTypeReqDTO)) {
+    public void modifyAppliance(ApplianceReqDTO applianceReqDTO) {
+        if (Objects.isNull(applianceReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        if (applianceTypeReqDTO.getStatus() == 1) {
-            Integer i = applianceMapper.selectHadChild(applianceTypeReqDTO.getId());
-            if (i > 0) {
-                throw new CommonException(ErrorCode.CANT_UPDATE_HAD_CHILD);
-            }
+        Integer result = applianceMapper.selectApplianceIsExist(applianceReqDTO);
+        if (result > 0) {
+            throw new CommonException(ErrorCode.DATA_EXIST);
         }
-        applianceTypeReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
-        Integer result = applianceMapper.modifyType(applianceTypeReqDTO);
+        applianceReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
+        result = applianceMapper.modifyAppliance(applianceReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
     }
 
     @Override
-    public void deleteType(ApplianceTypeReqDTO applianceTypeReqDTO) {
-        if (Objects.isNull(applianceTypeReqDTO)) {
+    public void deleteAppliance(ApplianceReqDTO applianceReqDTO) {
+        if (Objects.isNull(applianceReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        Integer i = applianceMapper.selectHadChild(applianceTypeReqDTO.getId());
-        if (i > 0) {
-            throw new CommonException(ErrorCode.CANT_DELETE_HAD_CHILD);
-        }
-        applianceTypeReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
-        Integer result = applianceMapper.deleteType(applianceTypeReqDTO);
+        applianceReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
+        Integer result = applianceMapper.deleteAppliance(applianceReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
@@ -107,39 +105,52 @@ public class ApplianceServiceImpl implements ApplianceService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void importAppliance(MultipartFile file) {
+    public void importApplianceConfig(MultipartFile file) {
         try {
             FileInputStream fileInputStream = new FileInputStream(FileUtils.transferToFile(file));
             XSSFWorkbook xssfWorkbook = new XSSFWorkbook(fileInputStream);
             XSSFSheet sheet = xssfWorkbook.getSheetAt(0);
-            List<ApplianceConfigReqDTO> temp = new ArrayList<>();
+            List<ApplianceConfigReqDTO> temp1 = new ArrayList<>();
+            List<ApplianceConfigReqDTO> temp2 = new ArrayList<>();
             for (Row cells : sheet) {
                 if (cells.getRowNum() < 1) {
                     continue;
                 }
                 ApplianceConfigReqDTO reqDTO = new ApplianceConfigReqDTO();
-                cells.getCell(0).setCellType(1);
-                reqDTO.setApplianceName(cells.getCell(0) == null ? null : cells.getCell(0).getStringCellValue());
                 cells.getCell(1).setCellType(1);
-                reqDTO.setApplianceCode(cells.getCell(1) == null ? null : cells.getCell(1).getStringCellValue());
-                cells.getCell(2).setCellType(1);
-                reqDTO.setApplianceType(cells.getCell(2) == null ? null : cells.getCell(2).getStringCellValue());
-                cells.getCell(3).setCellType(1);
-                reqDTO.setUserNo(cells.getCell(3) == null ? null : cells.getCell(3).getStringCellValue());
+                reqDTO.setYear(cells.getCell(1) == null ? null : Integer.valueOf(cells.getCell(1).getStringCellValue()));
                 cells.getCell(4).setCellType(1);
-                reqDTO.setUserName(cells.getCell(4) == null ? null : cells.getCell(4).getStringCellValue());
-                cells.getCell(5).setCellType(1);
-                reqDTO.setNum(cells.getCell(5) == null ? null : Integer.valueOf(cells.getCell(5).getStringCellValue()));
-                reqDTO.setReceivingTime(cells.getCell(6) == null ? null : cells.getCell(6).getDateCellValue());
-                reqDTO.setEffectiveTime(cells.getCell(7) == null ? null : cells.getCell(7).getDateCellValue());
+                reqDTO.setDeptName(cells.getCell(4) == null ? null : cells.getCell(4).getStringCellValue());
+                cells.getCell(6).setCellType(1);
+                reqDTO.setUserName(cells.getCell(6) == null ? null : cells.getCell(6).getStringCellValue());
+                cells.getCell(7).setCellType(1);
+                reqDTO.setWorkType(cells.getCell(7) == null ? null : cells.getCell(7).getStringCellValue());
                 cells.getCell(8).setCellType(1);
-                reqDTO.setRemark(cells.getCell(8) == null ? null : cells.getCell(8).getStringCellValue());
+                reqDTO.setHazardFactors(cells.getCell(8) == null ? null : cells.getCell(8).getStringCellValue());
+                cells.getCell(9).setCellType(1);
+                reqDTO.setApplianceName(cells.getCell(9) == null ? null : cells.getCell(9).getStringCellValue());
+                cells.getCell(10).setCellType(1);
+                reqDTO.setApplianceCode(cells.getCell(10) == null ? null : cells.getCell(10).getStringCellValue());
+                cells.getCell(11).setCellType(1);
+                reqDTO.setNum(cells.getCell(11) == null ? null : Integer.valueOf(cells.getCell(11).getStringCellValue()));
+                reqDTO.setReceivingTime(cells.getCell(13) == null ? null : cells.getCell(13).getDateCellValue());
+                reqDTO.setEffectiveTime(cells.getCell(14) == null ? null : cells.getCell(14).getDateCellValue());
+                cells.getCell(17).setCellType(1);
+                reqDTO.setChangeReason(cells.getCell(17) == null ? null : cells.getCell(17).getStringCellValue());
+                cells.getCell(18).setCellType(1);
+                reqDTO.setRemark(cells.getCell(18) == null ? null : cells.getCell(18).getStringCellValue());
                 reqDTO.setId(TokenUtil.getUuId());
                 reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-                temp.add(reqDTO);
+                if (reqDTO.getChangeReason() == null) {
+                    temp1.add(reqDTO);
+                } else {
+                    temp2.add(reqDTO);
+                }
             }
             fileInputStream.close();
-            applianceMapper.importAppliance(temp);
+
+            applianceMapper.importApplianceConfig(temp1);
+
         } catch (IOException e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
@@ -161,10 +172,17 @@ public class ApplianceServiceImpl implements ApplianceService {
         if (Objects.isNull(applianceConfigReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        applianceConfigReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-        Integer result = applianceMapper.changeAppliance(applianceConfigReqDTO);
-        if (result < 0) {
-            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        ApplianceConfigResDTO applianceConfigResDTO = applianceMapper.getApplianceConfigDetail(applianceConfigReqDTO.getId());
+        if (!Objects.isNull(applianceConfigResDTO)) {
+            applianceConfigResDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+            applianceConfigResDTO.setReceivingTime(applianceConfigReqDTO.getReceivingTime());
+            applianceConfigResDTO.setEffectiveTime(applianceConfigReqDTO.getEffectiveTime());
+            applianceConfigResDTO.setChangeReason(applianceConfigReqDTO.getChangeReason());
+            applianceConfigResDTO.setNum(applianceConfigReqDTO.getNum());
+            Integer result = applianceMapper.changeAppliance(applianceConfigResDTO);
+            if (result < 0) {
+                throw new CommonException(ErrorCode.UPDATE_ERROR);
+            }
         }
     }
 
@@ -183,6 +201,11 @@ public class ApplianceServiceImpl implements ApplianceService {
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
+    }
+
+    @Override
+    public List<ApplianceConfigResDTO> userArchives(String id) {
+        return applianceMapper.userArchives(id);
     }
 
 }

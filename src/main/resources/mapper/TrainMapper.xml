@@ -3,18 +3,18 @@
 <mapper namespace="com.security.info.manage.mapper.TrainMapper">
 
     <select id="listTrain" resultType="com.security.info.manage.dto.res.TrainResDTO">
-        select t.id, t.org_ids, group_concat(d.org_name) as org_names, t.content,
-        t.train_time, t.lecturer, t.pic, t.address
-        from t_train as t left join sys_dept as d on find_in_set(d.id,t.org_ids)>0
+        select t.id, t.user_ids, group_concat(d.real_name) as user_names, t.content,
+        t.train_time, t.lecturer, t.pic, t.address, t.courseware
+        from t_train as t left join sys_user_ext as d on find_in_set(d.user_id,t.user_ids)>0
         where t.is_delete=0
         group by t.id
         order by t.create_date desc
     </select>
 
     <select id="getTrainDetail" resultType="com.security.info.manage.dto.res.TrainResDTO">
-        select t.id, t.org_ids, group_concat(d.org_name) as org_names, t.content,
-        t.train_time, t.lecturer, t.pic, t.address
-        from t_train as t left join sys_dept as d on find_in_set(d.id,t.org_ids)>0
+        select t.id, t.user_ids, group_concat(d.real_name) as user_names, t.content,
+        t.train_time, t.lecturer, t.pic, t.address, t.courseware
+        from t_train as t left join sys_user_ext as d on find_in_set(d.user_id,t.user_ids)>0
         where t.is_delete=0 and t.id=#{id}
         group by t.id
     </select>
@@ -36,7 +36,7 @@
     <update id="modifyTrain">
         update t_train set
         <if test="orgIds!=null">
-            org_ids=#{orgIds},
+            user_ids=#{userIds},
         </if>
         <if test="content!=null">
             content=#{content},
@@ -53,14 +53,17 @@
         <if test="address!=null">
             address=#{address},
         </if>
+        <if test="courseware!=null">
+            courseware=#{courseware},
+        </if>
         update_by=#{userId}, update_date=now()
         where
         id=#{id} and is_delete=0
     </update>
 
     <insert id="addTrain">
-        INSERT INTO t_train (id, org_ids, content, train_time, lecturer, create_by, pic, address)
-        value (#{id}, #{orgIds}, #{content}, #{trainTime}, #{lecturer}, #{userId}, #{pic}, #{address})
+        INSERT INTO t_train (id, user_ids, content, train_time, lecturer, create_by, pic, address, courseware)
+        value (#{id}, #{userIds}, #{content}, #{trainTime}, #{lecturer}, #{userId}, #{pic}, #{address}, #{courseware})
     </insert>
 
     <update id="deleteTrain">
@@ -85,4 +88,18 @@
         </foreach>
         ;
     </delete>
+
+    <select id="userArchives" resultType="com.security.info.manage.dto.res.TrainDetailResDTO">
+        select td.id, td.train_id, td.user_id, ue.real_name as user_name, ue.user_no,
+        td.train_time, td.train_condition, td.train_score, d.org_name as dept_name, p.post_name
+        from t_train_detail as td
+        left join sys_user as u on u.id=td.user_id and u.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=td.user_id and ue.is_delete=0 and ue.status=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        left join sys_user_post as up on up.user_id=td.user_id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        where td.train_id=#{id} and td.is_delete=0 and td.user_id=#{id}
+        group by td.user_id
+        order by td.create_date desc
+    </select>
 </mapper>

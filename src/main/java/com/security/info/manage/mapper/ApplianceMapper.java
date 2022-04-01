@@ -2,6 +2,7 @@ package com.security.info.manage.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
+import com.security.info.manage.dto.req.ApplianceReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.req.TrainDetailReqDTO;
 import com.security.info.manage.dto.res.*;
@@ -17,27 +18,25 @@ import java.util.List;
 @Repository
 public interface ApplianceMapper {
 
-    List<ApplianceTypeTreeResDTO> getTypeRoot(Integer status);
+    Page<ApplianceResDTO> listAppliance(Page<ApplianceResDTO> page);
 
-    List<ApplianceTypeTreeResDTO> getTypeBody(Integer status);
+    ApplianceResDTO getApplianceDetail(String id);
 
-    ApplianceTypeTreeResDTO getTypeDetail(String id);
+    Integer selectApplianceIsExist(ApplianceReqDTO applianceReqDTO);
 
-    Integer selectHadChild(String id);
+    Integer insertAppliance(ApplianceReqDTO applianceReqDTO);
 
-    Integer addType(ApplianceTypeReqDTO applianceTypeReqDTO);
+    Integer modifyAppliance(ApplianceReqDTO applianceReqDTO);
 
-    Integer modifyType(ApplianceTypeReqDTO applianceTypeReqDTO);
+    Integer deleteAppliance(ApplianceReqDTO applianceReqDTO);
 
-    Integer deleteType(ApplianceTypeReqDTO applianceTypeReqDTO);
-
-    void importAppliance(List<ApplianceConfigReqDTO> list);
+    void importApplianceConfig(List<ApplianceConfigReqDTO> list);
 
     Page<ApplianceConfigResDTO> listApplianceConfig(Page<ApplianceConfigResDTO> page);
 
     ApplianceConfigResDTO getApplianceConfigDetail(String id);
 
-    Integer changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO);
+    Integer changeAppliance(ApplianceConfigResDTO applianceConfigResDTO);
 
     List<ApplianceConfigResDTO> listExpiredAppliance();
 
@@ -48,4 +47,6 @@ public interface ApplianceMapper {
     Page<ApplianceWarnResDTO> listApplianceWarn(Page<ApplianceWarnResDTO> page);
 
     Integer modifyApplianceWarn(String id);
+
+    List<ApplianceConfigResDTO> userArchives(String id);
 }

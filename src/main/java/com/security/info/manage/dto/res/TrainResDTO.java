@@ -17,11 +17,11 @@ public class TrainResDTO {
     @ApiModelProperty(value = "培训id")
     private String id;
 
-    @ApiModelProperty(value = "包含部门id")
-    private String orgIds;
+    @ApiModelProperty(value = "包含人员id")
+    private String userIds;
 
-    @ApiModelProperty(value = "包含部门id")
-    private String orgNames;
+    @ApiModelProperty(value = "包含人员姓名")
+    private String userNames;
 
     @ApiModelProperty(value = "培训内容")
     private String content;
@@ -39,6 +39,9 @@ public class TrainResDTO {
 
     @ApiModelProperty(value = "地点")
     private String address;
+
+    @ApiModelProperty(value = "培训课件")
+    private String courseware;
 
     @ApiModelProperty(value = "培训人")
     private String lecturer;

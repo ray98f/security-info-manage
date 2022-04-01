@@ -122,4 +122,10 @@ public class UserController {
         userService.modifyUserPost(postReqDTO);
         return DataResponse.success();
     }
+
+    @GetMapping("/info")
+    @ApiOperation(value = "修改用户岗位")
+    public DataResponse<UserResDTO> getUserInfo(@RequestParam String id){
+        return DataResponse.of(userService.getUserInfo(id));
+    }
 }

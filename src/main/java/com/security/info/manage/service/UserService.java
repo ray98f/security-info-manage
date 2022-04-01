@@ -76,4 +76,6 @@ public interface UserService {
     List<PostResDTO> listUserPost(String userId);
 
     void modifyUserPost(PostReqDTO postReqDTO);
+
+    UserResDTO getUserInfo(String id);
 }

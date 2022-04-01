@@ -48,6 +48,12 @@ public class RegionResDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "主要风险")
+    private String mainRisk;
+
+    @ApiModelProperty(value = "主要防控措施")
+    private String mainPrevent;
+
     @ApiModelProperty(value = "四色图")
     private String pic;
 

@@ -4,6 +4,7 @@ import com.security.info.manage.config.MinioConfig;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
+import com.security.info.manage.service.FileService;
 import com.security.info.manage.utils.FileUploadUtils;
 import com.security.info.manage.utils.MinioUtils;
 import com.security.info.manage.utils.TokenUtil;
@@ -35,6 +36,9 @@ public class FileController {
     private MinioConfig minioConfig;
 
     @Autowired
+    private FileService fileService;
+
+    @Autowired
     private MinioClient client;
 
     @Autowired
@@ -50,6 +54,7 @@ public class FileController {
         if (!minioUtils.bucketExists(bizCode)) {
             minioUtils.makeBucket(bizCode);
         }
+        String oldName = file.getOriginalFilename();
         String fileName = FileUploadUtils.extractFilename(file);
         PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(bizCode)
@@ -58,6 +63,8 @@ public class FileController {
                 .contentType(file.getContentType())
                 .build();
         client.putObject(args);
-        return minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
+        String url = minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
+        fileService.insertFile(url, bizCode, oldName);
+        return url;
     }
 }
