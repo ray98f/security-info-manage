@@ -32,10 +32,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FileUtils {
 
@@ -349,7 +346,7 @@ public class FileUtils {
         File file = null;
         try {
             String originalFilename = multipartFile.getOriginalFilename();
-            String[] filename = originalFilename.split("\\.");
+            String[] filename = Objects.requireNonNull(originalFilename).split("\\.");
             file = File.createTempFile(filename[0], filename[filename.length - 1]);
             multipartFile.transferTo(file);
             file.deleteOnExit();

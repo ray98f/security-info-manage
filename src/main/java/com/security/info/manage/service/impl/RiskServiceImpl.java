@@ -11,11 +11,20 @@ import com.security.info.manage.mapper.RiskMapper;
 import com.security.info.manage.service.RiskService;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Objects;
+
+import static com.security.info.manage.utils.Constants.XLS;
+import static com.security.info.manage.utils.Constants.XLSX;
 
 /**
  * @author frp
@@ -87,8 +96,31 @@ public class RiskServiceImpl implements RiskService {
     }
 
     @Override
-    public void importRisk(MultipartFile file) {
+    public void importRisk(MultipartFile file, Integer type) {
         // todo 风险分级导入
+        if (type == 1) {
+            try {
+                Workbook workbook;
+                String fileName = file.getOriginalFilename();
+                if (Objects.requireNonNull(fileName).endsWith(XLS)) {
+                    workbook = new HSSFWorkbook(file.getInputStream());
+                } else if (fileName.endsWith(XLSX)) {
+                    workbook = new XSSFWorkbook(file.getInputStream());
+                } else {
+                    throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+                }
+                Sheet sheet = Objects.requireNonNull(workbook).getSheet("sheet1");
+                int rows = sheet.getLastRowNum();
+                if(rows == 0){
+                    throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (type == 2) {
+
+        }
     }
 
 }

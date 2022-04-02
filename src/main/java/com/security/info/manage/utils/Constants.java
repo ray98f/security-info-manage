@@ -27,8 +27,9 @@ public class Constants {
 
     public static final String VX_GET_USER_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/list";
 
+    public static final String XLS = "xls";
 
-
+    public static final String XLSX = "xlsx";
 
     public static final long DAY_MILL = 86400000L;
 

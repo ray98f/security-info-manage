@@ -19,7 +19,10 @@ import com.security.info.manage.service.SpecialtyService;
 import com.security.info.manage.utils.FileUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.security.info.manage.utils.Constants.XLS;
+import static com.security.info.manage.utils.Constants.XLSX;
 
 /**
  * @author frp
@@ -89,9 +95,17 @@ public class SpecialtyServiceImpl implements SpecialtyService {
     @Override
     public void importSpecialty(MultipartFile file) {
         try {
+            Workbook workbook;
+            String fileName = file.getOriginalFilename();
             FileInputStream fileInputStream = new FileInputStream(FileUtils.transferToFile(file));
-            XSSFWorkbook xssfWorkbook = new XSSFWorkbook(fileInputStream);
-            XSSFSheet sheet = xssfWorkbook.getSheetAt(0);
+            if (Objects.requireNonNull(fileName).endsWith(XLS)) {
+                workbook = new HSSFWorkbook(fileInputStream);
+            } else if (fileName.endsWith(XLSX)) {
+                workbook = new XSSFWorkbook(fileInputStream);
+            } else {
+                throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+            }
+            Sheet sheet = workbook.getSheetAt(0);
             List<SpecialtyReqDTO> temp = new ArrayList<>();
             for (Row cells : sheet) {
                 if (cells.getRowNum() < 1) {

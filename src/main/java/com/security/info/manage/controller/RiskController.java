@@ -68,8 +68,8 @@ public class RiskController {
 
     @PostMapping("/import")
     @ApiOperation(value = "风险导入")
-    public DataResponse<T> importRisk(@RequestParam MultipartFile file) {
-        riskService.importRisk(file);
+    public DataResponse<T> importRisk(@RequestParam MultipartFile file, Integer type) {
+        riskService.importRisk(file, type);
         return DataResponse.success();
     }
 

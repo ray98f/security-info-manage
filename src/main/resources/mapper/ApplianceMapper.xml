@@ -152,7 +152,7 @@
 
     <select id="listApplianceWarn" resultType="com.security.info.manage.dto.res.ApplianceWarnResDTO">
         select aw.id, aw.info, aw.appliance_user_id, aw.status, aw.ring_time, d.org_name as dept_name,
-        p.post_name, ue.user_no, ue.real_name as user_name, a.name as appliance_name
+        p.post_name, ue.user_no, ue.real_name as user_name, a.name as appliance_name, auc.user_id
         from t_appliance_warning as aw
         left join t_appliance_user_config as auc on auc.id=aw.appliance_user_id and auc.is_delete=0
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
@@ -163,20 +163,6 @@
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
         where aw.is_delete=0
         order by aw.create_date desc
-    </select>
-
-    <select id="getApplianceWarnDetail" resultType="com.security.info.manage.dto.res.ApplianceWarnResDTO">
-        select aw.id, aw.info, aw.appliance_user_id, aw.status, aw.ring_time, d.org_name as dept_name,
-        p.post_name, ue.user_no, ue.real_name as user_name, a.name as appliance_name
-        from t_appliance_warning as aw
-        left join t_appliance_user_config as auc on auc.id=aw.appliance_user_id and auc.is_delete=0
-        left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
-        left join sys_user as u on u.id=auc.user_id and u.is_delete=0
-        left join sys_user_ext as ue on ue.user_id=auc.user_id and ue.status=0 and ue.is_delete=0
-        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
-        left join sys_user_post as up on up.user_id=auc.user_id
-        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
-        where aw.is_delete=0 and aw.id=#{id}
     </select>
 
     <update id="modifyApplianceWarn">

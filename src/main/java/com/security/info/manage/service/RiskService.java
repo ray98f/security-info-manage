@@ -21,6 +21,6 @@ public interface RiskService {
 
     void deleteRisk(RiskInfoReqDTO riskInfoReqDTO);
 
-    void importRisk(MultipartFile file);
+    void importRisk(MultipartFile file, Integer type);
 
 }

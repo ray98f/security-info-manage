@@ -98,12 +98,6 @@ public class ApplianceController {
         return PageResponse.of(applianceService.listApplianceWarn(pageReqDTO));
     }
 
-    @GetMapping("/warn/detail")
-    @ApiOperation(value = "获取劳保到期预警详情")
-    public DataResponse<ApplianceWarnResDTO> getApplianceWarnDetail(@RequestParam String id) {
-        return DataResponse.of(applianceService.getApplianceWarnDetail(id));
-    }
-
     @PostMapping("/warn/handle")
     @ApiOperation(value = "处理劳保到期预警")
     public DataResponse<T> handleApplianceWarn(@RequestBody ApplianceWarnResDTO applianceWarnResDTO) {

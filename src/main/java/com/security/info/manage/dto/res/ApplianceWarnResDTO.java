@@ -21,6 +21,9 @@ public class ApplianceWarnResDTO {
     @ApiModelProperty(value = "劳保配置id")
     private String applianceUserId;
 
+    @ApiModelProperty(value = "员工id")
+    private String userId;
+
     @ApiModelProperty(value = "工号")
     private String userNo;
 

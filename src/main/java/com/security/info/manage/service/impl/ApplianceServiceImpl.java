@@ -17,7 +17,10 @@ import com.security.info.manage.mapper.ApplianceMapper;
 import com.security.info.manage.service.ApplianceService;
 import com.security.info.manage.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.security.info.manage.utils.Constants.XLS;
+import static com.security.info.manage.utils.Constants.XLSX;
 
 /**
  * @author frp
@@ -107,9 +113,17 @@ public class ApplianceServiceImpl implements ApplianceService {
     @Transactional(rollbackFor = Exception.class)
     public void importApplianceConfig(MultipartFile file) {
         try {
+            Workbook workbook;
+            String fileName = file.getOriginalFilename();
             FileInputStream fileInputStream = new FileInputStream(FileUtils.transferToFile(file));
-            XSSFWorkbook xssfWorkbook = new XSSFWorkbook(fileInputStream);
-            XSSFSheet sheet = xssfWorkbook.getSheetAt(0);
+            if (Objects.requireNonNull(fileName).endsWith(XLS)) {
+                workbook = new HSSFWorkbook(fileInputStream);
+            } else if (fileName.endsWith(XLSX)) {
+                workbook = new XSSFWorkbook(fileInputStream);
+            } else {
+                throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+            }
+            Sheet sheet = workbook.getSheetAt(0);
             List<ApplianceConfigReqDTO> temp = new ArrayList<>();
             for (Row cells : sheet) {
                 if (cells.getRowNum() < 1) {
@@ -187,14 +201,6 @@ public class ApplianceServiceImpl implements ApplianceService {
     public Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         return applianceMapper.listApplianceWarn(pageReqDTO.of());
-    }
-
-    @Override
-    public ApplianceWarnResDTO getApplianceWarnDetail(String id) {
-        if (Objects.isNull(id)) {
-            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
-        }
-        return applianceMapper.getApplianceWarnDetail(id);
     }
 
     @Override
