@@ -17,12 +17,12 @@ public interface TransportService {
 
     List<TransportResDTO> listAllTransport();
 
-    void modifyTransport(TransportReqDTO riskApplianceReqDTO);
+    void modifyTransport(TransportReqDTO transportReqDTO);
 
-    void addTransport(TransportReqDTO riskApplianceReqDTO);
+    void addTransport(TransportReqDTO transportReqDTO);
 
     void importTransport(MultipartFile file);
 
-    void deleteTransport(TransportReqDTO riskApplianceReqDTO);
+    void deleteTransport(TransportReqDTO transportReqDTO);
 
 }

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.ConstructionMapper">
+
+    <select id="listConstructionType" resultType="com.security.info.manage.dto.res.ConstructionTypeResDTO">
+        select id, name, status, create_date, parent_id
+        from t_construction_type
+        where is_delete=0
+        order by create_date asc
+    </select>
+
+    <select id="listAllConstructionType" resultType="com.security.info.manage.dto.res.ConstructionTypeResDTO">
+        select id, name, status, create_date, parent_id
+        from t_construction_type
+        where is_delete=0
+        order by create_date asc
+    </select>
+
+    <select id="selectConstructionTypeIsExist" resultType="java.lang.Integer">
+        SELECT count(1) FROM t_construction_type WHERE name=#{name} and parent_id=#{parentId} and is_delete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <update id="modifyConstructionType">
+        update t_construction_type set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="parentId!=null">
+            parent_id=#{parentId},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{userId}, update_date=now()
+        where
+        id=#{id} and is_delete=0
+    </update>
+
+    <insert id="addConstructionType">
+        INSERT INTO t_construction_type (id, name, create_by, status, parent_id)
+        select #{id}, #{name}, #{userId}, #{status}, #{parentId}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_construction_type WHERE name=#{name} and parent_id=#{parentId} and is_delete=0)
+    </insert>
+
+    <update id="deleteConstructionType">
+        update t_construction_type set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <select id="listWeekPlan" resultType="com.security.info.manage.dto.res.WeekPlanResDTO">
+        select id, name, start_time, end_time
+        from t_weak_plan
+        where is_delete=0
+        order by create_date asc
+    </select>
+
+    <select id="selectWeekPlanIsExist" resultType="java.lang.Integer">
+        SELECT count(1) FROM t_weak_plan WHERE name=#{name} and is_delete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <update id="modifyWeekPlan">
+        update t_weak_plan set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="startTime!=null">
+            start_time=#{startTime},
+        </if>
+        <if test="endTime!=null">
+            end_time=#{endTime},
+        </if>
+        update_by=#{userId}, update_date=now()
+        where
+        id=#{id} and is_delete=0
+    </update>
+
+    <insert id="addWeekPlan">
+        INSERT INTO t_weak_plan (id, name, start_time, end_time, create_by)
+        select #{id}, #{name}, #{startTime}, #{endTime}, #{userId}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_weak_plan WHERE name=#{name} and is_delete=0)
+    </insert>
+
+    <update id="deleteWeekPlan">
+        update t_weak_plan set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <select id="listConstruction" resultType="com.security.info.manage.dto.res.ConstructionResDTO">
+        select c.id, c.plan_id, c.type_id, c.date, c.sort, c.no, c.org_id, c.start_time, c.end_time, c.is_day, c.name, c.region,
+        c.electric_arrange, c.protect_measures, c.coordination_requirement, c.user_id, c.phone, c.remark, c.status,
+        ct.name as type_name, wp.name as plan_name, d.org_name as org_name, ue.real_name as user_name
+        from t_construction as c
+        left join t_construction_type as ct on c.type_id=ct.id and ct.is_delete=0
+        left join t_weak_plan as wp on c.plan_id=wp.id and wp.is_delete=0
+        left join sys_dept as d on c.org_id=d.id and d.is_delete=0
+        left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
+        where c.plan_id=#{planId} and c.is_delete=0
+        order by c.sort
+    </select>
+
+    <insert id="addConstruction">
+        insert into t_construction(id, plan_id, type_id, date, sort, no, org_id, start_time, end_time, is_day, name, region,
+        electric_arrange, protect_measures, coordination_requirement, user_id, phone, remark, status, create_by)
+        value (#{id}, #{planId}, #{typeId}, #{date}, #{sort}, #{no}, #{orgId}, #{startTime}, #{endTime}, #{isDay}, #{name}, #{region},
+        #{electricArrange}, #{protectMeasures}, #{coordinationRequirement}, #{userId}, #{phone}, #{remark}, #{status}, #{createBy})
+    </insert>
+
+    <insert id="importConstruction">
+        insert into t_construction(id, plan_id, type_id, date, sort, no, org_id, start_time, end_time, is_day, name, region,
+        electric_arrange, protect_measures, coordination_requirement, user_id, phone, remark, status, create_by) values
+        <foreach collection="list" index="index" item="c" separator=",">
+            (#{c.id}, (select id from t_weak_plan where name=#{c.planName} and is_delete=0),
+            (select id from t_construction_type where name=#{c.typeName} and is_delete=0),
+            #{c.date}, #{c.sort}, #{c.no}, (select id from sys_dept where org_name=#{c.orgName} and is_delete=0),
+            #{c.startTime}, #{c.endTime}, #{c.isDay}, #{c.name}, #{c.region},
+            #{c.electricArrange}, #{c.protectMeasures}, #{c.coordinationRequirement},
+            (select user_id from sys_user_ext where real_name=#{c.userName} and is_delete=0),
+            #{c.phone}, #{c.remark}, #{c.status}, #{c.createBy})
+        </foreach>
+    </insert>
+</mapper>
