@@ -1,12 +1,14 @@
 package com.security.info.manage.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.security.info.manage.entity.File;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author frp
@@ -43,6 +45,12 @@ public class PostChangeListResDTO {
 
     @ApiModelProperty(value = "新岗位名称")
     private String newPostName;
+
+    @ApiModelProperty(value = "文件id组")
+    private String files;
+
+    @ApiModelProperty(value = "文件列表")
+    private List<File> fileList;
 
     @ApiModelProperty(value = "告警状态(0待处理;1已处理)")
     private Integer status;

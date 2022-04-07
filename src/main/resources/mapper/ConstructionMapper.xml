@@ -106,7 +106,10 @@
         left join t_weak_plan as wp on c.plan_id=wp.id and wp.is_delete=0
         left join sys_dept as d on c.org_id=d.id and d.is_delete=0
         left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
-        where c.plan_id=#{planId} and c.is_delete=0
+        where c.is_delete=0
+        <if test="planId!=null and planId!=''">
+            and c.plan_id=#{planId}
+        </if>
         order by c.date asc, c.sort asc, c.create_date desc
     </select>
 

@@ -10,6 +10,7 @@ import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.PostWarnResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
+import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.PostMapper;
 import com.security.info.manage.service.PostService;
 import com.security.info.manage.utils.TokenUtil;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +31,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostMapper postMapper;
+
+    @Autowired
+    private FileMapper fileMapper;
 
     @Override
     public Page<PostResDTO> listPost(String name, Integer status, PageReqDTO pageReqDTO) {
@@ -111,7 +116,13 @@ public class PostServiceImpl implements PostService {
         if (Objects.isNull(id)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        return postMapper.userArchives(id);
+        List<PostChangeListResDTO> list = postMapper.userArchives(id);
+        if (list != null && !list.isEmpty()) {
+            for (PostChangeListResDTO postChangeListResDTO : list) {
+                postChangeListResDTO.setFileList(fileMapper.selectFileInfo(Arrays.asList(postChangeListResDTO.getFiles().split(","))));
+            }
+        }
+        return list;
     }
 
 }

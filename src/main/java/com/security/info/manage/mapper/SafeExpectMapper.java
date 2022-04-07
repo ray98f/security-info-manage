@@ -26,6 +26,8 @@ public interface SafeExpectMapper {
 
     SafeExpectInfoResDTO getSafeExpectInfoDetail(String id);
 
+    SafeExpectInfoResDTO exportSafeExpectInfo(String id);
+
     SafeExpectCollectionUnionResDTO getSafeExpectCollectionUnionDetail(String id);
 
     Integer selectSafeExpectIsExist(SafeExpectReqDTO safeExpectReqDTO);

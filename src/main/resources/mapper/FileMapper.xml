@@ -6,4 +6,13 @@
         insert into sys_file(id, file_name, biz_code, file_url, create_by)
         value (#{id}, #{name}, #{bizCode}, #{url}, #{doName})
     </insert>
+
+    <select id="selectFileInfo" resultType="com.security.info.manage.entity.File">
+        select id, file_name, biz_code, file_url, create_by from sys_file
+        where id in (
+        <foreach collection="list" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+        ) and is_delete=0
+    </select>
 </mapper>

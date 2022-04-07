@@ -101,7 +101,7 @@ public class ConstructionController {
 
     @GetMapping("/list")
     @ApiOperation(value = "获取施工作业列表")
-    public PageResponse<ConstructionResDTO> listConstruction(@RequestParam @ApiParam(value = "周计划id") String planId,
+    public PageResponse<ConstructionResDTO> listConstruction(@RequestParam(required = false) @ApiParam(value = "周计划id") String planId,
                                                              @Valid PageReqDTO pageReqDTO) {
         return PageResponse.of(constructionService.listConstruction(planId, pageReqDTO));
     }

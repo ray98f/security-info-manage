@@ -58,7 +58,7 @@ public class SafeExpectServiceImpl implements SafeExpectService {
             throw new CommonException(ErrorCode.DATA_EXIST);
         }
         safeExpectReqDTO.setId(TokenUtil.getUuId());
-        safeExpectReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
+        safeExpectReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
         result = safeExpectMapper.addSafeExpect(safeExpectReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
@@ -76,14 +76,14 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         if (Objects.isNull(safeExpectModifyReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectInfoReqDTO())) {
-            Integer result = safeExpectMapper.modifySafeExpectInfo(safeExpectModifyReqDTO.getSafeExpectInfoReqDTO());
+        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectInfo())) {
+            Integer result = safeExpectMapper.modifySafeExpectInfo(safeExpectModifyReqDTO.getSafeExpectInfo());
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
             }
         }
-        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectCollectionUnionReqDTO())) {
-            Integer result = safeExpectMapper.modifySafeExpectCollectionUnion(safeExpectModifyReqDTO.getSafeExpectCollectionUnionReqDTO());
+        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectCollectionUnion())) {
+            Integer result = safeExpectMapper.modifySafeExpectCollectionUnion(safeExpectModifyReqDTO.getSafeExpectCollectionUnion());
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
             }

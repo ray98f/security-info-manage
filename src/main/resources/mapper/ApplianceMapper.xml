@@ -3,17 +3,17 @@
 <mapper namespace="com.security.info.manage.mapper.ApplianceMapper">
 
     <select id="listAppliance" resultType="com.security.info.manage.dto.res.ApplianceResDTO">
-        select a.id, a.type, a.code, a.name, a.manufacturer, a.certificate, f.file_name as certificate_name, a.unit
+        select a.id, a.type, a.code, a.name, a.manufacturer, f.file_url as certificate, f.file_name as certificate_name, a.unit
         from t_appliance as a
-        left join sys_file as f on f.file_url=a.certificate and f.is_delete=0
+        left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where a.is_delete=0
         order by a.create_date desc
     </select>
 
     <select id="getApplianceDetail" resultType="com.security.info.manage.dto.res.ApplianceResDTO">
-        select a.id, a.type, a.code, a.name, a.manufacturer, a.certificate, f.file_name as certificate_name, a.unit
+        select a.id, a.type, a.code, a.name, a.manufacturer, f.file_url as certificate, f.file_name as certificate_name, a.unit
         from t_appliance as a
-        left join sys_file as f on f.file_url=a.certificate and f.is_delete=0
+        left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where a.is_delete=0 and a.id=#{id}
     </select>
 
@@ -97,12 +97,13 @@
     <select id="listApplianceConfig" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
-        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
+        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
         left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0
         order by auc.create_date desc
     </select>
@@ -110,12 +111,13 @@
     <select id="getApplianceConfigDetail" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
-        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
+        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
         left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0 and auc.id=#{id}
     </select>
 
@@ -170,12 +172,13 @@
     <select id="userArchives" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
-        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, a.certificate, a.unit,
+        a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
         left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0 and auc.user_id=#{id}
         order by auc.create_date desc
     </select>

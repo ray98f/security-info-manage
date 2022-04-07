@@ -23,8 +23,21 @@
 
     <select id="getSafeExpectInfoDetail" resultType="com.security.info.manage.dto.res.SafeExpectInfoResDTO">
         select s.id, s.safe_expect_id, s.weather, s.work_temperature, s.wind_power, s.relative_humidity, s.work_content,
+        s.work_environment, s.safe_tools, s.transport_modes, s.overhaul_equipment_status,
+        s.describe_person_factor, s.describe_object_factor, s.describe_environment_factor, s.describe_manage_factor,
+        s.describe_may_occur, s.describe_occupational_hazards,
+        s.risk_level, s.risk_control_measures, s.work_attention_matter, s.safe_technical_disclosure
+        from t_safe_expect_info as s
+        where s.is_delete=0 and s.safe_expect_id=#{id}
+        group by s.id
+    </select>
+
+    <select id="exportSafeExpectInfo" resultType="com.security.info.manage.dto.res.SafeExpectInfoResDTO">
+        select s.id, s.safe_expect_id, s.weather, s.work_temperature, s.wind_power, s.relative_humidity, s.work_content,
         s.work_environment, group_concat(r.name) as safe_tools, group_concat(t.name) as transport_modes, s.overhaul_equipment_status,
-        s.risk_description_level, s.risk_control_measures, s.work_attention_matter, s.safe_technical_disclosure
+        s.describe_person_factor, s.describe_object_factor, s.describe_environment_factor, s.describe_manage_factor,
+        s.describe_may_occur, s.describe_occupational_hazards,
+        s.risk_level, s.risk_control_measures, s.work_attention_matter, s.safe_technical_disclosure
         from t_safe_expect_info as s
         left join t_transport as t on find_in_set(t.id,s.transport_modes)>0 and t.is_delete=0
         left join t_risk_appliance as r on find_in_set(r.id,s.safe_tools)>0 and r.is_delete=0
@@ -64,17 +77,22 @@
 
     <insert id="modifySafeExpectInfo">
         INSERT INTO t_safe_expect_info (id, safe_expect_id, weather, work_temperature, wind_power, relative_humidity,
-        work_content, work_environment, safe_tools, transport_modes, overhaul_equipment_status, risk_description_level,
-        risk_control_measures, work_attention_matter, safe_technical_disclosure, create_by)
+        work_content, work_environment, safe_tools, transport_modes, overhaul_equipment_status, describe_person_factor,
+        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur, describe_occupational_hazards,
+        risk_level, risk_control_measures, work_attention_matter, safe_technical_disclosure, create_by)
         select replace(uuid(),"-",""), #{safeExpectId}, #{weather}, #{workTemperature}, #{windPower}, #{relativeHumidity},
-        #{workContent}, #{workEnvironment}, #{safeTools}, #{transportModes}, #{overhaulEquipmentStatus}, #{riskDescriptionLevel},
-        #{riskControlMeasures},  #{workAttentionMatter},  #{safeTechnicalDisclosure}, #{createBy}
+        #{workContent}, #{workEnvironment}, #{safeTools}, #{transportModes}, #{overhaulEquipmentStatus}, #{describePersonFactor},
+        #{describeObjectFactor}, #{describeEnvironmentFactor}, #{describeManageFactor}, #{describeMayOccur}, #{describeOccupationalHazards},
+        #{riskLevel}, #{riskControlMeasures},  #{workAttentionMatter},  #{safeTechnicalDisclosure}, #{createBy}
         FROM DUAL
         WHERE not exists (SELECT id FROM t_safe_expect_info WHERE safe_expect_id=#{safeExpectId} and is_delete=0);
         update t_safe_expect_info set
         weather=#{weather}, work_temperature=#{workTemperature}, wind_power=#{windPower}, relative_humidity=#{relativeHumidity},
         work_content=#{workContent}, work_environment=#{workEnvironment}, safe_tools=#{safeTools}, transport_modes=#{transportModes},
-        overhaul_equipment_status=#{overhaulEquipmentStatus}, risk_description_level=#{riskDescriptionLevel}, risk_control_measures=#{riskControlMeasures},
+        overhaul_equipment_status=#{overhaulEquipmentStatus}, describe_person_factor=#{describePersonFactor},
+        describe_object_factor=#{describeObjectFactor}, describe_environment_factor=#{describeEnvironmentFactor},
+        describe_manage_factor=#{describeManageFactor}, describe_may_occur=#{describeMayOccur},
+        describe_occupational_hazards=#{describeOccupationalHazards}, risk_level=#{riskLevel},
         work_attention_matter=#{workAttentionMatter}, safe_technical_disclosure=#{safeTechnicalDisclosure}, update_by=#{createBy}
         where safe_expect_id=#{safeExpectId} and is_delete=0
     </insert>

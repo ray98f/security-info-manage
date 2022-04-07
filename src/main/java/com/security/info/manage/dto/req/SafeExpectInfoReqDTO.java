@@ -42,8 +42,26 @@ public class SafeExpectInfoReqDTO {
     @ApiModelProperty(value = "检修时的设备状态")
     private String overhaulEquipmentStatus;
 
-    @ApiModelProperty(value = "风险描述与等级")
-    private String riskDescriptionAndLevel;
+    @ApiModelProperty(value = "风险描述-人的因素(作业风险类型)")
+    private String describePersonFactor;
+
+    @ApiModelProperty(value = "风险描述-物的因素(作业风险类型)")
+    private String describeObjectFactor;
+
+    @ApiModelProperty(value = "风险描述-环境因素(作业风险类型)")
+    private String describeEnvironmentFactor;
+
+    @ApiModelProperty(value = "风险描述-管理因素(作业风险类型)")
+    private String describeManageFactor;
+
+    @ApiModelProperty(value = "风险描述-本次作业可能发生(作业风险类型)")
+    private String describeMayOccur;
+
+    @ApiModelProperty(value = "风险描述-职业病危害因素(作业风险类型)")
+    private String describeOccupationalHazards;
+
+    @ApiModelProperty(value = "风险等级")
+    private String riskLevel;
 
     @ApiModelProperty(value = "风险管控措施")
     private String riskControlMeasures;
