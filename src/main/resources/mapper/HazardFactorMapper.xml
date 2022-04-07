@@ -17,14 +17,12 @@
     </select>
 
     <insert id="importHazardFactor">
-        <if test="list.size()>0">
-            insert into t_hazard_factor(id, name, before_check_proj, on_check_proj, after_check_proj, check_cycle,
-            health_check, after_check, contraindication, create_by) values
-            <foreach collection="list" index="index" item="hazardFactor" separator=",">
-                (#{hazardFactor.id}, #{hazardFactor.name}, #{hazardFactor.beforeCheckProj}, #{hazardFactor.onCheckProj}, #{hazardFactor.afterCheckProj},
-                #{hazardFactor.checkCycle}, #{hazardFactor.healthCheck}, #{hazardFactor.afterCheck}, #{hazardFactor.contraindication}, #{hazardFactor.createBy})
-            </foreach>
-        </if>
+        insert into t_hazard_factor(id, name, before_check_proj, on_check_proj, after_check_proj, check_cycle,
+        health_check, after_check, contraindication, create_by) values
+        <foreach collection="list" index="index" item="hazardFactor" separator=",">
+            (#{hazardFactor.id}, #{hazardFactor.name}, #{hazardFactor.beforeCheckProj}, #{hazardFactor.onCheckProj}, #{hazardFactor.afterCheckProj},
+            #{hazardFactor.checkCycle}, #{hazardFactor.healthCheck}, #{hazardFactor.afterCheck}, #{hazardFactor.contraindication}, #{hazardFactor.createBy})
+        </foreach>
     </insert>
 
     <insert id="addHazardFactor">
@@ -39,13 +37,11 @@
     </select>
 
     <insert id="addPostHazardFactor">
-        <if test="hazardFactorIds.size()>0">
-            insert into t_post_hazard_config(id, post_id, hazard_id)
-            values
-            <foreach collection="hazardFactorIds" index="index" item="hazardFactorId" separator=",">
-                (replace(uuid(),"-",""), #{postId}, #{hazardFactorId})
-            </foreach>
-        </if>
+        insert into t_post_hazard_config(id, post_id, hazard_id)
+        values
+        <foreach collection="hazardFactorIds" index="index" item="hazardFactorId" separator=",">
+            (replace(uuid(),"-",""), #{postId}, #{hazardFactorId})
+        </foreach>
     </insert>
 
     <delete id="modifyPostHazardFactor">

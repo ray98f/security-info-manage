@@ -107,27 +107,29 @@
         left join sys_dept as d on c.org_id=d.id and d.is_delete=0
         left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
         where c.plan_id=#{planId} and c.is_delete=0
-        order by c.sort
+        order by c.date asc, c.sort asc, c.create_date desc
     </select>
 
     <insert id="addConstruction">
         insert into t_construction(id, plan_id, type_id, date, sort, no, org_id, start_time, end_time, is_day, name, region,
-        electric_arrange, protect_measures, coordination_requirement, user_id, phone, remark, status, create_by)
+        electric_arrange, protect_measures, coordination_requirement, user_id, phone, remark, create_by)
         value (#{id}, #{planId}, #{typeId}, #{date}, #{sort}, #{no}, #{orgId}, #{startTime}, #{endTime}, #{isDay}, #{name}, #{region},
-        #{electricArrange}, #{protectMeasures}, #{coordinationRequirement}, #{userId}, #{phone}, #{remark}, #{status}, #{createBy})
+        #{electricArrange}, #{protectMeasures}, #{coordinationRequirement},
+        (select user_id from sys_user_ext where real_name=#{userName} and is_delete=0), #{phone}, #{remark}, #{createBy})
     </insert>
 
     <insert id="importConstruction">
+        delete from t_construction where plan_id=#{planId} and is_delete=0;
         insert into t_construction(id, plan_id, type_id, date, sort, no, org_id, start_time, end_time, is_day, name, region,
-        electric_arrange, protect_measures, coordination_requirement, user_id, phone, remark, status, create_by) values
+        electric_arrange, protect_measures, coordination_requirement, user_id, phone, remark, create_by) values
         <foreach collection="list" index="index" item="c" separator=",">
-            (#{c.id}, (select id from t_weak_plan where name=#{c.planName} and is_delete=0),
-            (select id from t_construction_type where name=#{c.typeName} and is_delete=0),
+            (#{c.id}, #{planId}, (select id from t_construction_type where name=#{c.typeName} and is_delete=0),
             #{c.date}, #{c.sort}, #{c.no}, (select id from sys_dept where org_name=#{c.orgName} and is_delete=0),
             #{c.startTime}, #{c.endTime}, #{c.isDay}, #{c.name}, #{c.region},
             #{c.electricArrange}, #{c.protectMeasures}, #{c.coordinationRequirement},
             (select user_id from sys_user_ext where real_name=#{c.userName} and is_delete=0),
-            #{c.phone}, #{c.remark}, #{c.status}, #{c.createBy})
+            #{c.phone}, #{c.remark}, #{c.createBy})
         </foreach>
+        ;
     </insert>
 </mapper>

@@ -18,22 +18,20 @@
     </select>
 
     <insert id="insertUser" parameterType="com.security.info.manage.dto.res.VxUserResDTO">
-        <if test="list.size()>0">
-            <foreach collection="list" index="index" item="user" separator=";">
-                insert into sys_user(id, name, mobile, telephone, email, biz_mail, status,
-                open_userid, main_dept, avatar, thumb_avatar, qr_code, address, gender, create_by)
-                SELECT
-                #{user.userid}, #{user.name}, #{user.mobile}, #{user.telephone}, #{user.email}, #{user.biz_mail}, #{user.status},
-                #{user.open_userid}, #{user.main_department}, #{user.avatar}, #{user.thumb_avatar}, #{user.qr_code}, #{user.address},
-                #{user.gender}, #{doName}
-                FROM DUAL
-                WHERE not exists (SELECT id FROM sys_user WHERE id=#{user.userid} and is_delete=0);
-                insert into sys_user_ext(id, user_id, real_name, create_by)
-                SELECT replace(uuid(),"-",""), #{user.userid}, #{user.name}, #{doName}
-                FROM DUAL
-                WHERE not exists (SELECT id FROM sys_user_ext WHERE user_id=#{user.userid} and is_delete=0)
-            </foreach>
-        </if>
+        <foreach collection="list" index="index" item="user" separator=";">
+            insert into sys_user(id, name, mobile, telephone, email, biz_mail, status,
+            open_userid, main_dept, avatar, thumb_avatar, qr_code, address, gender, create_by)
+            SELECT
+            #{user.userid}, #{user.name}, #{user.mobile}, #{user.telephone}, #{user.email}, #{user.biz_mail}, #{user.status},
+            #{user.open_userid}, #{user.main_department}, #{user.avatar}, #{user.thumb_avatar}, #{user.qr_code}, #{user.address},
+            #{user.gender}, #{doName}
+            FROM DUAL
+            WHERE not exists (SELECT id FROM sys_user WHERE id=#{user.userid} and is_delete=0);
+            insert into sys_user_ext(id, user_id, real_name, create_by)
+            SELECT replace(uuid(),"-",""), #{user.userid}, #{user.name}, #{doName}
+            FROM DUAL
+            WHERE not exists (SELECT id FROM sys_user_ext WHERE user_id=#{user.userid} and is_delete=0)
+        </foreach>
     </insert>
 
     <select id="selectUserIds" resultType="java.lang.String">
@@ -41,18 +39,16 @@
     </select>
 
     <update id="deleteUser">
-        <if test="list.size()>0">
-            update sys_user set is_delete=1, update_by=#{doName} where id in (
-            <foreach collection="list" index="index" item="id" separator=",">
-                #{id}
-            </foreach>
-            );
-            update sys_user_ext set is_delete=1, update_by=#{doName} where user_id in (
-            <foreach collection="list" index="index" item="id" separator=",">
-                #{id}
-            </foreach>
-            );
-        </if>
+        update sys_user set is_delete=1, update_by=#{doName} where id in (
+        <foreach collection="list" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+        );
+        update sys_user_ext set is_delete=1, update_by=#{doName} where user_id in (
+        <foreach collection="list" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+        );
     </update>
 
     <insert id="insertUserRole">

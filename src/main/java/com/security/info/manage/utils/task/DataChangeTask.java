@@ -39,8 +39,10 @@ public class DataChangeTask {
             for (ApplianceConfigResDTO applianceConfigResDTO : list) {
                 applianceConfigResDTO.setUserName(applianceConfigResDTO.getUserName() + "的劳保用品即将到期预警");
             }
+            if (list.size() > 0) {
+                applianceMapper.addApplianceWarning(list, TokenUtil.getCurrentPersonNo());
+            }
         }
-        applianceMapper.addApplianceWarning(list, TokenUtil.getCurrentPersonNo());
     }
 
     @Scheduled(cron = "0 0 0 * * ?")

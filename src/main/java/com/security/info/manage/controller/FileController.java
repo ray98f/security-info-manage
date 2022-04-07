@@ -2,6 +2,7 @@ package com.security.info.manage.controller;
 
 import com.security.info.manage.config.MinioConfig;
 import com.security.info.manage.dto.DataResponse;
+import com.security.info.manage.entity.File;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.service.FileService;
@@ -46,11 +47,11 @@ public class FileController {
 
     @PostMapping("/upload")
     @ApiOperation(value = "文件上传")
-    public DataResponse<String> fileUpload(@RequestParam MultipartFile file, String bizCode) throws Exception {
+    public DataResponse<File> fileUpload(@RequestParam MultipartFile file, String bizCode) throws Exception {
         return DataResponse.of(uploadFile(file, bizCode));
     }
 
-    public String uploadFile(MultipartFile file, String bizCode) throws Exception {
+    public File uploadFile(MultipartFile file, String bizCode) throws Exception {
         if (!minioUtils.bucketExists(bizCode)) {
             minioUtils.makeBucket(bizCode);
         }
@@ -64,7 +65,6 @@ public class FileController {
                 .build();
         client.putObject(args);
         String url = minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
-        fileService.insertFile(url, bizCode, oldName);
-        return url;
+        return fileService.insertFile(url, bizCode, oldName);
     }
 }

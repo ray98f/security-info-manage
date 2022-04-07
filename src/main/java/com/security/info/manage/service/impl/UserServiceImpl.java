@@ -108,11 +108,15 @@ public class UserServiceImpl implements UserService {
                 List<String> userIds = userMapper.selectUserIds();
                 if (userIds != null && !userIds.isEmpty()) {
                     userIds.removeAll(userAllList.stream().map(VxUserResDTO::getUserid).collect(Collectors.toList()));
-                    userMapper.deleteUser(userIds, TokenUtil.getCurrentPersonNo());
+                    if (userIds.size() > 0) {
+                        userMapper.deleteUser(userIds, TokenUtil.getCurrentPersonNo());
+                    }
                 }
-                userMapper.insertUser(userAllList, TokenUtil.getCurrentPersonNo());
+                if (userAllList.size() > 0) {
+                    userMapper.insertUser(userAllList, TokenUtil.getCurrentPersonNo());
 //                    postMapper.insertPost(userList, TokenUtil.getCurrentPersonNo());
 //                    postMapper.insertUserPost(userList);
+                }
             }
         }
     }

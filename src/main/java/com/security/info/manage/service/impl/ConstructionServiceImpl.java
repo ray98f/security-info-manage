@@ -1,8 +1,10 @@
 package com.security.info.manage.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
+import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
 import com.security.info.manage.dto.req.ConstructionReqDTO;
 import com.security.info.manage.dto.req.ConstructionTypeReqDTO;
 import com.security.info.manage.dto.req.WeekPlanReqDTO;
@@ -13,14 +15,29 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.ConstructionMapper;
 import com.security.info.manage.service.ConstructionService;
+import com.security.info.manage.utils.DateUtils;
+import com.security.info.manage.utils.FileUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Objects;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.security.info.manage.utils.Constants.XLS;
+import static com.security.info.manage.utils.Constants.XLSX;
 
 /**
  * @author frp
@@ -160,7 +177,90 @@ public class ConstructionServiceImpl implements ConstructionService {
     }
 
     @Override
-    public void importConstruction(MultipartFile file) {
-        // todo 施工作业导入
+    public void importConstruction(MultipartFile file, String planId) {
+        try {
+            Workbook workbook;
+            String fileName = file.getOriginalFilename();
+            FileInputStream fileInputStream = new FileInputStream(FileUtils.transferToFile(file));
+            if (Objects.requireNonNull(fileName).endsWith(XLS)) {
+                workbook = new HSSFWorkbook(fileInputStream);
+            } else if (fileName.endsWith(XLSX)) {
+                workbook = new XSSFWorkbook(fileInputStream);
+            } else {
+                throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+            }
+            Sheet sheet = workbook.getSheetAt(0);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat dayDate = new SimpleDateFormat("yyyy-MM-dd");
+            String day = "";
+            String typeName = "";
+            List<ConstructionReqDTO> temp = new ArrayList<>();
+            for (Row cells : sheet) {
+                if (cells.getRowNum() < 1) {
+                    continue;
+                }
+                Calendar cal = Calendar.getInstance();
+                cells.getCell(0).setCellType(1);
+                if (cells.getCell(0).getStringCellValue().contains("月")) {
+                    day = cal.get(Calendar.YEAR) + "年" + cells.getCell(0).getStringCellValue().split("星期")[0];
+                    Date date = new SimpleDateFormat("yyyy年MM月dd日").parse(day);
+                    day = new SimpleDateFormat("yyyy-MM-dd").format(date);
+                    continue;
+                } else if (cells.getCell(1) == null || "".equals(cells.getCell(1).getStringCellValue())) {
+                    typeName = cells.getCell(0).getStringCellValue();
+                    continue;
+                } else if ("序号".equals(cells.getCell(0).getStringCellValue())) {
+                    continue;
+                }
+                ConstructionReqDTO reqDTO = new ConstructionReqDTO();
+                reqDTO.setDate(dayDate.parse(day));
+                cal.setTime(dayDate.parse(day));
+                cells.getCell(0).setCellType(1);
+                reqDTO.setSort(cells.getCell(0) == null ? null : Integer.valueOf(cells.getCell(0).getStringCellValue()));
+                cells.getCell(1).setCellType(1);
+                reqDTO.setNo(cells.getCell(1) == null ? null : cells.getCell(1).getStringCellValue());
+                cells.getCell(2).setCellType(1);
+                reqDTO.setOrgName(cells.getCell(2) == null ? null : cells.getCell(2).getStringCellValue());
+                cells.getCell(3).setCellType(1);
+                String workDate = cells.getCell(3) == null ? null : cells.getCell(3).getStringCellValue();
+                if (Objects.requireNonNull(workDate).contains("次日")) {
+                    reqDTO.setIsDay(1);
+                    workDate = workDate.replaceAll("次日", "");
+                    reqDTO.setStartTime(sdf.parse(day + " " + workDate.split("~")[0]));
+                    cal.add(Calendar.DAY_OF_MONTH, 1);
+                    reqDTO.setEndTime(sdf.parse(dayDate.format(cal.getTime()) + " " + workDate.split("~")[1]));
+                } else {
+                    reqDTO.setIsDay(0);
+                    reqDTO.setStartTime(sdf.parse(day + " " + workDate.split("~")[0]));
+                    reqDTO.setEndTime(sdf.parse(day + " " + workDate.split("~")[1]));
+                }
+                cells.getCell(4).setCellType(1);
+                reqDTO.setName(cells.getCell(4) == null ? null : cells.getCell(4).getStringCellValue());
+                cells.getCell(5).setCellType(1);
+                reqDTO.setRegion(cells.getCell(5) == null ? null : cells.getCell(5).getStringCellValue());
+                cells.getCell(6).setCellType(1);
+                reqDTO.setElectricArrange(cells.getCell(6) == null ? null : cells.getCell(6).getStringCellValue());
+                cells.getCell(7).setCellType(1);
+                reqDTO.setProtectMeasures(cells.getCell(7) == null ? null : cells.getCell(7).getStringCellValue());
+                cells.getCell(8).setCellType(1);
+                reqDTO.setCoordinationRequirement(cells.getCell(8) == null ? null : cells.getCell(8).getStringCellValue());
+                cells.getCell(9).setCellType(1);
+                String user = cells.getCell(9) == null ? null : cells.getCell(9).getStringCellValue();
+                if (user != null && !user.isEmpty()) {
+                    reqDTO.setUserName(user.split(":")[0]);
+                    reqDTO.setPhone(user.split(":")[1]);
+                }
+                cells.getCell(10).setCellType(1);
+                reqDTO.setRemark(cells.getCell(10) == null ? null : cells.getCell(10).getStringCellValue());
+                reqDTO.setId(TokenUtil.getUuId());
+                reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+                reqDTO.setTypeName(typeName);
+                temp.add(reqDTO);
+            }
+            fileInputStream.close();
+            constructionMapper.importConstruction(temp, planId);
+        } catch (IOException | ParseException e) {
+            throw new CommonException(ErrorCode.IMPORT_ERROR);
+        }
     }
 }

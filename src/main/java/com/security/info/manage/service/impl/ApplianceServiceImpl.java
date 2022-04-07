@@ -160,8 +160,9 @@ public class ApplianceServiceImpl implements ApplianceService {
                 temp.add(reqDTO);
             }
             fileInputStream.close();
-            applianceMapper.importApplianceConfig(temp);
-
+            if (temp.size() > 0) {
+                applianceMapper.importApplianceConfig(temp);
+            }
         } catch (IOException | ParseException e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }

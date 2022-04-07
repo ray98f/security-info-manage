@@ -97,7 +97,9 @@ public class HazardFactorServiceImpl implements HazardFactorService {
                 temp.add(reqDTO);
             }
             fileInputStream.close();
-            hazardFactorMapper.importHazardFactor(temp);
+            if (temp.size() > 0) {
+                hazardFactorMapper.importHazardFactor(temp);
+            }
         } catch (IOException e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
@@ -125,9 +127,11 @@ public class HazardFactorServiceImpl implements HazardFactorService {
         if (result > 0) {
             throw new CommonException(ErrorCode.POST_HAZARD_FACTOR_EXIST);
         }
-        result = hazardFactorMapper.addPostHazardFactor(postHazardFactorReqDTO);
-        if (result < 0) {
-            throw new CommonException(ErrorCode.INSERT_ERROR);
+        if (postHazardFactorReqDTO.getHazardFactorIds().size() > 0) {
+            result = hazardFactorMapper.addPostHazardFactor(postHazardFactorReqDTO);
+            if (result < 0) {
+                throw new CommonException(ErrorCode.INSERT_ERROR);
+            }
         }
     }
 

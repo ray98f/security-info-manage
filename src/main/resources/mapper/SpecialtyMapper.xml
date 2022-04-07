@@ -54,13 +54,11 @@
     </update>
 
     <insert id="importSpecialty">
-        <if test="list.size()>0">
-            <foreach collection="list" index="index" item="specialty" separator=";">
-                INSERT INTO t_specialty (id, name, sort, create_by, status)
-                select #{specialty.id}, #{specialty.name}, #{specialty.sort}, #{specialty.userId}, #{specialty.status}
-                FROM DUAL
-                WHERE not exists (SELECT id FROM t_specialty WHERE name=#{specialty.name} and is_delete=0)
-            </foreach>
-        </if>
+        <foreach collection="list" index="index" item="specialty" separator=";">
+            INSERT INTO t_specialty (id, name, sort, create_by, status)
+            select #{specialty.id}, #{specialty.name}, #{specialty.sort}, #{specialty.userId}, #{specialty.status}
+            FROM DUAL
+            WHERE not exists (SELECT id FROM t_specialty WHERE name=#{specialty.name} and is_delete=0)
+        </foreach>
     </insert>
 </mapper>

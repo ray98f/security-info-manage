@@ -46,5 +46,5 @@ public interface ConstructionMapper {
 
     Integer addConstruction(ConstructionReqDTO constructionReqDTO);
 
-    Integer importConstruction(List<ConstructionReqDTO> list);
+    Integer importConstruction(List<ConstructionReqDTO> list, String planId);
 }

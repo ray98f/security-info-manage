@@ -349,7 +349,7 @@
             apply_time=now(),
         </if>
         <if test="status!=null">
-            status=#{status},
+            status=#{status}, audit_id=#{updateBy},
         </if>
         update_by=#{updateBy}
         where id=#{id} and is_delete=0;
@@ -366,7 +366,7 @@
         insert into t_physical_warning(id, type, physical_id, physical_user_id, warning_time, info)
         values
         <foreach collection="list" index="index" item="warn" separator=",">
-            (replace(uuid(),"-",""), 1, #{warn.physicalId}, #{warn.id}, now(), #{userName})
+            (replace(uuid(),"-",""), 1, #{warn.physicalId}, #{warn.id}, now(), #{warn.userName})
         </foreach>
     </insert>
 

@@ -39,6 +39,6 @@ public interface ConstructionService {
 
     void addConstruction(ConstructionReqDTO constructionReqDTO);
 
-    void importConstruction(MultipartFile file);
+    void importConstruction(MultipartFile file, String planId);
 
 }

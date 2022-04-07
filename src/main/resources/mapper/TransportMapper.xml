@@ -51,13 +51,11 @@
     </update>
 
     <insert id="importTransport">
-        <if test="list.size()>0">
-            <foreach collection="list" index="index" item="riskAppliance" separator=";">
-                INSERT INTO t_transport (id, name, create_by, status)
-                select #{riskAppliance.id}, #{riskAppliance.name}, #{riskAppliance.userId}, #{riskAppliance.status}
-                FROM DUAL
-                WHERE not exists (SELECT id FROM t_transport WHERE name=#{riskAppliance.name} and is_delete=0)
-            </foreach>
-        </if>
+        <foreach collection="list" index="index" item="riskAppliance" separator=";">
+            INSERT INTO t_transport (id, name, create_by, status)
+            select #{riskAppliance.id}, #{riskAppliance.name}, #{riskAppliance.userId}, #{riskAppliance.status}
+            FROM DUAL
+            WHERE not exists (SELECT id FROM t_transport WHERE name=#{riskAppliance.name} and is_delete=0)
+        </foreach>
     </insert>
 </mapper>

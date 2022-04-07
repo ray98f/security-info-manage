@@ -114,7 +114,9 @@ public class RiskApplianceServiceImpl implements RiskApplianceService {
                 temp.add(reqDTO);
             }
             fileInputStream.close();
-            riskApplianceMapper.importRiskAppliance(temp);
+            if (temp.size() > 0) {
+                riskApplianceMapper.importRiskAppliance(temp);
+            }
         } catch (IOException e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }

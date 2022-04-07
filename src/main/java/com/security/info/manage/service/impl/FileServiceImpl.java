@@ -1,5 +1,6 @@
 package com.security.info.manage.service.impl;
 
+import com.security.info.manage.entity.File;
 import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.service.FileService;
 import com.security.info.manage.utils.TokenUtil;
@@ -19,8 +20,15 @@ public class FileServiceImpl implements FileService {
     private FileMapper fileMapper;
 
     @Override
-    public void insertFile(String url, String bizCode, String name) {
-        fileMapper.insertFile(TokenUtil.getUuId(), url, bizCode, name, TokenUtil.getCurrentPersonNo());
+    public File insertFile(String url, String bizCode, String name) {
+        String id = TokenUtil.getUuId();
+        fileMapper.insertFile(id, url, bizCode, name, TokenUtil.getCurrentPersonNo());
+        File file = new File();
+        file.setId(id);
+        file.setFileName(name);
+        file.setFileUrl(url);
+        file.setBizCode(bizCode);
+        return file;
     }
 
 }

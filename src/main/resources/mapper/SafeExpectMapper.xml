@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.SafeExpectMapper">
+
+    <select id="listSafeExpect" resultType="com.security.info.manage.dto.res.SafeExpectResDTO">
+        select se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
+        se.work_no, se.work_name, se.work_region, se.status from t_safe_expect as se
+        left join sys_user_ext as ue on ue.user_id=se.user_id and ue.is_delete=0 and ue.status=0
+        where se.is_delete=0
+        order by se.create_date desc
+    </select>
+
+    <select id="getSafeExpectDetail" resultType="com.security.info.manage.dto.res.SafeExpectResDTO">
+        select se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
+        se.work_no, se.work_name, se.work_region, se.status, group_concat(ue1.real_name) as user_names
+        from t_safe_expect as se
+        left join sys_user_ext as ue on ue.user_id=se.user_id and ue.is_delete=0 and ue.status=0
+        left join t_safe_expect_user as seu on seu.safe_expect_id=se.id
+        left join sys_user_ext as ue1 on ue1.user_id=seu.user_id and ue1.is_delete=0 and ue1.status=0
+        where se.is_delete=0 and se.id=#{id}
+        group by se.id
+    </select>
+
+    <select id="getSafeExpectInfoDetail" resultType="com.security.info.manage.dto.res.SafeExpectInfoResDTO">
+        select s.id, s.safe_expect_id, s.weather, s.work_temperature, s.wind_power, s.relative_humidity, s.work_content,
+        s.work_environment, group_concat(r.name) as safe_tools, group_concat(t.name) as transport_modes, s.overhaul_equipment_status,
+        s.risk_description_level, s.risk_control_measures, s.work_attention_matter, s.safe_technical_disclosure
+        from t_safe_expect_info as s
+        left join t_transport as t on find_in_set(t.id,s.transport_modes)>0 and t.is_delete=0
+        left join t_risk_appliance as r on find_in_set(r.id,s.safe_tools)>0 and r.is_delete=0
+        where s.is_delete=0 and s.safe_expect_id=#{id}
+        group by s.id
+    </select>
+
+    <select id="getSafeExpectCollectionUnionDetail" resultType="com.security.info.manage.dto.res.SafeExpectCollectionUnionResDTO">
+        select id, safe_expect_id, task_completion, problem_measure, collection_union_time
+        from t_safe_expect_collection_union
+        where is_delete=0 and safe_expect_id=#{id}
+    </select>
+
+    <select id="selectSafeExpectIsExist" resultType="java.lang.Integer">
+        SELECT count(1) FROM t_safe_expect WHERE work_id=#{workId} and work_no=#{workNo} and is_delete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="addSafeExpect">
+        INSERT INTO t_safe_expect (id, user_id, address, time, work_id, work_no, work_name, work_region, create_by)
+        select #{id}, #{userId}, #{address}, #{time}, #{workId}, #{workNo}, #{workName}, #{workRegion}, #{createBy}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_safe_expect WHERE work_id=#{workId} and work_no=#{workNo} and is_delete=0);
+    </insert>
+
+    <insert id="insertSafeExpectUser">
+        delete from t_safe_expect_user where safe_expect_id=#{id};
+        insert into t_safe_expect_user (id, user_id, safe_expect_id)
+        values
+        <foreach collection="list" index="index" item="userId" separator=",">
+            (replace(uuid(),"-",""), #{userId}, #{id})
+        </foreach>
+    </insert>
+
+    <insert id="modifySafeExpectInfo">
+        INSERT INTO t_safe_expect_info (id, safe_expect_id, weather, work_temperature, wind_power, relative_humidity,
+        work_content, work_environment, safe_tools, transport_modes, overhaul_equipment_status, risk_description_level,
+        risk_control_measures, work_attention_matter, safe_technical_disclosure, create_by)
+        select replace(uuid(),"-",""), #{safeExpectId}, #{weather}, #{workTemperature}, #{windPower}, #{relativeHumidity},
+        #{workContent}, #{workEnvironment}, #{safeTools}, #{transportModes}, #{overhaulEquipmentStatus}, #{riskDescriptionLevel},
+        #{riskControlMeasures},  #{workAttentionMatter},  #{safeTechnicalDisclosure}, #{createBy}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_safe_expect_info WHERE safe_expect_id=#{safeExpectId} and is_delete=0);
+        update t_safe_expect_info set
+        weather=#{weather}, work_temperature=#{workTemperature}, wind_power=#{windPower}, relative_humidity=#{relativeHumidity},
+        work_content=#{workContent}, work_environment=#{workEnvironment}, safe_tools=#{safeTools}, transport_modes=#{transportModes},
+        overhaul_equipment_status=#{overhaulEquipmentStatus}, risk_description_level=#{riskDescriptionLevel}, risk_control_measures=#{riskControlMeasures},
+        work_attention_matter=#{workAttentionMatter}, safe_technical_disclosure=#{safeTechnicalDisclosure}, update_by=#{createBy}
+        where safe_expect_id=#{safeExpectId} and is_delete=0
+    </insert>
+
+    <insert id="modifySafeExpectCollectionUnion">
+        INSERT INTO t_safe_expect_collection_union (id, safe_expect_id, task_completion, problem_measure, collection_union_time, create_by)
+        select replace(uuid(),"-",""), #{safeExpectId}, #{taskCompletion}, #{problemMeasure}, #{collectionUnionTime}, #{createBy}
+        FROM DUAL
+        WHERE not exists (SELECT id FROM t_safe_expect_collection_union WHERE safe_expect_id=#{safeExpectId} and is_delete=0);
+        update t_safe_expect_collection_union set
+        task_completion=#{taskCompletion}, problem_measure=#{problemMeasure},collection_union_time=#{collectionUnionTime}, update_by=#{createBy}
+        where safe_expect_id=#{safeExpectId} and is_delete=0
+    </insert>
+
+    <update id="deleteSafeExpect">
+        update t_safe_expect set
+        is_delete=1, update_by=#{createBy}
+        where id=#{id} and is_delete=0;
+        delete from t_safe_expect_user where safe_expect_id=#{id};
+        update t_safe_expect_collection_union set
+        is_delete=1, update_by=#{createBy}
+        where safe_expect_id=#{id} and is_delete=0;
+        update t_safe_expect_info set
+        is_delete=1, update_by=#{createBy}
+        where safe_expect_id=#{id} and is_delete=0;
+    </update>
+
+    <select id="listSafeExpectUser" resultType="com.security.info.manage.dto.res.SafeExpectUserResDTO">
+        select s.id, s.user_id, u.real_name as user_name, s.safe_expect_id, s.is_sign, s.sign_time
+        from t_safe_expect_user as s left join sys_user_ext as u on u.user_id=s.user_id and u.is_delete=0 and u.status=0
+        where s.safe_expect_id=#{id}
+    </select>
+
+    <update id="signSafeExpectUser">
+        update t_safe_expect_user set
+        is_sign=#{isSign}, sign_time=now()
+        where id=#{id}
+    </update>
+</mapper>

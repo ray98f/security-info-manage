@@ -115,8 +115,8 @@ public class ConstructionController {
 
     @PostMapping("/import")
     @ApiOperation(value = "施工作业导入")
-    public DataResponse<T> importConstruction(@RequestParam MultipartFile file) {
-        constructionService.importConstruction(file);
+    public DataResponse<T> importConstruction(@RequestParam MultipartFile file, String planId) {
+        constructionService.importConstruction(file, planId);
         return DataResponse.success();
     }
 }

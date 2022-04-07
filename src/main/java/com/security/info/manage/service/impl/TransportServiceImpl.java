@@ -115,7 +115,9 @@ public class TransportServiceImpl implements TransportService {
                 temp.add(reqDTO);
             }
             fileInputStream.close();
-            transportMapper.importTransport(temp);
+            if (temp.size() > 0) {
+                transportMapper.importTransport(temp);
+            }
         } catch (IOException e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }

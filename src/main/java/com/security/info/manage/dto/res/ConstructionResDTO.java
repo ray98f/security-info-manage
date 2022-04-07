@@ -49,17 +49,17 @@ public class ConstructionResDTO {
     private String orgName;
 
     @ApiModelProperty(value = "作业开始时间")
-    @DateTimeFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm")
     @JsonFormat(
-            pattern = "HH:mm:ss",
+            pattern = "HH:mm",
             timezone = "GMT+8"
     )
     private Date startTime;
 
     @ApiModelProperty(value = "作业结束时间")
-    @DateTimeFormat(pattern = "HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm")
     @JsonFormat(
-            pattern = "HH:mm:ss",
+            pattern = "HH:mm",
             timezone = "GMT+8"
     )
     private Date endTime;

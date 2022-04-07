@@ -61,39 +61,37 @@
     </update>
 
     <insert id="importApplianceConfig">
-        <if test="list.size()>0">
-            <foreach collection="list" index="index" item="appliance" separator=";">
-                insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,
-                hazard_factors, num, receiving_time, effective_time, remark, create_by)
-                 select #{appliance.id}, #{appliance.year},
-                (select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1),
-                <if test="appliance.userName!='工区工长'">
-                    (select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1),
-                </if>
-                <if test="appliance.userName=='工区工长'">
-                    (select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
-                    where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
-                    and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1),
-                </if>
-                #{appliance.userName},
-                (select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1),
-                #{appliance.workType}, #{appliance.hazardFactors}, #{appliance.num}, #{appliance.receivingTime},
-                #{appliance.effectiveTime}, #{appliance.remark}, #{appliance.createBy}
-                from dual
-                WHERE not exists (SELECT id FROM t_appliance_user_config
-                WHERE dept_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
-                <if test="appliance.userName!='工区工长'">
-                    and user_id=(select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1)
-                </if>
-                <if test="appliance.userName=='工区工长'">
-                    and user_id=(select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
-                    where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
-                    and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1)
-                </if>
-                and appliance_id=(select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1)
-                and is_delete=0)
-            </foreach>
-        </if>
+        <foreach collection="list" index="index" item="appliance" separator=";">
+            insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,
+            hazard_factors, num, receiving_time, effective_time, remark, create_by)
+             select #{appliance.id}, #{appliance.year},
+            (select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1),
+            <if test="appliance.userName!='工区工长'">
+                (select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1),
+            </if>
+            <if test="appliance.userName=='工区工长'">
+                (select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
+                where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+                and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1),
+            </if>
+            #{appliance.userName},
+            (select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1),
+            #{appliance.workType}, #{appliance.hazardFactors}, #{appliance.num}, #{appliance.receivingTime},
+            #{appliance.effectiveTime}, #{appliance.remark}, #{appliance.createBy}
+            from dual
+            WHERE not exists (SELECT id FROM t_appliance_user_config
+            WHERE dept_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+            <if test="appliance.userName!='工区工长'">
+                and user_id=(select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1)
+            </if>
+            <if test="appliance.userName=='工区工长'">
+                and user_id=(select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
+                where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+                and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1)
+            </if>
+            and appliance_id=(select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1)
+            and is_delete=0)
+        </foreach>
     </insert>
 
     <select id="listApplianceConfig" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">

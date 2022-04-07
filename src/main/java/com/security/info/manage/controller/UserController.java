@@ -124,7 +124,7 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    @ApiOperation(value = "修改用户岗位")
+    @ApiOperation(value = "获取用户信息")
     public DataResponse<UserResDTO> getUserInfo(@RequestParam String id){
         return DataResponse.of(userService.getUserInfo(id));
     }

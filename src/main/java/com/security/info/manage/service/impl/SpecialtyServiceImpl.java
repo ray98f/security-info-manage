@@ -124,7 +124,9 @@ public class SpecialtyServiceImpl implements SpecialtyService {
                 temp.add(reqDTO);
             }
             fileInputStream.close();
-            specialtyMapper.importSpecialty(temp);
+            if (temp.size() > 0) {
+                specialtyMapper.importSpecialty(temp);
+            }
         } catch (IOException e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
