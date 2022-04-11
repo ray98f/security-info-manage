@@ -8,11 +8,13 @@ import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.req.PhysicalResultImportReqDTO;
 import com.security.info.manage.dto.res.*;
+import com.security.info.manage.entity.File;
 import com.security.info.manage.entity.PhysicalFeedback;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.PhysicalMapper;
 import com.security.info.manage.mapper.UserMapper;
+import com.security.info.manage.service.FileService;
 import com.security.info.manage.service.PhysicalService;
 import com.security.info.manage.utils.*;
 import io.minio.MinioClient;
@@ -56,6 +58,9 @@ public class PhysicalServiceImpl implements PhysicalService {
 
     @Autowired
     private PhysicalMapper physicalMapper;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private UserMapper userMapper;
@@ -220,7 +225,7 @@ public class PhysicalServiceImpl implements PhysicalService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void uploadWord(MultipartFile file, String bizCode, String id) throws Exception {
-        String url = uploadFile(file, bizCode);
+        File fileRes = uploadFile(file, bizCode);
         PhysicalResultImportReqDTO physicalResultImportReqDTO = new PhysicalResultImportReqDTO();
         physicalResultImportReqDTO.setId(id);
         physicalResultImportReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
@@ -270,10 +275,10 @@ public class PhysicalServiceImpl implements PhysicalService {
         if ("physical-word".equals(bizCode)) {
             physicalMapper.editPhysical(physicalResultImportReqDTO);
             physicalMapper.physicalResultImport(physicalResultImportReqDTO);
-            result = physicalMapper.uploadFilePhysical(url, id, TokenUtil.getCurrentPersonNo(), 1);
+            result = physicalMapper.uploadFilePhysical(fileRes.getId(), id, TokenUtil.getCurrentPersonNo(), 1);
         } else if ("physical-user-word".equals(bizCode)) {
             physicalMapper.physicalResultImport(physicalResultImportReqDTO);
-            result = physicalMapper.uploadFilePhysicalUser(url, id, TokenUtil.getCurrentPersonNo(), 1);
+            result = physicalMapper.uploadFilePhysicalUser(fileRes.getId(), id, TokenUtil.getCurrentPersonNo(), 1);
         }
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
@@ -282,12 +287,12 @@ public class PhysicalServiceImpl implements PhysicalService {
 
     @Override
     public void uploadPdf(MultipartFile file, String bizCode, String id) throws Exception {
-        String url = uploadFile(file, bizCode);
+        File fileRes = uploadFile(file, bizCode);
         Integer result = 0;
         if ("physical-pdf".equals(bizCode)) {
-            result = physicalMapper.uploadFilePhysical(url, id, TokenUtil.getCurrentPersonNo(), 2);
+            result = physicalMapper.uploadFilePhysical(fileRes.getId(), id, TokenUtil.getCurrentPersonNo(), 2);
         } else if ("physical-user-pdf".equals(bizCode)) {
-            result = physicalMapper.uploadFilePhysicalUser(url, id, TokenUtil.getCurrentPersonNo(), 2);
+            result = physicalMapper.uploadFilePhysicalUser(fileRes.getId(), id, TokenUtil.getCurrentPersonNo(), 2);
         }
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
@@ -361,10 +366,11 @@ public class PhysicalServiceImpl implements PhysicalService {
         }
     }
 
-    public String uploadFile(MultipartFile file, String bizCode) throws IOException, ServerException, InsufficientDataException, InternalException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, XmlParserException, ErrorResponseException {
+    public File uploadFile(MultipartFile file, String bizCode) throws IOException, ServerException, InsufficientDataException, InternalException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, XmlParserException, ErrorResponseException {
         if (!minioUtils.bucketExists(bizCode)) {
             minioUtils.makeBucket(bizCode);
         }
+        String oldName = file.getOriginalFilename();
         String fileName = FileUploadUtils.extractFilename(file);
         PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(bizCode)
@@ -373,6 +379,7 @@ public class PhysicalServiceImpl implements PhysicalService {
                 .contentType(file.getContentType())
                 .build();
         client.putObject(args);
-        return minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
+        String url = minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
+        return fileService.insertFile(url, bizCode, oldName);
     }
 }

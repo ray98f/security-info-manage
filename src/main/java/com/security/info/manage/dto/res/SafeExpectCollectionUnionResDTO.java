@@ -33,6 +33,9 @@ public class SafeExpectCollectionUnionResDTO {
     )
     private Date collectionUnionTime;
 
+    @ApiModelProperty(value = "收工会时间字符串")
+    private String collectionUnionTimeStr;
+
     @ApiModelProperty(value = "创建人")
     private String createBy;
 }

@@ -33,6 +33,6 @@ public class SafeExpectUserResDTO {
     )
     private Date signTime;
 
-    @ApiModelProperty(value = "签到状态 0 未签到 1 未确认 2 已确认")
+    @ApiModelProperty(value = "签到状态 0 已确认 1 未签到 2 未确认")
     private Integer isSign;
 }

@@ -6,6 +6,9 @@ import com.security.info.manage.dto.req.SafeExpectModifyReqDTO;
 import com.security.info.manage.dto.req.SafeExpectReqDTO;
 import com.security.info.manage.dto.res.SafeExpectResDTO;
 import com.security.info.manage.dto.res.SafeExpectUserResDTO;
+import com.security.info.manage.entity.File;
+
+import java.util.Map;
 
 /**
  * @author frp
@@ -25,4 +28,8 @@ public interface SafeExpectService {
     Page<SafeExpectUserResDTO> listSafeExpectUser(String id, PageReqDTO pageReqDTO);
 
     void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
+
+    Map<String, Object> exportSafeExpectData(String id);
+
+    File exportSafeExpect(String id) throws Exception;
 }

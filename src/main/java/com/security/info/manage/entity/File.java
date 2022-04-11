@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @ApiModel
 public class File {
 
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "文件id")
     private String id;
 
     @ApiModelProperty(value = "文件名")

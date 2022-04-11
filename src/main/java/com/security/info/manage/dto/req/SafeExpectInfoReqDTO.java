@@ -61,7 +61,7 @@ public class SafeExpectInfoReqDTO {
     private String describeOccupationalHazards;
 
     @ApiModelProperty(value = "风险等级")
-    private String riskLevel;
+    private Integer riskLevel;
 
     @ApiModelProperty(value = "风险管控措施")
     private String riskControlMeasures;

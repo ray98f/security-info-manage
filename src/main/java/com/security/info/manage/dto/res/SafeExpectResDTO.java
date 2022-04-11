@@ -52,8 +52,8 @@ public class SafeExpectResDTO {
     private String userNames;
 
     @ApiModelProperty(value = "安全预想会详情")
-    private SafeExpectInfoResDTO safeExpectInfoReqDTO;
+    private SafeExpectInfoResDTO safeExpectInfo;
 
     @ApiModelProperty(value = "收工会详情")
-    private SafeExpectCollectionUnionResDTO safeExpectCollectionUnionReqDTO;
+    private SafeExpectCollectionUnionResDTO safeExpectCollectionUnion;
 }

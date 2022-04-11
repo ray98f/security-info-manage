@@ -3,6 +3,7 @@ package com.security.info.manage.utils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -28,9 +29,9 @@ public class FileUploadUtils
     /**
      * 编码文件名
      */
-    public static final String extractFilename(MultipartFile file)
+    public static String extractFilename(MultipartFile file)
     {
-        String fileName = file.getOriginalFilename();
+        String fileName;
         String extension = getExtension(file);
         fileName = DateUtils.datePath() + "/" + UUID.randomUUID().toString() + "." + extension;
         return fileName;
@@ -42,12 +43,11 @@ public class FileUploadUtils
      * @param file 表单文件
      * @return 后缀名
      */
-    public static final String getExtension(MultipartFile file)
+    public static String getExtension(MultipartFile file)
     {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (StringUtils.isEmpty(extension))
-        {
-            extension = MimeTypeUtils.getExtension(file.getContentType());
+        if (StringUtils.isEmpty(extension)) {
+            extension = MimeTypeUtils.getExtension(Objects.requireNonNull(file.getContentType()));
         }
         return extension;
     }

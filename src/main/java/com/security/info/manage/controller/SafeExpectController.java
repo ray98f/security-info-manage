@@ -7,7 +7,9 @@ import com.security.info.manage.dto.req.SafeExpectModifyReqDTO;
 import com.security.info.manage.dto.req.SafeExpectReqDTO;
 import com.security.info.manage.dto.res.SafeExpectResDTO;
 import com.security.info.manage.dto.res.SafeExpectUserResDTO;
+import com.security.info.manage.entity.File;
 import com.security.info.manage.service.SafeExpectService;
+import com.security.info.manage.utils.DocUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author frp
@@ -78,6 +83,15 @@ public class SafeExpectController {
         return DataResponse.success();
     }
 
-    // todo 打印预览 打印
+    @GetMapping("/export/data")
+    @ApiOperation(value = "安全预想会模板数据")
+    public DataResponse<Map<String, Object>> exportSafeExpectData(@RequestParam String id) {
+        return DataResponse.of(safeExpectService.exportSafeExpectData(id));
+    }
 
+    @GetMapping("/export")
+    @ApiOperation(value = "导出安全预想会word")
+    public DataResponse<File> exportSafeExpect(@RequestParam String id) throws Exception {
+        return DataResponse.of(safeExpectService.exportSafeExpect(id));
+    }
 }

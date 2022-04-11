@@ -2,28 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.security.info.manage.mapper.PhysicalMapper">
     <select id="listPhysical" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
-        select id, no, hospital_no, type, start_time, end_time, remark, create_date, create_by,
-        file_word, file_pdf, estimate_num, actual_num from t_physical
-        where is_delete=0
+        select p.id, p.no, p.hospital_no, p.type, p.start_time, p.end_time, p.remark, p.create_date, p.create_by,
+        f1.file_url as file_word, f2.file_url as file_pdf, p.estimate_num, p.actual_num from t_physical as p
+        left join sys_file as f1 on f1.id=p.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=p.file_pdf and f2.is_delete=0
+        where p.is_delete=0
         <if test="type!=null">
-            and type=#{type}
+            and p.type=#{type}
         </if>
         <if test="sStartTime!=null and sStartTime!=''">
-            and start_time>=#{sStartTime}
+            and p.start_time>=#{sStartTime}
         </if>
         <if test="sEndTime!=null and sEndTime!=''">
-            and #{sEndTime}>=start_time
+            and #{sEndTime}>=p.start_time
         </if>
         <if test="eStartTime!=null and eStartTime!=''">
-            and end_time>=#{eStartTime}
+            and p.end_time>=#{eStartTime}
         </if>
         <if test="eEndTime!=null and eEndTime!=''">
-            and #{eEndTime}>=end_time
+            and #{eEndTime}>=p.end_time
         </if>
         <if test="type==null">
-            and file_word is not null and estimate_num is not null and actual_num is not null
+            and p.file_word is not null and p.estimate_num is not null and p.actual_num is not null
         </if>
-        order by create_date desc
+        order by p.create_date desc
     </select>
 
     <select id="countPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserCountResDTO">
@@ -38,9 +40,12 @@
 
     <select id="getPhysicalDetail" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
         select p.id, p.no, p.hospital_no, p.type, p.start_time, p.end_time, p.remark, p.create_date, p.create_by,
-        p.file_word, p.file_pdf, p.estimate_num, p.actual_num,
+        f1.file_url as file_word, f2.file_url as file_pdf, p.estimate_num, p.actual_num,
         sum(case when pu.result=1 then 1 else 0 end) as danger_num, sum(case when pu.result=2 then 1 else 0 end) as review_num
-        from t_physical as p left join t_physical_user as pu on pu.physical_id=p.id and pu.is_delete=0
+        from t_physical as p
+        left join t_physical_user as pu on pu.physical_id=p.id and pu.is_delete=0
+        left join sys_file as f1 on f1.id=p.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=p.file_pdf and f2.is_delete=0
         where p.is_delete=0 and p.id=#{id}
     </select>
 
@@ -181,8 +186,10 @@
     <select id="listPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
         pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
-        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
         where pu.physical_id=#{id} and pu.is_delete=0
         order by pu.create_date desc
     </select>
@@ -190,17 +197,21 @@
     <select id="selectPhysicalUserById" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
         pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
-        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
         where pu.id=#{id} and pu.is_delete=0
     </select>
 
     <select id="selectLatestPhysicalUserByUserId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, p.hospital_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
         pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
-        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
+        left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
         where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
         order by pu.physical_time desc
         limit 1
@@ -209,9 +220,11 @@
     <select id="selectPhysicalUserByUserId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, p.hospital_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
         pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
-        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
+        left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
         where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
         order by pu.physical_time desc
     </select>
@@ -219,9 +232,11 @@
     <select id="selectPhysicalUserByPhysicalId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
         pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
-        pu.physical_time, pu.create_date, pu.file_word, pu.file_pdf from t_physical_user as pu
+        pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
         where p.id=#{id} and pu.is_delete=0 and pu.result=2
     </select>
 
