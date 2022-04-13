@@ -74,7 +74,7 @@ public interface UserMapper {
      *
      * @return
      */
-    List<User> listAllUser();
+    List<UserResDTO> listAllUser();
 
     /**
      * 查询用户列表

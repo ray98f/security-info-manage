@@ -52,7 +52,7 @@ public interface UserService {
      *
      * @return
      */
-    List<User> listAllUser();
+    List<UserResDTO> listAllUser();
 
     /**
      * 查询用户列表

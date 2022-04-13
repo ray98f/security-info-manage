@@ -24,4 +24,34 @@
         where parent_id='1' and is_delete=0
         order by sort
     </select>
+
+    <select id="selectParent" resultType="com.security.info.manage.dto.res.DeptTreeResDTO">
+        select d2.id, d2.parent_id, d2.org_code, d2.org_name, d2.sort, d2.user_ids, d2.create_date
+        from sys_dept as d1
+        left join sys_dept as d2 on d1.parent_id=d2.id and d2.is_delete=0
+        where d1.id=#{deptId} and d1.is_delete=0
+    </select>
+
+    <select id="selectDepartmentUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.real_name, d.org_name as dept_name, p.post_name as user_name
+        from sys_dept as d
+        left join sys_post as p on p.org_id=d.id and p.status=0 and p.is_delete=0
+        <if test="dangerId==null">
+            and p.post_name='科长'
+        </if>
+        <if test="dangerId!=null">
+            and p.post_name in ('部长', '副部长')
+        </if>
+        left join sys_user_post as up on up.post_id=p.id
+        left join sys_user as u on u.id=up.user_id and u.is_delete=0 and u.status=1
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        where d.parent_id=#{deptId} and d.is_delete=0 and u.id is not null
+        <if test="dangerId==null">
+            and d.org_name like CONCAT('%','科')
+        </if>
+        <if test="dangerId!=null">
+            and d.org_name like CONCAT('%','部')
+        </if>
+    </select>
 </mapper>

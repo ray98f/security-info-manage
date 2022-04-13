@@ -169,8 +169,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> listAllUser() {
-        List<User> list = userMapper.listAllUser();
+    public List<UserResDTO> listAllUser() {
+        List<UserResDTO> list = userMapper.listAllUser();
         if (null == list || list.isEmpty()) {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }

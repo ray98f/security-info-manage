@@ -76,7 +76,7 @@ public class UserController {
      */
     @GetMapping("/all")
     @ApiOperation(value = "获取所有用户")
-    public DataResponse<List<User>> listAllUser(){
+    public DataResponse<List<UserResDTO>> listAllUser(){
         return DataResponse.of(userService.listAllUser());
     }
 

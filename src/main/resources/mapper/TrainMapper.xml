@@ -3,7 +3,7 @@
 <mapper namespace="com.security.info.manage.mapper.TrainMapper">
 
     <select id="listTrain" resultType="com.security.info.manage.dto.res.TrainResDTO">
-        select t.id, t.user_ids, group_concat(d.real_name) as user_names, t.content,
+        select t.id, t.user_ids, group_concat(distinct d.real_name) as user_names, t.content,
         t.train_time, t.lecturer, t.pic, t.address, t.courseware
         from t_train as t left join sys_user_ext as d on find_in_set(d.user_id,t.user_ids)>0
         where t.is_delete=0
@@ -12,7 +12,7 @@
     </select>
 
     <select id="getTrainDetail" resultType="com.security.info.manage.dto.res.TrainResDTO">
-        select t.id, t.user_ids, group_concat(d.real_name) as user_names, t.content,
+        select t.id, t.user_ids, group_concat(distinct d.real_name) as user_names, t.content,
         t.train_time, t.lecturer, t.pic, t.address, t.courseware
         from t_train as t left join sys_user_ext as d on find_in_set(d.user_id,t.user_ids)>0
         where t.is_delete=0 and t.id=#{id}
@@ -35,7 +35,7 @@
 
     <update id="modifyTrain">
         update t_train set
-        <if test="orgIds!=null">
+        <if test="userIds!=null">
             user_ids=#{userIds},
         </if>
         <if test="content!=null">

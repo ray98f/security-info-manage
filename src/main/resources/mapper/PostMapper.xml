@@ -93,7 +93,7 @@
         CONCAT((select real_name from sys_user_ext where user_id=#{userId} and status=0 and is_delete=0),"从",
         (select p.post_name from sys_user_post as up left join sys_post as p on p.id=up.post_id and p.status=0 and p.is_delete=0
         where up.id=#{id}),"岗位变更,需要更新其危害因素关联信息"), now(), #{files},
-        (select p.post_id from sys_user_post as up left join sys_post as p on p.id=up.post_id and p.status=0 and p.is_delete=0
+        (select p.id from sys_user_post as up left join sys_post as p on p.id=up.post_id and p.status=0 and p.is_delete=0
         where up.id=#{id}), #{postId})
     </insert>
 

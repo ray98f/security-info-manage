@@ -1,6 +1,7 @@
 package com.security.info.manage.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.security.info.manage.entity.File;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,6 +37,9 @@ public class TrainResDTO {
 
     @ApiModelProperty(value = "图片")
     private String pic;
+
+    @ApiModelProperty(value = "图片")
+    private List<File> picFile;
 
     @ApiModelProperty(value = "地点")
     private String address;

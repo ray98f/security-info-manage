@@ -14,8 +14,11 @@ public class UserResDTO {
     @ApiModelProperty(value = "用户ID")
     private String id;
 
-    @ApiModelProperty(value = "用户真实姓名")
+    @ApiModelProperty(value = "用户昵称")
     private String name;
+
+    @ApiModelProperty(value = "用户真实姓名")
+    private String realName;
 
     @ApiModelProperty(value = "手机号")
     private String mobile;

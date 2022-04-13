@@ -93,12 +93,19 @@
         where user_id=#{userReqDTO.id} and is_delete=0
     </update>
 
-    <select id="listAllUser" resultType="com.security.info.manage.entity.User">
-        select * from sys_user where is_delete=0 and status=0
+    <select id="listAllUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where u.is_delete=0 and u.status=0
     </select>
 
     <select id="listUser" resultType="com.security.info.manage.dto.res.UserResDTO">
-        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status,
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
         d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
         left join sys_user_role as ur on u.id=ur.user_id
         left join sys_user_post as up on up.user_id=u.id
@@ -123,7 +130,7 @@
     </select>
 
     <select id="pageUser" resultType="com.security.info.manage.dto.res.UserResDTO">
-        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status,
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
         d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
         left join sys_user_role as ur on u.id=ur.user_id
         left join sys_user_post as up on up.user_id=u.id
@@ -153,7 +160,7 @@
     </select>
 
     <select id="selectUser" resultType="com.security.info.manage.dto.res.UserResDTO">
-        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status,
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
         d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
         left join sys_user_role as ur on u.id=ur.user_id
         left join sys_user_post as up on up.user_id=u.id

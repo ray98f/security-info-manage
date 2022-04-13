@@ -75,7 +75,7 @@
         r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
         from t_region as r
         left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
-        where r.is_delete=0
+        where r.is_delete=0 and r.status=0
         order by r.create_date asc
     </select>
 

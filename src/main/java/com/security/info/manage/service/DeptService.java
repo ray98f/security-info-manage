@@ -1,6 +1,8 @@
 package com.security.info.manage.service;
 
 import com.security.info.manage.dto.res.DeptTreeResDTO;
+import com.security.info.manage.dto.res.UserResDTO;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -14,5 +16,7 @@ public interface DeptService {
     List<DeptTreeResDTO> listTree();
 
     List<DeptTreeResDTO> listFirst();
+
+    List<UserResDTO> getDeptUser(String deptId, String dangerId);
 
 }

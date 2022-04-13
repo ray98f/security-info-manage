@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.DangerMapper">
+
+    <select id="listDept" resultType="com.security.info.manage.dto.res.DeptTreeResDTO">
+        select distinct ep.dept_id as id,
+        CASE ep.dept_id WHEN 0
+        THEN "公共板块"
+        ELSE d.org_name
+        END as org_name from sys_entry_plate as ep
+        left join sys_dept as d on d.id=ep.dept_id and d.is_delete=0
+        where ep.type=#{type}
+        order by d.sort asc
+    </select>
+
+    <select id="listPlate" resultType="com.security.info.manage.entity.EntryPlate">
+        select id, type, dept_id, plate_name, proportion
+        from sys_entry_plate
+        where type=#{type} and dept_id=#{deptId}
+    </select>
+
+    <select id="listEntry" resultType="com.security.info.manage.entity.EntryPlate$Entry">
+        select id, plate_id, content
+        from sys_entry
+        where plate_id=#{plateId}
+    </select>
+
+    <select id="selectUserStatus" resultType="java.lang.Integer">
+        select count(1) from t_danger_examine
+        where danger_id=#{dangerId} and status=0
+        <if test="userId!=null and userId!='' and userId!='admin'">
+            and examine_user_id=#{userId}
+        </if>
+        and is_delete=0
+        limit 1
+    </select>
+
+    <select id="listDangerExamine" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
+        select de.id, de.danger_id, de.user_type, de.examine_user_id, de.examine_time, de.opinion, de.status,
+        ue.real_name as examine_user_name from t_danger_examine as de
+        left join sys_user_ext as ue on ue.user_id=de.examine_user_id and ue.status=0 and ue.is_delete=0
+        where de.danger_id=#{dangerId} and de.is_delete=0
+        order by user_type asc
+    </select>
+
+    <select id="listDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
+        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time,
+        d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
+        d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
+        d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
+        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content
+        from t_danger as d
+        left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
+        left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
+        left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        <if test="userId!=null and userId!=''">
+            left join t_danger_examine as de on de.danger_id=d.id and de.is_delete=0
+        </if>
+        left join sys_entry as e1 on e1.id=d.build_entry_id
+        left join sys_entry_plate as ep1 on ep1.id=e1.plate_id
+        left join sys_dept as d2 on d2.id=ep1.dept_id and d2.is_delete=0
+        left join sys_entry as e2 on e2.id=d.prod_entry_id
+        left join sys_entry_plate as ep2 on ep2.id=e2.plate_id
+        left join sys_dept as d3 on d3.id=ep2.dept_id and d3.is_delete=0
+        where d.is_delete=0
+        <if test="type==1">
+            and d.is_build_prob=1
+        </if>
+        <if test="type==2">
+            and d.is_prod_prob=1
+        </if>
+        <if test="type==3">
+            and d.is_danger_prob=1
+        </if>
+        <if test="userId!=null and userId!=''">
+            and de.examine_user_id=#{userId}
+        </if>
+        order by d.create_date desc
+    </select>
+
+    <select id="getDangerDetail" resultType="com.security.info.manage.dto.res.DangerResDTO">
+        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time,
+        d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
+        d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
+        d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
+        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content
+        from t_danger as d
+        left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
+        left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
+        left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        left join sys_entry as e1 on e1.id=d.build_entry_id
+        left join sys_entry_plate as ep1 on ep1.id=e1.plate_id
+        left join sys_dept as d2 on d2.id=ep1.dept_id and d2.is_delete=0
+        left join sys_entry as e2 on e2.id=d.prod_entry_id
+        left join sys_entry_plate as ep2 on ep2.id=e2.plate_id
+        left join sys_dept as d3 on d3.id=ep2.dept_id and d3.is_delete=0
+        where d.is_delete=0 and d.id=#{id}
+        order by d.create_date desc
+    </select>
+
+    <update id="modifyDanger">
+        update t_danger set
+        <if test="regionId!=null">
+            region_id=#{regionId},
+        </if>
+        <if test="address!=null">
+            address=#{address},
+        </if>
+        <if test="content!=null">
+            content=#{content},
+        </if>
+        <if test="beforePic!=null">
+            before_pic=#{beforePic},
+        </if>
+        <if test="rectifyTerm!=null">
+            rectify_term=#{rectifyTerm},
+        </if>
+        <if test="checkDeptId!=null">
+            check_dept_id=#{checkDeptId},
+        </if>
+        <if test="checkUserId!=null">
+            check_user_id=#{checkUserId},
+        </if>
+        <if test="checkTime!=null">
+            check_time=#{checkTime},
+        </if>
+        <if test="isBuildProb!=null">
+            is_build_prob=#{isBuildProb},
+        </if>
+        <if test="buildEntryId!=null">
+            build_entry_id=#{buildEntryId},
+        </if>
+        <if test="buildScore!=null">
+            build_score=#{buildScore},
+        </if>
+        <if test="buildConversionScore!=null">
+            build_conversion_score=#{buildConversionScore},
+        </if>
+        <if test="isProdProb!=null">
+            is_prod_prob=#{isProdProb},
+        </if>
+        <if test="prodEntryId!=null">
+            prod_entry_id=#{prodEntryId},
+        </if>
+        <if test="prodEntryScore!=null">
+            prod_entry_score=#{prodEntryScore},
+        </if>
+        <if test="isDangerProb!=null">
+            is_danger_prob=#{isDangerProb},
+        </if>
+        <if test="level!=null">
+            level=#{level},
+        </if>
+        <if test="dangerCategory!=null">
+            danger_category=#{dangerCategory},
+        </if>
+        <if test="isPush!=null">
+            is_push=#{isPush},
+        </if>
+        <if test="prodCategory!=null">
+            prod_category=#{prodCategory},
+        </if>
+        <if test="isUse!=null">
+            is_use=#{isUse},
+        </if>
+        <if test="isUse==1">
+            status=1,
+        </if>
+        update_by=#{createBy}, update_date=now()
+        where id=#{id} and is_delete=0;
+        <if test="isUse==1">
+            insert into t_danger_examine(id, danger_id, user_type, examine_user_id, create_by)
+            value (replace(uuid(),"-",""), #{id}, 1, #{examineUserId}, #{createBy});
+        </if>
+    </update>
+
+    <insert id="addDanger">
+        INSERT INTO t_danger (id, no, region_id, address, content, before_pic, rectify_term, check_dept_id, check_user_id,
+        check_time, is_build_prob, build_entry_id, build_score, build_conversion_score, is_prod_prob, prod_entry_id,
+        prod_entry_score, is_danger_prob, level, danger_category, is_push, create_by, prod_category, is_use
+        <if test="isUse==1">
+            , status
+        </if>
+        )
+        value (#{id}, #{no}, #{regionId}, #{address}, #{content}, #{beforePic}, #{rectifyTerm}, #{checkDeptId}, #{checkUserId},
+        #{checkTime}, #{isBuildProb}, #{buildEntryId}, #{buildScore}, #{buildConversionScore}, #{isProdProb}, #{prodEntryId},
+        #{prodEntryScore}, #{isDangerProb}, #{level}, #{dangerCategory}, #{isPush}, #{createBy}, #{prodCategory}, #{isUse}
+        <if test="isUse==1">
+            , 1
+        </if>
+        );
+        <if test="isUse==1">
+            insert into t_danger_examine(id, danger_id, user_type, examine_user_id, create_by)
+            value (replace(uuid(),"-",""), #{id}, 1, #{examineUserId}, #{createBy});
+        </if>
+    </insert>
+
+    <select id="selectIsDangerExamine" resultType="java.lang.Integer">
+        select status from t_danger where id=#{id} and is_delete=0
+    </select>
+
+    <update id="deleteDanger">
+        update t_danger set
+        is_delete=1, update_by=#{createBy}, update_date=now()
+        where id=#{id} and is_delete=0;
+        update t_danger_examine set
+        is_delete=1, update_by=#{createBy}, update_date=now()
+        where danger_id=#{id} and is_delete=0;
+    </update>
+
+    <select id="selectUserType" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
+        select id, max(user_type) as user_type from t_danger_examine where danger_id=#{dangerId} and is_delete=0 and status=0
+    </select>
+
+    <select id="selectCheckUserId" resultType="java.lang.String">
+        select check_user_id from t_danger where is_delete=0 and id=#{dangerId} and is_use=1
+    </select>
+
+    <update id="examineDanger">
+        update t_danger_examine set
+        examine_time=now(), opinion=#{opinion}, status=#{status}, update_by=#{userId}
+        where id=#{id};
+        <if test="status==1">
+            insert into t_danger_examine(id, danger_id, user_type, examine_user_id, create_by)
+            value (replace(uuid(),"-",""), #{dangerId}, #{userType}, #{examineUserId}, #{userId});
+            <if test="userType==4">
+                update t_danger set status=2, update_by=#{userId}, update_date=now() where id=#{dangerId} and is_delete=0;
+            </if>
+        </if>
+        <if test="status==2">
+            update t_danger set status=6, update_by=#{userId}, update_date=now() where id=#{dangerId} and is_delete=0;
+        </if>
+    </update>
+
+    <update id="issueDanger">
+        update t_danger set
+        responsibility_dept_id=#{deptId},
+        <if test="rectifyTerm!=null">
+            rectify_term=#{rectifyTerm},
+        </if>
+        status=3, update_by=#{createBy}, update_date=now()
+        where id=#{dangerId} and is_delete=0;
+        update t_danger_examine set
+        examine_time=now(), opinion=#{opinion}, status=1, update_by=#{createBy}
+        where danger_id=#{dangerId} and status=0;
+    </update>
+</mapper>

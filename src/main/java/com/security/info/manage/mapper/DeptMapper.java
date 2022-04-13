@@ -1,6 +1,7 @@
 package com.security.info.manage.mapper;
 
 import com.security.info.manage.dto.res.DeptTreeResDTO;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.dto.res.VxDeptResDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,8 @@ public interface DeptMapper {
     List<DeptTreeResDTO> getRoot();
 
     List<DeptTreeResDTO> listCompanyList();
+
+    DeptTreeResDTO selectParent(String deptId);
+
+    List<UserResDTO> selectDepartmentUser(String deptId, String dangerId);
 }

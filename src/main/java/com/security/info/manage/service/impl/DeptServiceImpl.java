@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.security.info.manage.dto.VxAccessToken;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.dto.res.VxDeptResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
@@ -91,5 +92,23 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public List<DeptTreeResDTO> listFirst() {
         return deptMapper.listCompanyList();
+    }
+
+    @Override
+    public List<UserResDTO> getDeptUser(String deptId, String dangerId) {
+        DeptTreeResDTO res = deptMapper.selectParent(deptId);
+        if (!Objects.isNull(res) && !"1".equals(res.getId())) {
+            while (!"1".equals(res.getParentId())) {
+                res = deptMapper.selectParent(res.getId());
+                if (Objects.isNull(res)) {
+                    break;
+                }
+            }
+            return deptMapper.selectDepartmentUser(res.getId(), dangerId);
+        } else if ("1".equals(res.getId())) {
+            return deptMapper.selectDepartmentUser(deptId, dangerId);
+        } else {
+            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+        }
     }
 }

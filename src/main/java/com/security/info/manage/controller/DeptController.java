@@ -2,6 +2,7 @@ package com.security.info.manage.controller;
 
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.security.info.manage.dto.DataResponse;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.service.DeptService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,5 +47,12 @@ public class DeptController {
     @ApiOperation(value = "获取一级目录列表")
     public DataResponse<List<DeptTreeResDTO>> listFirst() {
         return DataResponse.of(deptService.listFirst());
+    }
+
+    @GetMapping("/getDeptUser")
+    @ApiOperation(value = "获取最上级部门人员")
+    public DataResponse<List<UserResDTO>> getDeptUser(@RequestParam String deptId,
+                                                      @RequestParam(required = false) String dangerId) {
+        return DataResponse.of(deptService.getDeptUser(deptId, dangerId));
     }
 }

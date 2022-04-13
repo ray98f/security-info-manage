@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.*;
+import com.security.info.manage.dto.res.PostChangeListResDTO;
 import com.security.info.manage.dto.res.PostResDTO;
 import com.security.info.manage.dto.res.TrainDetailResDTO;
 import com.security.info.manage.dto.res.TrainResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
+import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.PostMapper;
 import com.security.info.manage.mapper.TrainMapper;
 import com.security.info.manage.service.PostService;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,15 +49,35 @@ public class TrainServiceImpl implements TrainService {
     @Autowired
     private TrainMapper trainMapper;
 
+    @Autowired
+    private FileMapper fileMapper;
+
     @Override
     public Page<TrainResDTO> listTrain(String startTime, String endTime, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return trainMapper.listTrain(pageReqDTO.of(), startTime, endTime);
+        Page<TrainResDTO> page = trainMapper.listTrain(pageReqDTO.of(), startTime, endTime);
+        List<TrainResDTO> list = page.getRecords();
+        if (list != null && !list.isEmpty()) {
+            for (TrainResDTO resDTO : list) {
+                if (resDTO.getPic() != null && !"".equals(resDTO.getPic())) {
+                    resDTO.setPicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getPic().split(","))));
+                }
+            }
+        }
+        page.setRecords(list);
+        return page;
     }
 
     @Override
     public TrainResDTO getTrainDetail(String id) {
-        return trainMapper.getTrainDetail(id);
+        TrainResDTO res = trainMapper.getTrainDetail(id);
+        if (Objects.isNull(res)) {
+            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+        }
+        if (res.getPic() != null && !"".equals(res.getPic())) {
+            res.setPicFile(fileMapper.selectFileInfo(Arrays.asList(res.getPic().split(","))));
+        }
+        return res;
     }
 
     @Override
