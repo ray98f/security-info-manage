@@ -10,7 +10,7 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.DeptMapper;
 import com.security.info.manage.service.DeptService;
-import com.security.info.manage.utils.DeptTreeToolUtils;
+import com.security.info.manage.utils.treeTool.DeptTreeToolUtils;
 import com.security.info.manage.utils.Constants;
 import com.security.info.manage.utils.TokenUtil;
 import com.security.info.manage.utils.VxApiUtils;

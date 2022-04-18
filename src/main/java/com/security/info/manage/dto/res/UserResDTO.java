@@ -73,4 +73,36 @@ public class UserResDTO {
 
     @ApiModelProperty(value = "年龄")
     private Integer age;
+
+    public UserResDTO() {}
+
+    public UserResDTO(String id, String name, String realName) {
+        this.id = id;
+        this.name = name;
+        this.realName = realName;
+    }
+
+    public UserResDTO(String id, String name, String realName, String mobile, String telephone, String email, String bizMail, Integer status, Integer userStatus, String openUserid, String mainDept, String deptName, String avatar, String thumbAvatar, String qrCode, String address, String gender, String userName, String password, String userNo, Integer age) {
+        this.id = id;
+        this.name = name;
+        this.realName = realName;
+        this.mobile = mobile;
+        this.telephone = telephone;
+        this.email = email;
+        this.bizMail = bizMail;
+        this.status = status;
+        this.userStatus = userStatus;
+        this.openUserid = openUserid;
+        this.mainDept = mainDept;
+        this.deptName = deptName;
+        this.avatar = avatar;
+        this.thumbAvatar = thumbAvatar;
+        this.qrCode = qrCode;
+        this.address = address;
+        this.gender = gender;
+        this.userName = userName;
+        this.password = password;
+        this.userNo = userNo;
+        this.age = age;
+    }
 }

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.LawMapper">
+
+    <select id="listLawCatalog" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.no,
+        case when group_concat(distinct lc1.name) is null then 'root' else group_concat(distinct lc1.name) end as route_name,
+        lc.dept_id, d.org_name as dept_name, lc.sort, lc.status
+        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
+        left join t_law_catalog as lc1 on find_in_set(lc1.id,lc.route)>0
+        where lc.is_delete=0
+        group by lc.id
+        order by lc.id asc, lc.sort asc
+    </select>
+
+    <select id="getRoot" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
+        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
+        where lc.is_delete=0 and lc.parent_id='root' and lc.status=0
+        <if test="deptId!=null and deptId!=''">
+            and lc.dept_id=#{deptId}
+        </if>
+    </select>
+
+    <select id="getBody" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
+        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
+        where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0
+        <if test="deptId!=null and deptId!=''">
+            and lc.dept_id=#{deptId}
+        </if>
+    </select>
+
+    <select id="selectIfLawCatalogHadChild" resultType="java.lang.Integer">
+        select count(1) from t_law_catalog where parent_id like CONCAT(#{route},',','%') and status=0 limit 1
+    </select>
+
+    <update id="modifyLawCatalog">
+        update t_law_catalog set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="no!=null">
+            no=#{no},
+        </if>
+        <if test="engName!=null">
+            eng_name=#{engName},
+        </if>
+        <if test="code!=null">
+            code=#{code},
+        </if>
+        <if test="parentId!=null">
+            parent_id=#{parentId},
+        </if>
+        <if test="route!=null">
+            route=#{route},
+        </if>
+        <if test="deptId!=null">
+            dept_id=#{deptId},
+        </if>
+        <if test="sort!=null">
+            sort=#{sort},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <insert id="addLawCatalog">
+        INSERT INTO t_law_catalog (id, no, name, eng_name, code, parent_id, route, dept_id, sort, status, create_by)
+        value (#{id}, #{no}, #{name}, #{engName}, #{code}, #{parentId}, #{route}, #{deptId}, #{sort}, #{status}, #{userId})
+    </insert>
+
+    <insert id="addLawCatalogRole">
+        <foreach collection="userIds" index="index" item="userId" separator="">
+            <foreach collection="lawCatalogIds" index="index" item="lawCatalogId" separator="">
+                insert into t_law_catalog_user(id, law_catalog_id, user_id, role)
+                select replace(uuid(),"-",""), #{lawCatalogId}, #{userId}, #{role}
+                FROM DUAL
+                WHERE not exists (SELECT id FROM t_law_catalog_user WHERE law_catalog_id=#{lawCatalogId} and user_id=#{userId});
+                update t_law_catalog_user set role=#{role} where law_catalog_id=#{lawCatalogId} and user_id=#{userId};
+            </foreach>
+        </foreach>
+    </insert>
+
+    <select id="listLaw" resultType="com.security.info.manage.dto.res.LawResDTO">
+        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
+        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name
+        from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
+        left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0
+        where l.is_delete=0
+        <if test="catalogId!=null and catalogId!=''">
+            and l.catalog_id=#{catalogId}
+        </if>
+        <if test="name!=null and name!=''">
+            and f.file_name like CONCAT('%',#{name},'%')
+        </if>
+        order by l.create_date
+    </select>
+
+    <insert id="addLaw">
+        <foreach collection="fileIds" index="index" item="fileId" separator=";">
+            insert into t_law(id, catalog_id, file_id, create_by)
+            value (replace(uuid(),"-",""), #{lawCatalogId}, #{fileId}, #{createBy})
+        </foreach>
+    </insert>
+
+    <update id="deleteLaw">
+        update t_law set
+        is_delete=1, update_by=#{createBy}
+        where catalog_id=#{lawCatalogId} and file_id=#{fileId} and is_delete=0;
+        update sys_file set
+        is_delete=1, update_by=#{createBy}
+        where id=#{fileId} and is_delete=0;
+    </update>
+</mapper>

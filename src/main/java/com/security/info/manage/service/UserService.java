@@ -38,7 +38,7 @@ public interface UserService {
      *
      * @param passwordReqDTO
      */
-    void changePwd(PasswordReqDTO passwordReqDTO);
+    void changePwd(PasswordReqDTO passwordReqDTO) throws Exception;
 
     /**
      * 编辑用户

@@ -3,6 +3,7 @@ package com.security.info.manage.controller;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
+import com.security.info.manage.dto.req.LoginReqDTO;
 import com.security.info.manage.dto.res.TransportResDTO;
 import com.security.info.manage.entity.Accident;
 import com.security.info.manage.entity.RiskLevel;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author frp
@@ -30,6 +32,12 @@ public class SysController {
 
     @Resource
     private SysService sysService;
+
+    @PostMapping("/login")
+    @ApiOperation(value = "登录")
+    public DataResponse<Map<String, Object>> login(@RequestBody LoginReqDTO loginReqDTO) throws Exception {
+        return DataResponse.of(sysService.login(loginReqDTO));
+    }
 
     @GetMapping("/listRiskLevel")
     @ApiOperation(value = "获取风险等级列表")

@@ -53,7 +53,7 @@ public class UserController {
      */
     @PostMapping("/change")
     @ApiOperation(value = "修改密码")
-    public DataResponse<T> changePwd(@RequestBody @Valid PasswordReqDTO passwordReqDTO) {
+    public DataResponse<T> changePwd(@RequestBody @Valid PasswordReqDTO passwordReqDTO) throws Exception {
         userService.changePwd(passwordReqDTO);
         return DataResponse.success();
     }

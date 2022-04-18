@@ -20,10 +20,7 @@ import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.PostMapper;
 import com.security.info.manage.mapper.UserMapper;
 import com.security.info.manage.service.UserService;
-import com.security.info.manage.utils.AesUtils;
-import com.security.info.manage.utils.Constants;
-import com.security.info.manage.utils.TokenUtil;
-import com.security.info.manage.utils.VxApiUtils;
+import com.security.info.manage.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -141,11 +138,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePwd(PasswordReqDTO passwordReqDTO) {
+    public void changePwd(PasswordReqDTO passwordReqDTO) throws Exception {
         if (Objects.isNull(passwordReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        if (!AesUtils.encrypt(passwordReqDTO.getOldPwd()).equals(userMapper.selectOldPassword(passwordReqDTO))) {
+        if (!MyAESUtil.encrypt(passwordReqDTO.getOldPwd()).equals(userMapper.selectOldPassword(passwordReqDTO))) {
             throw new CommonException(ErrorCode.PWD_ERROR);
         }
         passwordReqDTO.setOldPwd(AesUtils.encrypt(passwordReqDTO.getOldPwd()));

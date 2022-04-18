@@ -32,7 +32,9 @@ public interface RegionMapper {
 
     Page<RegionResDTO> listRegion(Page<PostResDTO> page);
 
-    List<RegionResDTO> listAllRegion();
+    List<RegionResDTO> listAllRegionRoot();
+
+    List<RegionResDTO> listAllRegionBody();
 
     RegionResDTO getRegionDetail(String id);
 

@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author frp
@@ -76,4 +77,7 @@ public class RegionResDTO {
             timezone = "GMT+8"
     )
     private Date createDate;
+
+    @ApiModelProperty(value = "子集")
+    private List<RegionResDTO> children;
 }

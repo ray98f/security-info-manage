@@ -1,9 +1,9 @@
-package com.security.info.manage.utils;
+package com.security.info.manage.utils.treeTool;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
 import com.security.info.manage.dto.res.DeptTreeResDTO;
+import com.security.info.manage.dto.res.LawCatalogResDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -11,41 +11,41 @@ import java.util.Map;
 /**
  * @author frp
  */
-public class ApplianceTypeTreeToolUtils {
+public class LawCatalogTreeToolUtils {
     /**
      * 根节点对象
      */
-    private List<ApplianceTypeTreeResDTO> rootList;
+    private List<LawCatalogResDTO> rootList;
 
     /**
      * 其他节点，可以包含根节点
      */
-    private List<ApplianceTypeTreeResDTO> bodyList;
+    private List<LawCatalogResDTO> bodyList;
 
-    public ApplianceTypeTreeToolUtils(List<ApplianceTypeTreeResDTO> rootList, List<ApplianceTypeTreeResDTO> bodyList) {
+    public LawCatalogTreeToolUtils(List<LawCatalogResDTO> rootList, List<LawCatalogResDTO> bodyList) {
         this.rootList = rootList;
         this.bodyList = bodyList;
     }
 
-    public List<ApplianceTypeTreeResDTO> getTree() {
+    public List<LawCatalogResDTO> getTree() {
         if (bodyList != null && !bodyList.isEmpty()) {
-            //声明一个map，用来过滤已操作过的数据
             Map<String, String> map = Maps.newHashMapWithExpectedSize(bodyList.size());
             rootList.forEach(beanTree -> getChild(beanTree, map));
         }
         return rootList;
     }
 
-    public void getChild(ApplianceTypeTreeResDTO applianceTypeTreeResDTO, Map<String, String> map) {
-        List<ApplianceTypeTreeResDTO> childList = Lists.newArrayList();
+    public void getChild(LawCatalogResDTO lawCatalogResDTO, Map<String, String> map) {
+        List<LawCatalogResDTO> childList = Lists.newArrayList();
         bodyList.stream()
                 .filter(c -> !map.containsKey(c.getId()))
-                .filter(c -> c.getParentId().equals(applianceTypeTreeResDTO.getId()))
+                .filter(c -> c.getParentId().equals(lawCatalogResDTO.getId()))
                 .forEach(c -> {
                     map.put(c.getId(), c.getParentId());
                     getChild(c, map);
                     childList.add(c);
                 });
-        applianceTypeTreeResDTO.setChildren(childList);
+        lawCatalogResDTO.setChildren(childList);
+
     }
 }

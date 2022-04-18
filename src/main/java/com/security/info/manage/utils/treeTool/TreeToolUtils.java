@@ -1,4 +1,4 @@
-package com.security.info.manage.utils;
+package com.security.info.manage.utils.treeTool;
 
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.google.common.collect.Lists;
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author frp
  */
-public class DeptTreeToolUtils {
+public class TreeToolUtils {
     /**
      * 根节点对象
      */
@@ -21,7 +21,7 @@ public class DeptTreeToolUtils {
      */
     private List<DeptTreeResDTO> bodyList;
 
-    public DeptTreeToolUtils(List<DeptTreeResDTO> rootList, List<DeptTreeResDTO> bodyList) {
+    public TreeToolUtils(List<DeptTreeResDTO> rootList, List<DeptTreeResDTO> bodyList) {
         this.rootList = rootList;
         this.bodyList = bodyList;
     }
@@ -31,17 +31,18 @@ public class DeptTreeToolUtils {
             //声明一个map，用来过滤已操作过的数据
             Map<String, String> map = Maps.newHashMapWithExpectedSize(bodyList.size());
             rootList.forEach(beanTree -> getChild(beanTree, map));
+            return rootList;
         }
-        return rootList;
+        return null;
     }
 
     public void getChild(DeptTreeResDTO deptTreeResDTO, Map<String, String> map) {
         List<DeptTreeResDTO> childList = Lists.newArrayList();
         bodyList.stream()
-                .filter(c -> !map.containsKey(c.getId()))
-                .filter(c -> c.getParentId().equals(deptTreeResDTO.getId()))
+                .filter(c -> !map.containsKey(c.getOrgCode()))
+                .filter(c -> c.getParentId().equals(deptTreeResDTO.getOrgCode()))
                 .forEach(c -> {
-                    map.put(c.getId(), c.getParentId());
+                    map.put(c.getOrgCode(), c.getParentId());
                     getChild(c, map);
                     childList.add(c);
                 });

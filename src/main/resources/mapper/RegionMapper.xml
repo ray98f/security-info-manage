@@ -70,12 +70,21 @@
         order by r.create_date asc
     </select>
 
-    <select id="listAllRegion" resultType="com.security.info.manage.dto.res.RegionResDTO">
+    <select id="listAllRegionRoot" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
         r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
         from t_region as r
         left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
-        where r.is_delete=0 and r.status=0
+        where r.is_delete=0 and r.status=0 and r.parent_id=0
+        order by r.create_date asc
+    </select>
+
+    <select id="listAllRegionBody" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
+        where r.is_delete=0 and r.status=0 and r.parent_id!=0
         order by r.create_date asc
     </select>
 

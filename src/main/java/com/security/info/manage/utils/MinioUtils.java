@@ -1,9 +1,6 @@
 package com.security.info.manage.utils;
 
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.SetBucketPolicyArgs;
+import io.minio.*;
 import io.minio.errors.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,6 +67,14 @@ public class MinioUtils {
         try {
             instance.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             setPolicy(bucketName, CommonConstants.BUCKET_POLICY_DEFAULT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeObject(String bucketName, String objectName) {
+        try {
+            instance.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
         } catch (Exception e) {
             e.printStackTrace();
         }

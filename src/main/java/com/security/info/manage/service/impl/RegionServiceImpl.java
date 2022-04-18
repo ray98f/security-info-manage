@@ -12,6 +12,7 @@ import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.RegionMapper;
 import com.security.info.manage.service.RegionService;
 import com.security.info.manage.utils.TokenUtil;
+import com.security.info.manage.utils.treeTool.RegionTreeToolUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,13 +114,20 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public List<RegionResDTO> listAllRegion() {
-        List<RegionResDTO> list = regionMapper.listAllRegion();
-        if (list != null && !list.isEmpty()) {
-            for (RegionResDTO regionResDTO : list) {
+        List<RegionResDTO> root = regionMapper.listAllRegionRoot();
+        if (root != null && !root.isEmpty()) {
+            for (RegionResDTO regionResDTO : root) {
                 regionResDTO.setParentNames(regionMapper.selectParentNames(regionResDTO.getParentIds()));
             }
         }
-        return list;
+        List<RegionResDTO> body = regionMapper.listAllRegionBody();
+        if (body != null && !body.isEmpty()) {
+            for (RegionResDTO regionResDTO : body) {
+                regionResDTO.setParentNames(regionMapper.selectParentNames(regionResDTO.getParentIds()));
+            }
+        }
+        RegionTreeToolUtils res = new RegionTreeToolUtils(root, body);
+        return res.getTree();
     }
 
     @Override

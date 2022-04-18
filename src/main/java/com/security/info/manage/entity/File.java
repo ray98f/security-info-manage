@@ -23,4 +23,7 @@ public class File {
 
     @ApiModelProperty(value = "链接")
     private String fileUrl;
+
+    @ApiModelProperty(value = "内容")
+    private String content;
 }

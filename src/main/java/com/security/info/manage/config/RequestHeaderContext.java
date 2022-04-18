@@ -1,6 +1,7 @@
 package com.security.info.manage.config;
 
 import com.security.info.manage.dto.SimpleTokenInfo;
+import com.security.info.manage.dto.res.UserResDTO;
 import lombok.Data;
 
 
@@ -16,7 +17,7 @@ public class RequestHeaderContext {
 
     private static final ThreadLocal<RequestHeaderContext> REQUEST_HEADER_CONTEXT_THREAD_LOCAL = new ThreadLocal<>();
 
-    private SimpleTokenInfo user;
+    private UserResDTO user;
 
     public static RequestHeaderContext getInstance() {
         return REQUEST_HEADER_CONTEXT_THREAD_LOCAL.get();
@@ -38,9 +39,9 @@ public class RequestHeaderContext {
     @Data
     public static class RequestHeaderContextBuild {
 
-        private SimpleTokenInfo user;
+        private UserResDTO user;
 
-        public RequestHeaderContextBuild user(SimpleTokenInfo user) {
+        public RequestHeaderContextBuild user(UserResDTO user) {
             this.user = user;
             return this;
         }

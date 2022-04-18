@@ -1,7 +1,9 @@
 package com.security.info.manage.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.security.info.manage.config.RequestHeaderContext;
 import com.security.info.manage.dto.SimpleTokenInfo;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.enums.TokenStatus;
 import com.security.info.manage.exception.CommonException;
@@ -99,7 +101,7 @@ public class TokenUtil {
      * @return String
      * @throws Exception Token校验失败
      */
-    public static String createSimpleToken(CurrentLoginUser item) {
+    public static String createSimpleToken(UserResDTO item) {
         //默认token有效时间为2小时
         return createSimpleToken(item, 60 * 60 * 2 * 1000);
     }
@@ -112,13 +114,14 @@ public class TokenUtil {
      * @param ttlMillis 令牌有效时间
      * @return 返还生成的令牌
      */
-    public static String createSimpleToken(CurrentLoginUser item, long ttlMillis) {
+    public static String createSimpleToken(UserResDTO item, long ttlMillis) {
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
         JwtBuilder builder = Jwts.builder()
-                .setId(String.valueOf(item.getPersonNo()))
-                .setSubject(item.getPersonName())
+                .setId(String.valueOf(item.getId()))
+                .setSubject(item.getRealName())
                 .setIssuedAt(now)
+                .claim("CURRENT_USER_INFO", JSON.toJSONString(item))
                 .signWith(generalKey(SIMPLE_TOKEN_SECRET));
         if (ttlMillis >= 0) {
             long expMillis = nowMillis + ttlMillis;
@@ -132,7 +135,7 @@ public class TokenUtil {
      * Simple
      * 验证令牌，成功则返还令牌所携带的信息
      */
-    private static SimpleTokenInfo simpleParseToken(String token) throws JwtException {
+    private static UserResDTO simpleParseToken(String token) throws JwtException {
         Jws<Claims> jws;
         try {
             jws = Jwts.parser()
@@ -143,10 +146,7 @@ public class TokenUtil {
             return null;
         }
         Claims res = jws.getBody();
-        return new SimpleTokenInfo(
-                res.getId(),
-                res.getSubject()
-        );
+        return JSON.parseObject(res.get("CURRENT_USER_INFO", String.class), UserResDTO.class);
     }
 
     /**
@@ -155,24 +155,24 @@ public class TokenUtil {
      *
      * @return
      */
-    public static SimpleTokenInfo getSimpleTokenInfo(String token) {
-        SimpleTokenInfo simpleTokenInfo = null;
+    public static UserResDTO getSimpleTokenInfo(String token) {
+        UserResDTO userResDTO = null;
         try {
-            simpleTokenInfo = simpleParseToken(token);
+            userResDTO = simpleParseToken(token);
         } catch (JwtException e) {
             e.printStackTrace();
         }
         // 401
-        if (token == null || Constants.EMPTY.equals(token) || simpleTokenInfo == null) {
+        if (token == null || Constants.EMPTY.equals(token) || userResDTO == null) {
             throw new CommonException(ErrorCode.AUTHORIZATION_CHECK_FAIL);
         }
-        return simpleTokenInfo;
+        return userResDTO;
     }
 
     public static String getCurrentPersonNo() {
         String personNo;
         try {
-            personNo = RequestHeaderContext.getInstance().getUser().getPersonNo();
+            personNo = RequestHeaderContext.getInstance().getUser().getId();
         } catch (Exception e) {
             personNo = "";
         }
@@ -182,7 +182,7 @@ public class TokenUtil {
     public static String getCurrentUserName() {
         String userName;
         try {
-            userName = RequestHeaderContext.getInstance().getUser().getPersonName();
+            userName = RequestHeaderContext.getInstance().getUser().getRealName();
         } catch (Exception e) {
             userName = "";
         }

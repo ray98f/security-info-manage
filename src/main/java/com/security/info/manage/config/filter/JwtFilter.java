@@ -2,6 +2,7 @@ package com.security.info.manage.config.filter;
 
 import com.security.info.manage.config.RequestHeaderContext;
 import com.security.info.manage.dto.SimpleTokenInfo;
+import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.enums.TokenStatus;
 import com.security.info.manage.exception.CommonException;
@@ -49,9 +50,9 @@ public class JwtFilter implements Filter {
             switch (Objects.requireNonNull(tokenStatus)) {
                 //有效
                 case VALID:
-                    SimpleTokenInfo simpleTokenInfo = TokenUtil.getSimpleTokenInfo(token);
-                    new RequestHeaderContext.RequestHeaderContextBuild().user(simpleTokenInfo).build();
-                    httpRequest.setAttribute("tokenInfo", simpleTokenInfo);
+                    UserResDTO userResDTO = TokenUtil.getSimpleTokenInfo(token);
+                    new RequestHeaderContext.RequestHeaderContextBuild().user(userResDTO).build();
+                    httpRequest.setAttribute("tokenInfo", userResDTO);
                     chain.doFilter(httpRequest, httpResponse);
                     break;
                 //过期
