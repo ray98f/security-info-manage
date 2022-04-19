@@ -101,7 +101,8 @@
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
         left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
         left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
-        where u.is_delete=0 and u.status=0
+        where u.is_delete=0 and u.status=1
+        group by u.id
     </select>
 
     <select id="listUser" resultType="com.security.info.manage.dto.res.UserResDTO">

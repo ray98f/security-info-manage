@@ -10,7 +10,20 @@
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
         left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
         left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
-        where u.is_delete=0 and u.status=0 and ue.user_name=#{userName}
+        where u.is_delete=0 and u.status=1 and ue.user_name=#{userName}
+    </select>
+
+    <select id="listUserMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">
+        select distinct m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
+        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color,
+        case when group_concat(distinct m1.menu_name) is null then 'root' else group_concat(distinct m1.menu_name) end as parent_names
+        from sys_user_role as ur
+        left join sys_role_menu as rm on rm.role_id=ur.role_id
+        left join sys_menu as m on m.id=rm.menu_id and m.is_delete=0
+        left join sys_menu as m1 on find_in_set(m1.id,m.parent_ids)>0
+        where ur.user_id=#{userId}
+        group by m.id
+        order by m.id asc, m.menu_sort asc
     </select>
 
     <select id="listRiskLevel" resultType="com.security.info.manage.entity.RiskLevel">
@@ -20,4 +33,250 @@
     <select id="listAccident" resultType="com.security.info.manage.entity.Accident">
         select id, code, name from sys_accident
     </select>
+
+    <select id="listMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">
+        select m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
+        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color,
+        case when group_concat(distinct m1.menu_name) is null then 'root' else group_concat(distinct m1.menu_name) end as parent_names
+        from sys_menu as m
+        left join sys_menu as m1 on find_in_set(m1.id,m.parent_ids)>0
+        where m.is_delete=0
+        group by m.id
+        order by m.id asc, m.menu_sort asc
+    </select>
+
+    <select id="getMenuRoot" resultType="com.security.info.manage.dto.res.MenuResDTO">
+        select m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
+        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color
+        from sys_menu as m
+        where m.is_delete=0 and m.parent_id='root' and m.status=0 and m.is_show=1
+    </select>
+
+    <select id="getMenuBody" resultType="com.security.info.manage.dto.res.MenuResDTO">
+        select m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
+        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color
+        from sys_menu as m
+        where m.is_delete=0 and m.parent_id!='root' and m.status=0 and m.is_show=1
+    </select>
+
+    <select id="selectIfMenuHadChild" resultType="java.lang.Integer">
+        select count(1) from sys_menu where parent_ids like CONCAT((select parent_ids from sys_menu where id=#{id}),',','%')
+        and status=0 and is_delete=0 limit 1
+    </select>
+
+    <update id="modifyMenu">
+        update sys_menu set
+        <if test="parentId!=null">
+            parent_id=#{parentId},
+        </if>
+        <if test="parentIds!=null">
+            parent_ids=#{parentIds},
+        </if>
+        <if test="menuCode!=null">
+            menu_code=#{menuCode},
+        </if>
+        <if test="menuName!=null">
+            menu_name=#{menuName},
+        </if>
+        <if test="menuType!=null">
+            menu_type=#{menuType},
+        </if>
+        <if test="menuSort!=null">
+            menu_sort=#{menuSort},
+        </if>
+        <if test="menuPath!=null">
+            menu_path=#{menuPath},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        <if test="menuIcon!=null">
+            menu_icon=#{menuIcon},
+        </if>
+        <if test="menuUrl!=null">
+            menu_url=#{menuUrl},
+        </if>
+        <if test="isShow!=null">
+            is_show=#{isShow},
+        </if>
+        <if test="backgroundColor!=null">
+            background_color=#{backgroundColor},
+        </if>
+        <if test="backgroundPic!=null">
+            background_pic=#{backgroundPic},
+        </if>
+        <if test="titleColor!=null">
+            title_color=#{titleColor},
+        </if>
+        update_by=#{createBy}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <insert id="addMenu">
+        INSERT INTO sys_menu (id, parent_id, parent_ids, menu_code, menu_name, menu_type,
+        <if test="menuSort!=null">
+            menu_sort,
+        </if>
+        menu_path, status, menu_icon, menu_url, is_show, background_color, background_pic, title_color, create_by)
+        value (#{id}, #{parentId}, #{parentIds}, #{menuCode}, #{menuName}, #{menuType},
+        <if test="menuSort!=null">
+            #{menuSort},
+        </if>
+        #{menuPath}, #{status}, #{menuIcon}, #{menuUrl}, #{isShow}, #{backgroundColor}, #{backgroundPic}, #{titleColor}, #{createBy})
+    </insert>
+
+    <update id="deleteMenu">
+        update sys_menu set
+        is_delete=1, update_by=#{createBy}
+        where id=#{id};
+        update sys_menu set
+        is_delete=1, update_by=#{createBy}
+        where parent_ids like CONCAT((select a.parent_ids from (select parent_ids from sys_menu where id=#{id}) as a),',','%');
+    </update>
+
+    <select id="listAllRole" resultType="com.security.info.manage.entity.Role">
+        select id, role_name, role_code, sort, status, remark from sys_role where is_delete=0
+        ORDER BY create_date DESC
+    </select>
+
+    <select id="listRole" resultType="com.security.info.manage.entity.Role">
+        select id, role_name, role_code, sort, status, remark from sys_role where is_delete=0
+        <if test="status!=null">
+            and status=#{status}
+        </if>
+        <if test="roleName!=null and roleName!=''">
+            and role_name like CONCAT('%',#{roleName},'%')
+        </if>
+        ORDER BY create_date DESC
+    </select>
+
+    <select id="selectRoleUse" resultType="java.lang.Integer">
+        select count(1) from sys_user_role where role_id=#{id} limit 1
+    </select>
+
+    <update id="deleteRole">
+        update sys_role set is_delete=1 where id=#{id} and is_delete=0;
+        delete from sys_user_role where role_id=#{id};
+        delete from sys_role_menu where role_id=#{id};
+    </update>
+
+    <select id="selectRoleIsExist" resultType="java.lang.Integer">
+        select count(1) from sys_role where role_name=#{roleName} and role_code=#{roleCode} and is_delete=0
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="insertRole">
+        insert into sys_role
+        <trim prefix="(" suffix=")">
+            id,
+            <if test="roleName!=null and roleName!=''">
+                role_name,
+            </if>
+            <if test="roleCode!=null and roleCode!=''">
+                role_code,
+            </if>
+            <if test="sort!=null">
+                sort,
+            </if>
+            <if test="status!=null">
+                status,
+            </if>
+            <if test="remark!=null and remark!=''">
+                remark,
+            </if>
+            create_by
+        </trim>
+        value
+        <trim prefix="(" suffix=")">
+            #{id},
+            <if test="roleName!=null and roleName!=''">
+                #{roleName},
+            </if>
+            <if test="roleCode!=null and roleCode!=''">
+                #{roleCode},
+            </if>
+            <if test="sort!=null">
+                #{sort},
+            </if>
+            <if test="status!=null">
+                #{status},
+            </if>
+            <if test="remark!=null and remark!=''">
+                #{remark},
+            </if>
+            #{createBy}
+        </trim>
+    </insert>
+
+    <update id="updateRole">
+        update sys_role
+        <set>
+            <if test="roleName!=null" >
+                role_name=#{roleName},
+            </if>
+            <if test="roleCode!=null" >
+                role_code=#{roleCode},
+            </if>
+            <if test="sort!=null" >
+                sort=#{sort},
+            </if>
+            <if test="status!=null" >
+                status=#{status},
+            </if>
+            <if test="remark!=null" >
+                remark=#{remark},
+            </if>
+            update_by=#{createBy}
+        </set>
+        WHERE id=#{id} and is_delete=0
+    </update>
+
+    <insert id="insertRoleMenu">
+        insert into sys_role_menu(id, role_id, menu_id)
+        values
+        <foreach collection="menuIds" index="index" item="menuId" separator=",">
+            (replace(uuid(),"-",""), #{roleId}, #{menuId})
+        </foreach>
+    </insert>
+
+    <select id="selectRoleMenuIds" resultType="java.lang.String">
+        SELECT DISTINCT menu_id FROM sys_role_menu WHERE role_id=#{roleId}
+    </select>
+
+    <delete id="deleteRoleMenus">
+        delete from sys_role_menu WHERE role_id=#{roleId}
+    </delete>
+
+    <select id="listUserRole" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user_role as ur
+        left join sys_user as u on u.id=ur.user_id and u.is_delete=0 and u.status=1
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where ur.role_id=#{roleId}
+        group by u.id
+    </select>
+
+    <insert id="addUserRole">
+        <foreach collection="userIds" index="index" item="userId" separator=";">
+            insert into sys_user_role (id, user_id, role_id)
+            select replace(uuid(),"-",""), #{userId}, #{roleId}
+            from dual
+            WHERE not exists (SELECT id FROM sys_user_role WHERE user_id=#{userId} and role_id=#{roleId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteUserRole">
+        delete from sys_user_role
+        where role_id=#{roleId} and user_id in (
+        <foreach collection="userIds" index="index" item="userId" separator=",">
+            #{userId}
+        </foreach>
+        )
+    </delete>
 </mapper>
