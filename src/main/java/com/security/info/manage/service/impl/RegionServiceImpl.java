@@ -93,7 +93,8 @@ public class RegionServiceImpl implements RegionService {
         List<RegionResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (RegionResDTO regionResDTO : list) {
-                regionResDTO.setParentNames(regionMapper.selectParentNames(regionResDTO.getParentIds()));
+                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
             }
         }
         page.setRecords(list);
@@ -107,7 +108,8 @@ public class RegionServiceImpl implements RegionService {
         }
         RegionResDTO regionResDTO = regionMapper.getRegionDetail(id);
         if (!Objects.isNull(regionResDTO)) {
-            regionResDTO.setParentNames(regionMapper.selectParentNames(regionResDTO.getParentIds()));
+            String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+            regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
         }
         return regionResDTO;
     }
@@ -117,13 +119,15 @@ public class RegionServiceImpl implements RegionService {
         List<RegionResDTO> root = regionMapper.listAllRegionRoot();
         if (root != null && !root.isEmpty()) {
             for (RegionResDTO regionResDTO : root) {
-                regionResDTO.setParentNames(regionMapper.selectParentNames(regionResDTO.getParentIds()));
+                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
             }
         }
         List<RegionResDTO> body = regionMapper.listAllRegionBody();
         if (body != null && !body.isEmpty()) {
             for (RegionResDTO regionResDTO : body) {
-                regionResDTO.setParentNames(regionMapper.selectParentNames(regionResDTO.getParentIds()));
+                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
             }
         }
         RegionTreeToolUtils res = new RegionTreeToolUtils(root, body);

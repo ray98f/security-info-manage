@@ -32,7 +32,7 @@
     </select>
 
     <select id="selectIfLawCatalogHadChild" resultType="java.lang.Integer">
-        select count(1) from t_law_catalog where parent_id like CONCAT(#{route},',','%') and status=0 limit 1
+        select count(1) from t_law_catalog where route like CONCAT(#{route},',','%') and status=0 and is_delete=0 limit 1
     </select>
 
     <update id="modifyLawCatalog">

@@ -20,6 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
@@ -87,6 +88,7 @@ public class TransportServiceImpl implements TransportService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void importTransport(MultipartFile file) {
         try {
             Workbook workbook;

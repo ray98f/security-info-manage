@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * @author frp
  */
@@ -26,5 +28,5 @@ public interface RiskMapper {
 
     Integer deleteRisk(RiskInfoReqDTO riskInfoReqDTO);
 
-    void importRisk(MultipartFile file);
+    void importRisk(List<RiskInfoReqDTO> list);
 }

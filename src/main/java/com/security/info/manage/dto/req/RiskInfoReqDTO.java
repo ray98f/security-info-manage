@@ -17,7 +17,7 @@ public class RiskInfoReqDTO {
     private String id;
 
     @ApiModelProperty(value = "风险项类型 1 运营类 2 生产类")
-    private String type;
+    private Integer type;
 
     @ApiModelProperty(value = "所属专业模块")
     private String modules;
