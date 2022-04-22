@@ -9,6 +9,7 @@ import com.security.info.manage.dto.req.RoleReqDTO;
 import com.security.info.manage.dto.req.UserRoleReqDTO;
 import com.security.info.manage.dto.res.LawCatalogResDTO;
 import com.security.info.manage.dto.res.MenuResDTO;
+import com.security.info.manage.dto.res.OperationLogResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.Accident;
 import com.security.info.manage.entity.RiskLevel;
@@ -259,5 +260,11 @@ public class SysServiceImpl implements SysService {
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
+    }
+
+    @Override
+    public Page<OperationLogResDTO> listOperLog(String startTime, String endTime, Integer type, PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return sysMapper.listOperLog(pageReqDTO.of(), startTime, endTime, type);
     }
 }

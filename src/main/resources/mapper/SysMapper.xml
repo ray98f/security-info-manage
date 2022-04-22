@@ -294,4 +294,19 @@
         </foreach>
         )
     </delete>
+
+    <select id="listOperLog" resultType="com.security.info.manage.dto.res.OperationLogResDTO">
+        select id, user_name, operation_time, operation_type, use_time, params, host_ip, create_date from sys_operation_log
+        where is_delete=0
+        <if test="startTime!=null and startTime!=''">
+            and operation_time>=#{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and #{endTime}>=operation_time
+        </if>
+        <if test="type!=null">
+            and operation_type=#{type}
+        </if>
+        order by operation_time desc
+    </select>
 </mapper>

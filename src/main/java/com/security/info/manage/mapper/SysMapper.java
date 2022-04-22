@@ -6,6 +6,7 @@ import com.security.info.manage.dto.req.MenuReqDTO;
 import com.security.info.manage.dto.req.RoleReqDTO;
 import com.security.info.manage.dto.req.UserRoleReqDTO;
 import com.security.info.manage.dto.res.MenuResDTO;
+import com.security.info.manage.dto.res.OperationLogResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.Accident;
 import com.security.info.manage.entity.RiskLevel;
@@ -71,4 +72,6 @@ public interface SysMapper {
     Integer addUserRole(UserRoleReqDTO userRoleReqDTO);
 
     Integer deleteUserRole(UserRoleReqDTO userRoleReqDTO);
+
+    Page<OperationLogResDTO> listOperLog(Page<OperationLogResDTO> page, String startTime, String endTime, Integer type);
 }

@@ -7,6 +7,7 @@ import com.security.info.manage.dto.req.MenuReqDTO;
 import com.security.info.manage.dto.req.RoleReqDTO;
 import com.security.info.manage.dto.req.UserRoleReqDTO;
 import com.security.info.manage.dto.res.MenuResDTO;
+import com.security.info.manage.dto.res.OperationLogResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.Accident;
 import com.security.info.manage.entity.RiskLevel;
@@ -57,5 +58,7 @@ public interface SysService {
     void addUserRole(UserRoleReqDTO userRoleReqDTO);
 
     void deleteUserRole(UserRoleReqDTO userRoleReqDTO);
+
+    Page<OperationLogResDTO> listOperLog(String startTime, String endTime, Integer type, PageReqDTO pageReqDTO);
 
 }

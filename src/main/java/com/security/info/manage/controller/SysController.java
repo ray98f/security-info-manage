@@ -4,10 +4,7 @@ import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.*;
-import com.security.info.manage.dto.res.LawCatalogResDTO;
-import com.security.info.manage.dto.res.MenuResDTO;
-import com.security.info.manage.dto.res.TransportResDTO;
-import com.security.info.manage.dto.res.UserResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.Accident;
 import com.security.info.manage.entity.RiskLevel;
 import com.security.info.manage.entity.Role;
@@ -160,5 +157,14 @@ public class SysController {
     public DataResponse<T> deleteUserRole(@RequestBody UserRoleReqDTO userRoleReqDTO) {
         sysService.deleteUserRole(userRoleReqDTO);
         return DataResponse.success();
+    }
+
+    @GetMapping("/oper/log")
+    @ApiOperation(value = "获取操作日志列表")
+    public PageResponse<OperationLogResDTO> listOperLog(@RequestParam(required = false) String startTime,
+                                                        @RequestParam(required = false) String endTime,
+                                                        @RequestParam(required = false) Integer type,
+                                                        @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(sysService.listOperLog(startTime, endTime, type, pageReqDTO));
     }
 }
