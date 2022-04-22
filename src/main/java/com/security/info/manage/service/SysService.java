@@ -11,6 +11,7 @@ import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.Accident;
 import com.security.info.manage.entity.RiskLevel;
 import com.security.info.manage.entity.Role;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public interface SysService {
 
     List<Accident> listAccident();
 
-    Page<MenuResDTO> listMenu(PageReqDTO pageReqDTO);
+    Page<MenuResDTO> listMenu(Integer type, String name, PageReqDTO pageReqDTO);
 
     List<MenuResDTO> listAllMenu();
 

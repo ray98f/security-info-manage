@@ -155,8 +155,8 @@ public enum ErrorCode {
     /**
      * 字典
      */
-    DIC_TYPE_ALREADY_EXIST(32000121, "dic.type.already.exist"),
-    DIC_TYPE_NOT_EXIST(32000122, "dic.type.not.exist"),
+    DIC_TYPE_EXIST(32000121, "dic.type.exist"),
+    DIC_DATA_EXIST(32000122, "dic.data.exist"),
     /**
      * 其他
      */
@@ -186,7 +186,8 @@ public enum ErrorCode {
     USER_REVIEW_EXIST(32000012, "user.review.exist"),
     POST_HAZARD_FACTOR_EXIST(32000012, "post.hazard.factor.exist"),
     CANT_DELETE_HAD_CHILD(32000012, "cant.delete.had.child"),
-    CANT_UPDATE_HAD_CHILD(32000012, "cant.update.had.child");
+    CANT_UPDATE_HAD_CHILD(32000012, "cant.update.had.child"),
+    PREVIEW_ERROR(31000004, "preview.error");
 
     private Integer code;
 

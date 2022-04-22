@@ -63,37 +63,45 @@
 
     <select id="listRegion" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
-        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
         from t_region as r
-        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
         where r.is_delete=0
         order by r.create_date asc
     </select>
 
     <select id="listAllRegionRoot" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
-        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
         from t_region as r
-        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
         where r.is_delete=0 and r.status=0 and r.parent_id=0
         order by r.create_date asc
     </select>
 
     <select id="listAllRegionBody" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
-        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
         from t_region as r
-        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
         where r.is_delete=0 and r.status=0 and r.parent_id!=0
         order by r.create_date asc
     </select>
 
     <select id="getRegionDetail" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
-        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
         from t_region as r
-        left join t_region_type as rt on rt.id=r.type_id and r.is_delete=0
-        where r.is_delete=0 and id=#{id}
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
+        where r.is_delete=0 and r.id=#{id}
         order by r.create_date asc
     </select>
 
@@ -101,6 +109,28 @@
         select GROUP_CONCAT(name) from t_region
         where FIND_IN_SET(id,#{parentIds}) > 0
         group by id
+    </select>
+
+    <select id="selectRegionRootByType" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
+        where r.is_delete=0 and r.type_id=#{id} and r.parent_id=0
+        order by r.create_date asc
+    </select>
+
+    <select id="selectRegionBodyByType" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
+        where r.is_delete=0 and r.parent_id=#{id}
+        order by r.create_date asc
     </select>
 
     <select id="selectRegionIsExist" resultType="java.lang.Integer">

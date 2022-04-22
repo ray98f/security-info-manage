@@ -88,4 +88,10 @@ public class LawController {
         return DataResponse.success();
     }
 
+    @GetMapping("/preview")
+    @ApiOperation(value = "法律法规预览")
+    public DataResponse<String> previewLaw(@RequestParam String url) {
+        return DataResponse.of(lawService.previewLaw(url));
+    }
+
 }

@@ -67,8 +67,10 @@ public class SysController {
 
     @GetMapping("/menu/list")
     @ApiOperation(value = "获取菜单列表")
-    public PageResponse<MenuResDTO> listMenu(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(sysService.listMenu(pageReqDTO));
+    public PageResponse<MenuResDTO> listMenu(@RequestParam(required = false) Integer type,
+                                             @RequestParam(required = false) String name,
+                                             @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(sysService.listMenu(type, name, pageReqDTO));
     }
 
     @GetMapping("/menu/listAll")

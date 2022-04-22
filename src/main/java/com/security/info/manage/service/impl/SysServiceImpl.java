@@ -65,7 +65,13 @@ public class SysServiceImpl implements SysService {
         if (Objects.isNull(userId)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        return sysMapper.listUserMenu(userId);
+        List<MenuResDTO> extraRootList = sysMapper.listUserRootMenu(userId);
+        if (Objects.isNull(extraRootList)) {
+            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+        }
+        List<MenuResDTO> extraBodyList = sysMapper.listUserBodyMenu(userId);
+        MenuTreeToolUtils extraTree = new MenuTreeToolUtils(extraRootList, extraBodyList);
+        return extraTree.getTree();
     }
 
     @Override
@@ -79,9 +85,9 @@ public class SysServiceImpl implements SysService {
     }
 
     @Override
-    public Page<MenuResDTO> listMenu(PageReqDTO pageReqDTO) {
+    public Page<MenuResDTO> listMenu(Integer type, String name, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        Page<MenuResDTO> page = sysMapper.listMenu(pageReqDTO.of());
+        Page<MenuResDTO> page = sysMapper.listMenu(pageReqDTO.of(), type, name);
         List<MenuResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (MenuResDTO res : list) {

@@ -37,7 +37,7 @@ public class JwtFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        if (!Arrays.asList(pages).contains(httpRequest.getRequestURI()) || httpRequest.getRequestURI().contains("/static")) {
+        if (Arrays.asList(pages).contains(httpRequest.getRequestURI())) {
             chain.doFilter(httpRequest, httpResponse);
         } else {
             String token = httpRequest.getHeader("Authorization");

@@ -24,13 +24,15 @@ public interface SysMapper {
 
     UserResDTO selectUser(String userName);
 
-    List<MenuResDTO> listUserMenu(String userId);
+    List<MenuResDTO> listUserRootMenu(String userId);
+
+    List<MenuResDTO> listUserBodyMenu(String userId);
 
     List<RiskLevel> listRiskLevel();
 
     List<Accident> listAccident();
 
-    Page<MenuResDTO> listMenu(Page<MenuResDTO> page);
+    Page<MenuResDTO> listMenu(Page<MenuResDTO> page, Integer type, String name);
 
     List<MenuResDTO> getMenuRoot();
 

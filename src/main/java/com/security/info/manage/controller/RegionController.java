@@ -7,6 +7,7 @@ import com.security.info.manage.dto.req.RegionReqDTO;
 import com.security.info.manage.dto.req.RegionTypeReqDTO;
 import com.security.info.manage.dto.res.RegionResDTO;
 import com.security.info.manage.dto.res.RegionTypeResDTO;
+import com.security.info.manage.dto.res.VxRegionResDTO;
 import com.security.info.manage.service.RegionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -82,6 +83,18 @@ public class RegionController {
     @ApiOperation(value = "获取所有区域列表")
     public DataResponse<List<RegionResDTO>> listAllRegion() {
         return DataResponse.of(regionService.listAllRegion());
+    }
+
+    @GetMapping("/vx/listAll")
+    @ApiOperation(value = "微信端-获取所有一级区域列表")
+    public DataResponse<List<VxRegionResDTO>> vxListAllRegion() {
+        return DataResponse.of(regionService.vxListAllRegion());
+    }
+
+    @GetMapping("/vx/getBody")
+    @ApiOperation(value = "微信端-获取一级区域子集列表")
+    public DataResponse<List<RegionResDTO>> vxGetRegionBody(@RequestParam String id) {
+        return DataResponse.of(regionService.vxGetRegionBody(id));
     }
 
     @PostMapping("/modify")

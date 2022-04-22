@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Data
 public class RegionResDTO {
+
     @ApiModelProperty(value = "id")
     private String id;
 
@@ -43,8 +44,17 @@ public class RegionResDTO {
     @ApiModelProperty(value = "地图坐标-经度")
     private Double lat;
 
-    @ApiModelProperty(value = "区域层级")
+    @ApiModelProperty(value = "区域风险等级id")
     private Integer level;
+
+    @ApiModelProperty(value = "区域风险等级名称")
+    private String levelName;
+
+    @ApiModelProperty(value = "区域风险等级颜色")
+    private String levelColor;
+
+    @ApiModelProperty(value = "区域风险等级色谱")
+    private String levelChromatography;
 
     @ApiModelProperty(value = "备注")
     private String remark;

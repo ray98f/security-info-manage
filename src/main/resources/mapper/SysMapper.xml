@@ -13,17 +13,26 @@
         where u.is_delete=0 and u.status=1 and ue.user_name=#{userName}
     </select>
 
-    <select id="listUserMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">
+    <select id="listUserRootMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">
         select distinct m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
-        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color,
-        case when group_concat(distinct m1.menu_name) is null then 'root' else group_concat(distinct m1.menu_name) end as parent_names
+        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color
         from sys_user_role as ur
         left join sys_role_menu as rm on rm.role_id=ur.role_id
-        left join sys_menu as m on m.id=rm.menu_id and m.is_delete=0
-        left join sys_menu as m1 on find_in_set(m1.id,m.parent_ids)>0
-        where ur.user_id=#{userId}
+        left join sys_menu as m on m.id=rm.menu_id and m.is_delete=0 and m.status=0
+        where ur.user_id=#{userId} and m.parent_id='root' and m.menu_type=1
         group by m.id
-        order by m.id asc, m.menu_sort asc
+        order by m.menu_sort asc
+    </select>
+
+    <select id="listUserBodyMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">
+        select distinct m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
+        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color
+        from sys_user_role as ur
+        left join sys_role_menu as rm on rm.role_id=ur.role_id
+        left join sys_menu as m on m.id=rm.menu_id and m.is_delete=0 and m.status=0
+        where ur.user_id=#{userId} and m.parent_id!='root' and m.menu_type!=1
+        group by m.id
+        order by m.menu_sort asc
     </select>
 
     <select id="listRiskLevel" resultType="com.security.info.manage.entity.RiskLevel">
@@ -41,8 +50,14 @@
         from sys_menu as m
         left join sys_menu as m1 on find_in_set(m1.id,m.parent_ids)>0
         where m.is_delete=0
+        <if test="type!=null">
+            and m.menu_type=#{type}
+        </if>
+        <if test="name!=null and name!=''">
+            and m.menu_name like concat('%', #{name},'%')
+        </if>
         group by m.id
-        order by m.id asc, m.menu_sort asc
+        order by m.menu_sort asc
     </select>
 
     <select id="getMenuRoot" resultType="com.security.info.manage.dto.res.MenuResDTO">

@@ -31,4 +31,6 @@ public interface LawService {
 
     void deleteLaw(LawReqDTO lawReqDTO);
 
+    String previewLaw(String url);
+
 }

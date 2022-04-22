@@ -7,6 +7,7 @@ import com.security.info.manage.dto.req.RegionReqDTO;
 import com.security.info.manage.dto.req.RegionTypeReqDTO;
 import com.security.info.manage.dto.res.RegionResDTO;
 import com.security.info.manage.dto.res.RegionTypeResDTO;
+import com.security.info.manage.dto.res.VxRegionResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.RegionMapper;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -132,6 +134,29 @@ public class RegionServiceImpl implements RegionService {
         }
         RegionTreeToolUtils res = new RegionTreeToolUtils(root, body);
         return res.getTree();
+    }
+
+    @Override
+    public List<VxRegionResDTO> vxListAllRegion() {
+        List<RegionTypeResDTO> list = regionMapper.listAllRegionType();
+        List<VxRegionResDTO> res = new ArrayList<>();
+        if (list != null && !list.isEmpty()) {
+            for (RegionTypeResDTO regionTypeResDTO : list) {
+                VxRegionResDTO vxRegionResDTO = new VxRegionResDTO();
+                vxRegionResDTO.setType(regionTypeResDTO);
+                vxRegionResDTO.setRegions(regionMapper.selectRegionRootByType(regionTypeResDTO));
+                res.add(vxRegionResDTO);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<RegionResDTO> vxGetRegionBody(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        return regionMapper.selectRegionBodyByType(id);
     }
 
     @Override

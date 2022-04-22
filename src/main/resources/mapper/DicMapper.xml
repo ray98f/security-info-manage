@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.DicMapper">
+    <select id="listDicType" resultType="com.security.info.manage.dto.res.DicResDTO">
+        SELECT id, name, type, is_enable, description, update_date FROM sys_dic
+        where is_delete=0
+        <if test="name != '' and name != null">
+            AND name LIKE CONCAT('%',#{name}, '%')
+        </if>
+        <if test="type != '' and type != null">
+            AND type LIKE CONCAT('%',#{type}, '%')
+        </if>
+        <if test = "isEnable != null">
+            AND is_enable = #{isEnable}
+        </if>
+        order by update_date DESC
+    </select>
+
+    <select id="selectDicTypeIsExist" resultType="java.lang.Integer">
+        select count(1) from sys_dic where is_delete=0
+        <if test="type!=null and type!=''">
+            and type=#{type}
+        </if>
+        <if test="name!=null and name!=''">
+            and name=#{name}
+        </if>
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="addDicType">
+        INSERT INTO sys_dic ( id, name, type, is_enable, description, create_by)
+        VALUE (#{id}, #{name}, #{type}, #{isEnable}, #{description}, #{createBy})
+    </insert>
+
+    <update id="modifyDicType">
+        update sys_dic set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="type!=null">
+            type=#{type},
+        </if>
+        <if test="isEnable!=null">
+            is_enable=#{isEnable},
+        </if>
+        <if test="description!=null">
+            description=#{description},
+        </if>
+        update_by=#{createBy}
+        where is_delete=0 and id=#{id}
+    </update>
+
+    <update id="deleteDicType">
+        update sys_dic set
+        is_delete=1, update_by=#{createBy}
+        where is_delete=0 and id=#{id}
+    </update>
+
+    <select id="listDicData" resultType="com.security.info.manage.dto.res.DicDataResDTO">
+        SELECT id, item_key, item_value, type, sort, description, is_enable, update_date FROM sys_dic_item
+        where is_delete=0
+        <if test="value != '' and value != null">
+            and name LIKE CONCAT('%',#{value}, '%')
+        </if>
+        <if test="type != '' and type != null">
+            and type LIKE CONCAT('%', #{type}, '%')
+        </if>
+        <if test = "isEnable != null">
+            and is_enable = #{isEnable}
+        </if>
+        order by sort asc
+    </select>
+
+    <select id="selectDicDataIsExist" resultType="java.lang.Integer">
+        select count(1) from sys_dic_item where is_delete=0
+        <if test="type!=null and type!=''">
+            and type=#{type}
+        </if>
+        <if test="itemKey!=null and itemKey!=''">
+            and item_key=#{itemKey}
+        </if>
+        <if test="itemValue!=null and itemValue!=''">
+            and item_value=#{itemValue}
+        </if>
+        <if test="id!=null">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="addDicData">
+        INSERT INTO sys_dic_item ( id, item_key, item_value, type, sort, description, is_enable, create_by)
+        VALUE (#{id}, #{itemKey}, #{itemValue}, #{type}, #{sort}, #{description}, #{isEnable}, #{createBy})
+    </insert>
+
+    <update id="modifyDicData">
+        update sys_dic_item set
+        <if test="itemKey!=null">
+            item_key=#{itemKey},
+        </if>
+        <if test="itemValue!=null">
+            item_value=#{itemValue},
+        </if>
+        <if test="type!=null">
+            type=#{type},
+        </if>
+        <if test="sort!=null">
+            sort=#{sort},
+        </if>
+        <if test="isEnable!=null">
+            is_enable=#{isEnable},
+        </if>
+        <if test="description!=null">
+            description=#{description},
+        </if>
+        update_by=#{createBy}
+        where is_delete=0 and id=#{id}
+    </update>
+
+    <update id="deleteDicData">
+        update sys_dic_item set
+        is_delete=1, update_by=#{createBy}
+        where is_delete=0 and id=#{id}
+    </update>
+</mapper>

@@ -6,6 +6,7 @@ import com.security.info.manage.dto.req.RegionReqDTO;
 import com.security.info.manage.dto.req.RegionTypeReqDTO;
 import com.security.info.manage.dto.res.RegionResDTO;
 import com.security.info.manage.dto.res.RegionTypeResDTO;
+import com.security.info.manage.dto.res.VxRegionResDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -30,6 +31,10 @@ public interface RegionService {
     RegionResDTO getRegionDetail(String id);
 
     List<RegionResDTO> listAllRegion();
+
+    List<VxRegionResDTO> vxListAllRegion();
+
+    List<RegionResDTO> vxGetRegionBody(String id);
 
     void modifyRegion(RegionReqDTO regionReqDTO);
 

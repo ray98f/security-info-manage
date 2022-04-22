@@ -1,6 +1,5 @@
 package com.security.info.manage.service.impl;
 
-import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.config.MinioConfig;
@@ -15,8 +14,8 @@ import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.LawMapper;
 import com.security.info.manage.service.LawService;
+import com.security.info.manage.utils.DocUtils;
 import com.security.info.manage.utils.MinioUtils;
-import com.security.info.manage.utils.treeTool.DeptTreeToolUtils;
 import com.security.info.manage.utils.TokenUtil;
 import com.security.info.manage.utils.treeTool.LawCatalogTreeToolUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,10 @@ import java.util.Objects;
 @Slf4j
 public class LawServiceImpl implements LawService {
 
+    public static final String DOC = ".doc";
+    public static final String DOCX = ".docx";
+    public static final String LAW = "law";
+    public static final String LAW_PATH = "/law";
     @Autowired
     private LawMapper lawMapper;
 
@@ -142,6 +145,24 @@ public class LawServiceImpl implements LawService {
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
-        minioUtils.removeObject("law", lawReqDTO.getFileUrl().replaceFirst(minioConfig.getUrl() + "/law", ""));
+        minioUtils.removeObject(LAW, lawReqDTO.getFileUrl().replaceFirst(minioConfig.getUrl() + LAW_PATH, ""));
+    }
+
+    @Override
+    public String previewLaw(String url) {
+        try {
+            if (url.contains(DOCX)) {
+                String docxHtml = DocUtils.docx2Html(url, "");
+                docxHtml = DocUtils.formatHtml(docxHtml);
+                return docxHtml.replace("___", "22");
+            }
+            if (url.contains(DOC)) {
+                String docHtml = DocUtils.doc2Html(url, "");
+                return DocUtils.formatHtml(docHtml);
+            }
+        } catch (Exception e) {
+            throw new CommonException(ErrorCode.PREVIEW_ERROR);
+        }
+        throw new CommonException(ErrorCode.PREVIEW_ERROR);
     }
 }

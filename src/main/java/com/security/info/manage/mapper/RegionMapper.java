@@ -40,6 +40,10 @@ public interface RegionMapper {
 
     String selectParentNames(String parentIds);
 
+    List<RegionResDTO> selectRegionRootByType(RegionTypeResDTO regionTypeResDTO);
+
+    List<RegionResDTO> selectRegionBodyByType(String id);
+
     Integer selectRegionIsExist(RegionReqDTO regionReqDTO);
 
     Integer modifyRegion(RegionReqDTO regionReqDTO);
