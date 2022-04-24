@@ -259,7 +259,7 @@ public class ConstructionServiceImpl implements ConstructionService {
             }
             fileInputStream.close();
             constructionMapper.importConstruction(temp, planId);
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }

@@ -77,6 +77,13 @@ public class PhysicalController {
         return DataResponse.of(physicalService.getPhysicalDetail(id));
     }
 
+    @GetMapping("/vx/user/confirm")
+    @ApiOperation(value = "微信端-体检结果确认")
+    public DataResponse<T> vxConfirmPhysicalUser(@RequestParam String id) {
+        physicalService.vxConfirmPhysicalUser(id);
+        return DataResponse.success();
+    }
+
     @GetMapping("/user/list")
     @ApiOperation(value = "体检用户列表")
     public PageResponse<PhysicalUserResDTO> listPhysicalUser(@RequestParam String id,
@@ -118,6 +125,13 @@ public class PhysicalController {
         return PageResponse.of(physicalService.listFeedback(name, pageReqDTO));
     }
 
+    @GetMapping("/feedback/detail/byPhysicalId")
+    @ApiOperation(value = "根据体检流程获取体检反馈详情")
+    public DataResponse<PhysicalFeedbackResDTO> getFeedbackDetailByPhysicalId(@RequestParam String id,
+                                                                              @RequestParam String physicalId) {
+        return DataResponse.of(physicalService.getFeedbackDetailByPhysicalId(id, physicalId));
+    }
+
     @PostMapping("/feedback/add")
     @ApiOperation(value = "新增体检反馈")
     public DataResponse<T> addFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
@@ -136,6 +150,18 @@ public class PhysicalController {
     @ApiOperation(value = "获取员工档案")
     public DataResponse<UserArchivesResDTO> userArchives(@RequestParam String id) {
         return DataResponse.of(physicalService.userArchives(id));
+    }
+
+    @GetMapping("/vx/user/archives")
+    @ApiOperation(value = "微信端-获取员工档案")
+    public PageResponse<PhysicalUserResDTO> vxUserArchives(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(physicalService.vxUserArchives(pageReqDTO));
+    }
+
+    @GetMapping("/vx/mine")
+    @ApiOperation(value = "微信端-我的体检")
+    public PageResponse<PhysicalUserResDTO> vxMinePhysical(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(physicalService.vxMinePhysical(pageReqDTO));
     }
 
     @GetMapping("/warn/list")

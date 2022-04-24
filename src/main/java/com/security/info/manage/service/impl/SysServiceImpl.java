@@ -1,16 +1,13 @@
 package com.security.info.manage.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
-import com.security.info.manage.dto.req.LoginReqDTO;
-import com.security.info.manage.dto.req.MenuReqDTO;
-import com.security.info.manage.dto.req.RoleReqDTO;
-import com.security.info.manage.dto.req.UserRoleReqDTO;
-import com.security.info.manage.dto.res.LawCatalogResDTO;
-import com.security.info.manage.dto.res.MenuResDTO;
-import com.security.info.manage.dto.res.OperationLogResDTO;
-import com.security.info.manage.dto.res.UserResDTO;
+import com.security.info.manage.dto.VxAccessToken;
+import com.security.info.manage.dto.req.*;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.Accident;
 import com.security.info.manage.entity.RiskLevel;
 import com.security.info.manage.entity.Role;
@@ -18,15 +15,16 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.SysMapper;
 import com.security.info.manage.service.SysService;
-import com.security.info.manage.utils.AesUtils;
-import com.security.info.manage.utils.Constants;
-import com.security.info.manage.utils.MyAESUtil;
-import com.security.info.manage.utils.TokenUtil;
+import com.security.info.manage.utils.*;
 import com.security.info.manage.utils.treeTool.LawCatalogTreeToolUtils;
 import com.security.info.manage.utils.treeTool.MenuTreeToolUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -43,21 +41,87 @@ public class SysServiceImpl implements SysService {
 
     public static final String HTTPS = "https";
     public static final String HTTP = "http";
+    public static final String SESSION_KEY = "session_key";
+    public static final String USERID = "userid";
+    public static final String TOKEN = "token";
+
+    @Value("${vx-business.corpid}")
+    private String corpid;
+
+    @Value("${vx-business.corpsecret}")
+    private String corpsecret;
+
     @Autowired
     private SysMapper sysMapper;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Override
+    public Integer vxAuditStatus() {
+        Integer result = sysMapper.selectVxAuditStatus();
+        return result == null ? 0 : result;
+    }
 
     @Override
     public Map<String, Object> login(LoginReqDTO loginReqDTO) throws Exception {
         if (Objects.isNull(loginReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        UserResDTO resDTO = sysMapper.selectUser(loginReqDTO.getUserName());
+        UserResDTO resDTO = sysMapper.selectUserByUserName(loginReqDTO.getUserName());
         if (Objects.isNull(resDTO) || Objects.isNull(resDTO.getId()) || !MyAESUtil.decrypt(loginReqDTO.getPassword()).equals(MyAESUtil.decrypt(resDTO.getPassword()))) {
             throw new CommonException(ErrorCode.LOGIN_PASSWORD_ERROR);
         }
         Map<String, Object> data = new HashMap<>(16);
         data.put("userInfo", resDTO);
-        data.put("token", TokenUtil.createSimpleToken(resDTO));
+        data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
+        return data;
+    }
+
+    @Override
+    public Map<String, Object> vxLoginSimple(LoginReqDTO loginReqDTO) throws Exception {
+        if (Objects.isNull(loginReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        UserResDTO resDTO = sysMapper.selectUserByMobile(loginReqDTO.getMobile());
+        if (Objects.isNull(resDTO) || Objects.isNull(resDTO.getId()) || !MyAESUtil.decrypt(loginReqDTO.getPassword()).equals(MyAESUtil.decrypt(resDTO.getPassword()))) {
+            throw new CommonException(ErrorCode.LOGIN_PASSWORD_ERROR);
+        }
+        Map<String, Object> data = new HashMap<>(16);
+        data.put("userInfo", resDTO);
+        data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
+        return data;
+    }
+
+    @Override
+    public Map<String, Object> vxLogin(String code) {
+        if (Objects.isNull(code)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, corpsecret);
+        if (accessToken == null) {
+            throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
+        }
+        String url = Constants.VX_GET_CODE2SESSION + "&access_token=" + accessToken.getToken() + "&js_code=CODE=" + code;
+        UriComponents uriComponents = UriComponentsBuilder.fromUriString(url)
+                .build()
+                .expand()
+                .encode();
+        URI uri = uriComponents.toUri();
+        JSONObject res = restTemplate.getForEntity(uri, JSONObject.class).getBody();
+        if (!Constants.SUCCESS.equals(Objects.requireNonNull(res).getString(Constants.ERR_CODE))) {
+            throw new CommonException(ErrorCode.VX_ERROR, String.valueOf(res.get(Constants.ERR_MSG)));
+        }
+        if (res.getString(SESSION_KEY) == null || res.getString(USERID) == null) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Map<String, Object> data = new HashMap<>(16);
+        data.put(SESSION_KEY, res.getString(SESSION_KEY));
+        UserResDTO resDTO = sysMapper.selectUserById(res.getString(USERID));
+        if (Objects.isNull(resDTO) || Objects.isNull(resDTO.getId())) {
+            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+        }
+        data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
         return data;
     }
 

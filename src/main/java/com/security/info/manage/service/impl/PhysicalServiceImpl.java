@@ -177,7 +177,7 @@ public class PhysicalServiceImpl implements PhysicalService {
                 throw new CommonException(ErrorCode.IMPORT_DATA_EXIST);
             }
             return temp;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }
@@ -185,6 +185,14 @@ public class PhysicalServiceImpl implements PhysicalService {
     @Override
     public PhysicalResDTO getPhysicalDetail(String id) {
         return physicalMapper.getPhysicalDetail(id);
+    }
+
+    @Override
+    public void vxConfirmPhysicalUser(String id) {
+        Integer result = physicalMapper.vxConfirmPhysicalUser(id, TokenUtil.getCurrentPersonNo());
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
     }
 
     @Override
@@ -200,6 +208,8 @@ public class PhysicalServiceImpl implements PhysicalService {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
         physicalUserResDTO.setPhysicalResult(physicalMapper.getPhysicalResult(id));
+        physicalUserResDTO.setPhysicalDetail(physicalMapper.getPhysicalDetail(physicalUserResDTO.getPhysicalId()));
+        physicalUserResDTO.setIfFeedback(physicalMapper.ifPhysicalHadFeedback(id, physicalUserResDTO.getPhysicalId()));
         return physicalUserResDTO;
     }
 
@@ -247,8 +257,8 @@ public class PhysicalServiceImpl implements PhysicalService {
             try {
                 List<XWPFTable> tables = document.getTables();
                 physicalResultImportReqDTO.setUsers(readWordTable.readTable(tables));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                throw new CommonException(ErrorCode.FILE_UPLOAD_FAIL);
             }
         } else {
             throw new CommonException(ErrorCode.FILE_FORMAT_ERROR);
@@ -306,6 +316,11 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
+    public PhysicalFeedbackResDTO getFeedbackDetailByPhysicalId(String id, String physicalId) {
+        return physicalMapper.getFeedbackDetailByPhysicalId(id, physicalId);
+    }
+
+    @Override
     public void addFeedback(PhysicalFeedback physicalFeedback) {
         if (Objects.isNull(physicalFeedback)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
@@ -332,6 +347,9 @@ public class PhysicalServiceImpl implements PhysicalService {
 
     @Override
     public UserArchivesResDTO userArchives(String id) {
+        if (id == null) {
+            id = TokenUtil.getCurrentPersonNo();
+        }
         UserArchivesResDTO userArchivesResDTO = new UserArchivesResDTO();
         userArchivesResDTO.setUserInfo(userMapper.selectUser(id));
         PhysicalUserResDTO physicalUserResDTO = physicalMapper.selectLatestPhysicalUserByUserId(id);
@@ -347,6 +365,37 @@ public class PhysicalServiceImpl implements PhysicalService {
         }
         userArchivesResDTO.setUserPhysicalList(list);
         return userArchivesResDTO;
+    }
+
+    @Override
+    public Page<PhysicalUserResDTO> vxUserArchives(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        Page<PhysicalUserResDTO> page = physicalMapper.selectVxPhysicalUserByUserId(pageReqDTO.of(), TokenUtil.getCurrentPersonNo());
+        List<PhysicalUserResDTO> list = page.getRecords();
+        if (list != null && !list.isEmpty()) {
+            for (PhysicalUserResDTO resDTO : list) {
+                resDTO.setPhysicalResult(physicalMapper.getPhysicalResult(resDTO.getId()));
+                resDTO.setPhysicalDetail(physicalMapper.getPhysicalDetail(resDTO.getPhysicalId()));
+            }
+        }
+        page.setRecords(list);
+        return page;
+    }
+
+    @Override
+    public Page<PhysicalUserResDTO> vxMinePhysical(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        Page<PhysicalUserResDTO> page = physicalMapper.selectVxMinePhysical(pageReqDTO.of(), TokenUtil.getCurrentPersonNo());
+        List<PhysicalUserResDTO> list = page.getRecords();
+        if (list != null && !list.isEmpty()) {
+            for (PhysicalUserResDTO resDTO : list) {
+                resDTO.setPhysicalResult(physicalMapper.getPhysicalResult(resDTO.getId()));
+                resDTO.setPhysicalDetail(physicalMapper.getPhysicalDetail(resDTO.getPhysicalId()));
+                resDTO.setIfFeedback(physicalMapper.ifPhysicalHadFeedback(resDTO.getId(), resDTO.getPhysicalId()));
+            }
+        }
+        page.setRecords(list);
+        return page;
     }
 
     @Override

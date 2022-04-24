@@ -2,7 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.security.info.manage.mapper.SysMapper">
 
-    <select id="selectUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+    <select id="selectVxAuditStatus" resultType="java.lang.Integer">
+        select vx_audit from sys_info where id=(select max(id) from sys_info where is_use=1)
+    </select>
+
+    <select id="selectUserByUserName" resultType="com.security.info.manage.dto.res.UserResDTO">
         select distinct u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
         d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
         left join sys_user_role as ur on u.id=ur.user_id
@@ -11,6 +15,28 @@
         left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
         left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
         where u.is_delete=0 and u.status=1 and ue.user_name=#{userName}
+    </select>
+
+    <select id="selectUserByMobile" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select distinct u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where u.is_delete=0 and u.status=1 and u.mobile=#{mobile}
+    </select>
+
+    <select id="selectUserById" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select distinct u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where u.is_delete=0 and u.status=1 and u.id=#{userId}
     </select>
 
     <select id="listUserRootMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">

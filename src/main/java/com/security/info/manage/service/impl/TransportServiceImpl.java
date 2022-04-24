@@ -120,7 +120,7 @@ public class TransportServiceImpl implements TransportService {
             if (temp.size() > 0) {
                 transportMapper.importTransport(temp);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }

@@ -2,10 +2,7 @@ package com.security.info.manage.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.PageReqDTO;
-import com.security.info.manage.dto.req.LoginReqDTO;
-import com.security.info.manage.dto.req.MenuReqDTO;
-import com.security.info.manage.dto.req.RoleReqDTO;
-import com.security.info.manage.dto.req.UserRoleReqDTO;
+import com.security.info.manage.dto.req.*;
 import com.security.info.manage.dto.res.MenuResDTO;
 import com.security.info.manage.dto.res.OperationLogResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
@@ -23,7 +20,13 @@ import java.util.Objects;
  */
 public interface SysService {
 
+    Integer vxAuditStatus();
+
     Map<String, Object> login(LoginReqDTO loginReqDTO) throws Exception;
+
+    Map<String, Object> vxLoginSimple(LoginReqDTO loginReqDTO) throws Exception;
+
+    Map<String, Object> vxLogin(String code);
 
     List<MenuResDTO> listUserMenu(String userId);
 

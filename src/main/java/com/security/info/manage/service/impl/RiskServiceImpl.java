@@ -238,7 +238,7 @@ public class RiskServiceImpl implements RiskService {
             if (temp.size() > 0) {
                 riskMapper.importRisk(temp);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

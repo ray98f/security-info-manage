@@ -35,7 +35,10 @@ public class PhysicalFeedbackResDTO {
     @ApiModelProperty(value = "工号")
     private String userNo;
 
-    @ApiModelProperty(value = "体检流程id")
+    @ApiModelProperty(value = "部门名称")
+    private String deptName;
+
+    @ApiModelProperty(value = "体检时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(
             pattern = "yyyy-MM-dd HH:mm:ss",
@@ -62,5 +65,13 @@ public class PhysicalFeedbackResDTO {
 
     @ApiModelProperty(value = "状态 0 未审批 1 已审批 2审批不通过")
     private Integer status;
+
+    @ApiModelProperty(value = "反馈发起时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
+    private Date createDate;
 
 }

@@ -163,7 +163,7 @@ public class ApplianceServiceImpl implements ApplianceService {
             if (temp.size() > 0) {
                 applianceMapper.importApplianceConfig(temp);
             }
-        } catch (IOException | ParseException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }
@@ -172,6 +172,20 @@ public class ApplianceServiceImpl implements ApplianceService {
     public Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         return applianceMapper.listApplianceConfig(pageReqDTO.of());
+    }
+
+    @Override
+    public Page<ApplianceConfigResDTO> vxListApplianceConfig(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return applianceMapper.vxListApplianceConfig(pageReqDTO.of(), TokenUtil.getCurrentPersonNo());
+    }
+
+    @Override
+    public void vxConfirmApplianceConfig(String id) {
+        Integer result = applianceMapper.vxConfirmApplianceConfig(id, TokenUtil.getCurrentPersonNo());
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
     }
 
     @Override

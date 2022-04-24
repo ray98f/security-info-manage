@@ -34,6 +34,10 @@ public interface ApplianceMapper {
 
     Page<ApplianceConfigResDTO> listApplianceConfig(Page<ApplianceConfigResDTO> page);
 
+    Page<ApplianceConfigResDTO> vxListApplianceConfig(Page<ApplianceConfigResDTO> page, String userId);
+
+    Integer vxConfirmApplianceConfig(String id, String userId);
+
     ApplianceConfigResDTO getApplianceConfigDetail(String id);
 
     Integer changeAppliance(ApplianceConfigResDTO applianceConfigResDTO);

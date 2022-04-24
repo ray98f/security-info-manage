@@ -159,7 +159,7 @@ public class TrainServiceImpl implements TrainService {
             }
             fileInputStream.close();
             trainMapper.importTrainDetail(temp, trainId);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }

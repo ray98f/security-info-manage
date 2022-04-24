@@ -91,9 +91,11 @@ public class SafeExpectServiceImpl implements SafeExpectService {
             throw new CommonException(ErrorCode.INSERT_ERROR);
         }
         if (result > 0) {
-            result = safeExpectMapper.insertSafeExpectUser(safeExpectReqDTO.getId(), safeExpectReqDTO.getUserIds());
-            if (result < 0) {
-                throw new CommonException(ErrorCode.INSERT_ERROR);
+            if (safeExpectReqDTO.getUserIds() != null && safeExpectReqDTO.getUserIds().size() > 0) {
+                result = safeExpectMapper.insertSafeExpectUser(safeExpectReqDTO.getId(), safeExpectReqDTO.getUserIds());
+                if (result < 0) {
+                    throw new CommonException(ErrorCode.INSERT_ERROR);
+                }
             }
         }
     }

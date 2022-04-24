@@ -127,7 +127,7 @@ public class SpecialtyServiceImpl implements SpecialtyService {
             if (temp.size() > 0) {
                 specialtyMapper.importSpecialty(temp);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }

@@ -23,7 +23,13 @@ import java.util.List;
 @Repository
 public interface SysMapper {
 
-    UserResDTO selectUser(String userName);
+    Integer selectVxAuditStatus();
+
+    UserResDTO selectUserByUserName(String userName);
+
+    UserResDTO selectUserByMobile(String mobile);
+
+    UserResDTO selectUserById(String userId);
 
     List<MenuResDTO> listUserRootMenu(String userId);
 

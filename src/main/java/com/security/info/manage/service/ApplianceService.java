@@ -29,6 +29,10 @@ public interface ApplianceService {
 
     Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO);
 
+    Page<ApplianceConfigResDTO> vxListApplianceConfig(PageReqDTO pageReqDTO);
+
+    void vxConfirmApplianceConfig(String id);
+
     ApplianceConfigResDTO getApplianceConfigDetail(String id);
 
     void changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO);

@@ -100,7 +100,7 @@ public class HazardFactorServiceImpl implements HazardFactorService {
             if (temp.size() > 0) {
                 hazardFactorMapper.importHazardFactor(temp);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }

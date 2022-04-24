@@ -22,7 +22,7 @@ public class PhysicalResDTO {
     @ApiModelProperty(value = "医院流水号")
     private String hospitalNo;
 
-    @ApiModelProperty(value = "体检类型")
+    @ApiModelProperty(value = "体检类型 1 岗中体检 2 新人入职体检")
     private Integer type;
 
     @ApiModelProperty(value = "体检起始时间")

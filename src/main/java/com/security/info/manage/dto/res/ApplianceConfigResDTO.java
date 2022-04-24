@@ -91,6 +91,9 @@ public class ApplianceConfigResDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "是否已确认 0 否 1 是")
+    private Integer isConfirm;
+
     @ApiModelProperty(value = "状态 0 未到期 1 已到期 2 已更换")
     private Integer status;
 

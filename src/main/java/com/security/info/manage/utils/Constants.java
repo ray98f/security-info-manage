@@ -15,6 +15,8 @@ public class Constants {
 
     public static final String ERR_MSG = "errmsg";
 
+    public static final String VX_GET_CODE2SESSION = "https://qyapi.weixin.qq.com/cgi-bin/miniprogram/jscode2session?grant_type=authorization_code";
+
     public static final String VX_GET_ACCESS_TOKEN = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
 
     public static final String VX_GET_ORG_IDS = "https://qyapi.weixin.qq.com/cgi-bin/department/simplelist";

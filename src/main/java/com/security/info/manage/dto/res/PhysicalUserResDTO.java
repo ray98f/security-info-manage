@@ -80,6 +80,12 @@ public class PhysicalUserResDTO {
     @ApiModelProperty(value = "新增人")
     private String createBy;
 
+    @ApiModelProperty(value = "是否已反馈 0 否 1 是")
+    private Integer ifFeedback;
+
+    @ApiModelProperty(value = "体检流程详情")
+    private PhysicalResDTO physicalDetail;
+
     @ApiModelProperty(value = "体检结果")
     private PhysicalResult physicalResult;
 }

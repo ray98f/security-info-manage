@@ -44,6 +44,26 @@ public class SysController {
         return DataResponse.of(sysService.login(loginReqDTO));
     }
 
+    @GetMapping("/vx/audit/status")
+    @ApiOperation(value = "微信小程序审核状态")
+    public DataResponse<Map<String, Integer>> vxAuditStatus() {
+        return DataResponse.of(new HashMap<String, Integer>(1) {{
+            put("status", sysService.vxAuditStatus());
+        }});
+    }
+
+    @PostMapping("/vx/login/simple")
+    @ApiOperation(value = "微信普通手机号登录")
+    public DataResponse<Map<String, Object>> vxLoginSimple(@RequestBody LoginReqDTO loginReqDTO) throws Exception {
+        return DataResponse.of(sysService.vxLoginSimple(loginReqDTO));
+    }
+
+    @GetMapping("/vx/login")
+    @ApiOperation(value = "微信授权登录")
+    public DataResponse<Map<String, Object>> vxLogin(@RequestParam String code) {
+        return DataResponse.of(sysService.vxLogin(code));
+    }
+
     @PostMapping("/user/menu")
     @ApiOperation(value = "获取登录用户菜单列表")
     public DataResponse<List<MenuResDTO>> listUserMenu() {

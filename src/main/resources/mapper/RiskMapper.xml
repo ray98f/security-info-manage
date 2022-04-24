@@ -35,7 +35,7 @@
         select count(1) from t_risk_info where is_delete=0 and type=#{type} and risk_points=#{riskPoints}
         and modules=#{modules} and main_risk_points=#{mainRiskPoints}
         <if test="describeResult!=null and describeResult!=''">
-            and describe_result=#{risk.describeResult}
+            and describe_result=#{describeResult}
         </if>
         <if test="describePersonFactor!=null and describePersonFactor!=''">
             and describe_person_factor=#{describePersonFactor}

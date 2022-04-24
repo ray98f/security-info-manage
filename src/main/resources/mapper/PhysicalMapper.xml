@@ -49,6 +49,12 @@
         where p.is_delete=0 and p.id=#{id}
     </select>
 
+    <update id="vxConfirmPhysicalUser">
+        update t_physical_result set
+        is_confirm=1, update_by=#{userId}
+        where physical_user_id=#{id} and is_delete=0
+    </update>
+
     <insert id="addPhysical">
         insert into t_physical(id, no,
         <if test="hospitalNo!=null and hospitalNo!=''">
@@ -121,26 +127,28 @@
     <update id="modifyPhysicalUser">
         update t_physical_user set is_delete=1, update_by=#{createBy}
         where physical_id=#{id} and physical_no=#{no} and is_delete=0;
-        insert into t_physical_user(id, physical_id, physical_no,
-        <if test="type==1">
-            user_id,
-        </if>
-        <if test="type==2">
-            new_user_id,
-        </if>
-        user_name, mobile, create_by)
-        values
-        <foreach collection="users" index="index" item="user" separator=",">
-            (replace(uuid(),"-",""), #{id}, #{no},
+        <if test="users!=null and users.size()>0">
+            insert into t_physical_user(id, physical_id, physical_no,
             <if test="type==1">
-                #{user.id},
+                user_id,
             </if>
             <if test="type==2">
-                #{user.id},
+                new_user_id,
             </if>
-            #{user.name}, #{user.mobile}, #{createBy})
-        </foreach>
-        ;
+            user_name, mobile, create_by)
+            values
+            <foreach collection="users" index="index" item="user" separator=",">
+                (replace(uuid(),"-",""), #{id}, #{no},
+                <if test="type==1">
+                    #{user.id},
+                </if>
+                <if test="type==2">
+                    #{user.id},
+                </if>
+                #{user.name}, #{user.mobile}, #{createBy})
+            </foreach>
+            ;
+        </if>
     </update>
 
     <update id="deletePhysical">
@@ -229,6 +237,35 @@
         order by pu.physical_time desc
     </select>
 
+    <select id="selectVxPhysicalUserByUserId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.physical_no, p.hospital_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
+        pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
+        left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
+        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
+        order by pu.physical_time desc
+    </select>
+
+    <select id="selectVxMinePhysical" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.id, pu.physical_id, pu.physical_no, p.hospital_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
+        pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
+        left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
+        left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
+        left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
+        where pu.user_id=#{id} and pu.is_delete=0
+        order by pu.physical_time desc
+    </select>
+
+    <select id="ifPhysicalHadFeedback" resultType="java.lang.Integer">
+        select count(1) from t_physical_feedback where physical_id=#{physicalId}
+        and physical_user_id=#{id} and is_delete=0 limit 1
+    </select>
+
     <select id="selectPhysicalUserByPhysicalId" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
         pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
@@ -242,7 +279,8 @@
 
     <select id="getPhysicalResult" resultType="com.security.info.manage.entity.PhysicalResult">
         select id, physical_user_id, name, age, sex, phone, work_year, work_type, hazard_factor_name, warning_index, conclusion,
-        handling_opinions, medical_advice, create_date, update_date, create_by, update_by, is_delete from t_physical_result
+        handling_opinions, medical_advice, is_confirm, create_date, update_date, create_by, update_by, is_delete
+        from t_physical_result
         where physical_user_id=#{id} and is_delete=0
     </select>
 
@@ -335,17 +373,31 @@
     </insert>
 
     <select id="listFeedback" resultType="com.security.info.manage.dto.res.PhysicalFeedbackResDTO">
-        select pf.id, pf.physical_id, pf.physical_user_id, p.no as physical_no, p.type, pu.physical_time,
-        pf.feedback_info, pf.apply_opinions, pf.apply_time, pf.status, ue.user_no, u.name as user_name
+        select pf.id, pf.physical_id, pf.physical_user_id, p.no as physical_no, p.type, pu.physical_time, pf.create_date,
+        pf.feedback_info, pf.apply_opinions, pf.apply_time, pf.status, ue.user_no, ue.real_name as user_name, d.org_name as dept_name
         from t_physical_feedback as pf
         left join t_physical as p on pf.physical_id=p.id and p.is_delete=0
         left join t_physical_user as pu on pu.id=pf.physical_user_id and pu.is_delete=0
         left join sys_user as u on u.id=pu.user_id and u.is_delete=0
         left join sys_user_ext as ue on u.id=ue.user_id and ue.is_delete=0 and ue.status=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
         where pf.is_delete=0
         <if test="name!=null and name!=''">
             and u.name like CONCAT('%',#{name},'%')
         </if>
+        order by pf.create_date desc
+    </select>
+
+    <select id="getFeedbackDetailByPhysicalId" resultType="com.security.info.manage.dto.res.PhysicalFeedbackResDTO">
+        select pf.id, pf.physical_id, pf.physical_user_id, p.no as physical_no, p.type, pu.physical_time, pf.create_date,
+        pf.feedback_info, pf.apply_opinions, pf.apply_time, pf.status, ue.user_no, ue.real_name as user_name, d.org_name as dept_name
+        from t_physical_feedback as pf
+        left join t_physical as p on pf.physical_id=p.id and p.is_delete=0
+        left join t_physical_user as pu on pu.id=pf.physical_user_id and pu.is_delete=0
+        left join sys_user as u on u.id=pu.user_id and u.is_delete=0
+        left join sys_user_ext as ue on u.id=ue.user_id and ue.is_delete=0 and ue.status=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where pf.is_delete=0 and pf.physical_user_id=#{id} and pf.physical_id=#{physicalId}
         order by pf.create_date desc
     </select>
 
@@ -360,15 +412,12 @@
         <if test="applyOpinions!=null and applyOpinions!=''">
             apply_opinions=#{applyOpinions},
         </if>
-        <if test="applyTime!=null and applyTime!=''">
-            apply_time=now(),
-        </if>
         <if test="status!=null">
-            status=#{status}, audit_id=#{updateBy},
+            apply_time=now(), status=#{status}, audit_id=#{updateBy},
         </if>
         update_by=#{updateBy}
-        where id=#{id} and is_delete=0;
-        update t_physical_user set status=2 where id=(select physical_user_id from t_physical_feedback where id=#{id} and is_delete=0);
+        where physical_id=#{physicalId} and physical_user_id=#{physicalUserId} and is_delete=0;
+        update t_physical_user set status=2 where id=#{physicalUserId};
     </update>
 
     <select id="listExpiredPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">

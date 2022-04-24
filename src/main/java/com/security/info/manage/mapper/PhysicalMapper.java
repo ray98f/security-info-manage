@@ -37,6 +37,8 @@ public interface PhysicalMapper {
 
     PhysicalResDTO getPhysicalDetail(String id);
 
+    Integer vxConfirmPhysicalUser(String id, String userId);
+
     Page<PhysicalUserResDTO> listPhysicalUser(Page<PhysicalUserResDTO> page, String id);
 
     PhysicalResult getPhysicalResult(String id);
@@ -46,6 +48,12 @@ public interface PhysicalMapper {
     PhysicalUserResDTO selectLatestPhysicalUserByUserId(String id);
 
     List<PhysicalUserResDTO> selectPhysicalUserByUserId(String id);
+
+    Page<PhysicalUserResDTO> selectVxPhysicalUserByUserId(Page<PhysicalUserResDTO> page, String id);
+
+    Page<PhysicalUserResDTO> selectVxMinePhysical(Page<PhysicalUserResDTO> page, String id);
+
+    Integer ifPhysicalHadFeedback(String id, String physicalId);
 
     List<PhysicalUserResDTO> selectPhysicalUserByPhysicalId(String id);
 
@@ -62,6 +70,8 @@ public interface PhysicalMapper {
     Integer insertPhysicalNotice(PhysicalNoticeReqDTO physicalNoticeReqDTO);
 
     Page<PhysicalFeedbackResDTO> listFeedback(Page<PhysicalFeedback> page, String name);
+
+    PhysicalFeedbackResDTO getFeedbackDetailByPhysicalId(String id, String physicalId);
 
     Integer insertPhysicalFeedback(PhysicalFeedback physicalFeedback);
 

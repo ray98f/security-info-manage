@@ -79,6 +79,19 @@ public class ApplianceController {
         return PageResponse.of(applianceService.listApplianceConfig(pageReqDTO));
     }
 
+    @GetMapping("/vx/user/list")
+    @ApiOperation(value = "微信端-劳保用品配备列表")
+    public PageResponse<ApplianceConfigResDTO> vxListApplianceConfig(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(applianceService.vxListApplianceConfig(pageReqDTO));
+    }
+
+    @GetMapping("/vx/user/confirm")
+    @ApiOperation(value = "微信端-劳保用品配备确认")
+    public DataResponse<T> vxConfirmApplianceConfig(@RequestParam String id) {
+        applianceService.vxConfirmApplianceConfig(id);
+        return DataResponse.success();
+    }
+
     @GetMapping("/user/detail")
     @ApiOperation(value = "劳保用品配备详情")
     public DataResponse<ApplianceConfigResDTO> getApplianceConfigDetail(@RequestParam String id) {

@@ -117,7 +117,7 @@ public class RiskApplianceServiceImpl implements RiskApplianceService {
             if (temp.size() > 0) {
                 riskApplianceMapper.importRiskAppliance(temp);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
     }

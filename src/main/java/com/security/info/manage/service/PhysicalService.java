@@ -27,6 +27,8 @@ public interface PhysicalService {
 
     PhysicalResDTO getPhysicalDetail(String id);
 
+    void vxConfirmPhysicalUser(String id);
+
     Page<PhysicalUserResDTO> listPhysicalUser(String id, PageReqDTO pageReqDTO);
 
     PhysicalUserResDTO getPhysicalUserDetail(String id);
@@ -39,11 +41,17 @@ public interface PhysicalService {
 
     Page<PhysicalFeedbackResDTO> listFeedback(String name, PageReqDTO pageReqDTO);
 
+    PhysicalFeedbackResDTO getFeedbackDetailByPhysicalId(String id, String physicalId);
+
     void addFeedback(PhysicalFeedback physicalFeedback);
 
     void modifyFeedback(PhysicalFeedback physicalFeedback);
 
     UserArchivesResDTO userArchives(String id);
+
+    Page<PhysicalUserResDTO> vxUserArchives(PageReqDTO pageReqDTO);
+
+    Page<PhysicalUserResDTO> vxMinePhysical(PageReqDTO pageReqDTO);
 
     Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO);
 

@@ -61,7 +61,7 @@ logging:
     path: ./log
 
 excluded:
-  pages: /securityInfo/manage/sys/login,/securityInfo/manage/sys/logout
+  pages: /securityInfo/manage/sys/login,/securityInfo/manage/sys/vx/login,/securityInfo/manage/sys/vx/login/simple,/securityInfo/manage/sys/vx/audit/status
 
 vx-business:
   corpid: ww56aa612b390c11d2

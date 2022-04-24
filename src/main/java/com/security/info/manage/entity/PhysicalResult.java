@@ -54,4 +54,7 @@ public class PhysicalResult extends BaseEntity {
 
     @ApiModelProperty(value = "结果")
     private Integer result;
+
+    @ApiModelProperty(value = "是否已确认 0 否 1 是")
+    private Integer isConfirm;
 }

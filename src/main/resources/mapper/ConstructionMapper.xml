@@ -114,9 +114,17 @@
     </select>
 
     <insert id="addConstruction">
-        insert into t_construction(id, plan_id, type_id, date, sort, no, org_id, start_time, end_time, is_day, name, region,
+        insert into t_construction(id, plan_id, type_id, date,
+        <if test="sort!=null">
+            sort,
+        </if>
+        no, org_id, start_time, end_time, is_day, name, region,
         electric_arrange, protect_measures, coordination_requirement, user_id, phone, remark, create_by)
-        value (#{id}, #{planId}, #{typeId}, #{date}, #{sort}, #{no}, #{orgId}, #{startTime}, #{endTime}, #{isDay}, #{name}, #{region},
+        value (#{id}, #{planId}, #{typeId}, #{date},
+        <if test="sort!=null">
+            #{sort}
+        </if>
+        #{no}, #{orgId}, #{startTime}, #{endTime}, #{isDay}, #{name}, #{region},
         #{electricArrange}, #{protectMeasures}, #{coordinationRequirement},
         (select user_id from sys_user_ext where real_name=#{userName} and is_delete=0), #{phone}, #{remark}, #{createBy})
     </insert>
