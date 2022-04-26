@@ -42,6 +42,12 @@ public class SafeExpectController {
         return PageResponse.of(safeExpectService.listSafeExpect(pageReqDTO));
     }
 
+    @GetMapping("/vx/list")
+    @ApiOperation(value = "微信端-获取我的安全预想会列表")
+    public PageResponse<SafeExpectResDTO> vxListSafeExpect(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(safeExpectService.vxListSafeExpect(pageReqDTO));
+    }
+
     @GetMapping("/detail")
     @ApiOperation(value = "获取安全预想会详情")
     public DataResponse<SafeExpectResDTO> getSafeExpectDetail(@RequestParam String id) {
@@ -78,8 +84,15 @@ public class SafeExpectController {
 
     @PostMapping("/user/sign")
     @ApiOperation(value = "安全预想会人员签到")
-    public DataResponse<SafeExpectUserResDTO> signSafeExpectUser(@RequestBody SafeExpectUserResDTO safeExpectUserResDTO) {
+    public DataResponse<T> signSafeExpectUser(@RequestBody SafeExpectUserResDTO safeExpectUserResDTO) {
         safeExpectService.signSafeExpectUser(safeExpectUserResDTO);
+        return DataResponse.success();
+    }
+
+    @GetMapping("/vx/user/sign")
+    @ApiOperation(value = "微信端-安全预想会人员签到")
+    public DataResponse<T> vxSignSafeExpectUser(@RequestParam String id) {
+        safeExpectService.vxSignSafeExpectUser(id);
         return DataResponse.success();
     }
 

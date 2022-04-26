@@ -79,5 +79,7 @@ public interface SysMapper {
 
     Integer deleteUserRole(UserRoleReqDTO userRoleReqDTO);
 
+    Integer selectIfAdmin(String userId);
+
     Page<OperationLogResDTO> listOperLog(Page<OperationLogResDTO> page, String startTime, String endTime, Integer type);
 }

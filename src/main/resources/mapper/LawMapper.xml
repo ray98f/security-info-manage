@@ -31,6 +31,20 @@
         </if>
     </select>
 
+    <select id="getVxRoot" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
+        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
+        where lc.is_delete=0 and lc.parent_id='root' and lc.status=0
+        and lc.dept_id=(select main_dept from sys_user where id=#{userId} and is_delete=0)
+    </select>
+
+    <select id="getVxBody" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
+        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
+        where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0
+        and lc.dept_id=(select main_dept from sys_user where id=#{userId} and is_delete=0)
+    </select>
+
     <select id="selectIfLawCatalogHadChild" resultType="java.lang.Integer">
         select count(1) from t_law_catalog where route like CONCAT(#{route},',','%') and status=0 and is_delete=0 limit 1
     </select>

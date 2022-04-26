@@ -30,6 +30,10 @@ public interface DangerMapper {
 
     Page<DangerResDTO> listDanger(Page<DangerResDTO> page, Integer type, String userId);
 
+    Page<DangerResDTO> vxListDanger(Page<DangerResDTO> page, Integer type, String userId);
+
+    Page<DangerResDTO> vxNearbyDanger(Page<DangerResDTO> page, Double maxLat, Double minLat, Double minLng, Double maxLng, String userId);
+
     DangerResDTO getDangerDetail(String id);
 
     Integer selectIsDangerExamine(String id);

@@ -13,8 +13,10 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.DangerMapper;
+import com.security.info.manage.mapper.SysMapper;
 import com.security.info.manage.service.DangerService;
 import com.security.info.manage.service.DeptService;
+import com.security.info.manage.utils.ObjectUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -34,6 +37,9 @@ public class DangerServiceImpl implements DangerService {
 
     @Autowired
     private DangerMapper dangerMapper;
+
+    @Autowired
+    private SysMapper sysMapper;
 
     @Resource
     private DeptService deptService;
@@ -59,7 +65,49 @@ public class DangerServiceImpl implements DangerService {
     @Override
     public Page<DangerResDTO> listDanger(Integer type, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        Page<DangerResDTO> page = dangerMapper.listDanger(pageReqDTO.of(), type, TokenUtil.getCurrentPersonNo());
+        Page<DangerResDTO> page;
+        if (sysMapper.selectIfAdmin(TokenUtil.getCurrentPersonNo()) == 1) {
+            page = dangerMapper.listDanger(pageReqDTO.of(), type, null);
+        } else {
+            page = dangerMapper.listDanger(pageReqDTO.of(), type, TokenUtil.getCurrentPersonNo());
+        }
+        List<DangerResDTO> list = page.getRecords();
+        if (list != null && !list.isEmpty()) {
+            for (DangerResDTO resDTO : list) {
+                if (resDTO.getBeforePic() != null && !"".equals(resDTO.getBeforePic())) {
+                    resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
+                }
+                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
+                resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+            }
+        }
+        page.setRecords(list);
+        return page;
+    }
+
+    @Override
+    public Page<DangerResDTO> vxListDanger(Integer type, PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        Page<DangerResDTO> page = dangerMapper.vxListDanger(pageReqDTO.of(), type, TokenUtil.getCurrentPersonNo());
+        List<DangerResDTO> list = page.getRecords();
+        if (list != null && !list.isEmpty()) {
+            for (DangerResDTO resDTO : list) {
+                if (resDTO.getBeforePic() != null && !"".equals(resDTO.getBeforePic())) {
+                    resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
+                }
+                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
+                resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+            }
+        }
+        page.setRecords(list);
+        return page;
+    }
+
+    @Override
+    public Page<DangerResDTO> vxNearbyDanger(Double lng, Double lat, PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        Map<String, Double> data = ObjectUtils.findNeighDrugstore(lng, lat, 3.0);
+        Page<DangerResDTO> page = dangerMapper.vxNearbyDanger(pageReqDTO.of(), data.get("maxLat"), data.get("minLat"), data.get("minLng"), data.get("maxLng"), TokenUtil.getCurrentPersonNo());
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (DangerResDTO resDTO : list) {

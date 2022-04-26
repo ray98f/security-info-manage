@@ -106,10 +106,36 @@ public class ConstructionController {
         return PageResponse.of(constructionService.listConstruction(planId, pageReqDTO));
     }
 
+    @GetMapping("/detail")
+    @ApiOperation(value = "获取施工作业详情")
+    public DataResponse<ConstructionResDTO> getConstructionDetail(@RequestParam String id) {
+        return DataResponse.of(constructionService.getConstructionDetail(id));
+    }
+
+    @GetMapping("/vx/list")
+    @ApiOperation(value = "微信端-我的施工作业列表")
+    public PageResponse<ConstructionResDTO> vxListConstruction(@Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(constructionService.vxListConstruction(pageReqDTO));
+    }
+
     @PostMapping("/add")
     @ApiOperation(value = "施工作业新增")
     public DataResponse<T> addConstruction(@RequestBody ConstructionReqDTO constructionReqDTO) {
         constructionService.addConstruction(constructionReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/modify")
+    @ApiOperation(value = "施工作业修改")
+    public DataResponse<T> modifyConstruction(@RequestBody ConstructionReqDTO constructionReqDTO) {
+        constructionService.modifyConstruction(constructionReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/delete")
+    @ApiOperation(value = "施工作业删除")
+    public DataResponse<T> deleteConstruction(@RequestBody ConstructionReqDTO constructionReqDTO) {
+        constructionService.deleteConstruction(constructionReqDTO);
         return DataResponse.success();
     }
 

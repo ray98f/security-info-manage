@@ -106,6 +106,11 @@ public class TokenUtil {
         return createSimpleToken(item, 60 * 60 * 2 * 1000);
     }
 
+    public static String createLongTermToken(UserResDTO item) {
+        //默认token有效时间为2小时
+        return createSimpleToken(item, 60 * 60 * 24 * 7 * 1000);
+    }
+
     /**
      * Simple
      * 根据请求登录的信息生成令牌

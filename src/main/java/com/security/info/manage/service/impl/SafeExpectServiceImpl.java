@@ -63,6 +63,12 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     }
 
     @Override
+    public Page<SafeExpectResDTO> vxListSafeExpect(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return safeExpectMapper.vxListSafeExpect(pageReqDTO.of(), TokenUtil.getCurrentPersonNo());
+    }
+
+    @Override
     public SafeExpectResDTO getSafeExpectDetail(String id) {
         if (Objects.isNull(id)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
@@ -71,6 +77,7 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         if (!Objects.isNull(safeExpectResDTO)) {
             safeExpectResDTO.setSafeExpectInfo(safeExpectMapper.getSafeExpectInfoDetail(id));
             safeExpectResDTO.setSafeExpectCollectionUnion(safeExpectMapper.getSafeExpectCollectionUnionDetail(id));
+            safeExpectResDTO.setUserInfo(safeExpectMapper.getSafeExpectUserInfo(id));
         }
         return safeExpectResDTO;
     }
@@ -143,6 +150,14 @@ public class SafeExpectServiceImpl implements SafeExpectService {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
         Integer result = safeExpectMapper.signSafeExpectUser(safeExpectUserResDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void vxSignSafeExpectUser(String id) {
+        Integer result = safeExpectMapper.vxSignSafeExpectUser(id, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

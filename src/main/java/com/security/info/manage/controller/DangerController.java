@@ -59,6 +59,21 @@ public class DangerController {
         return PageResponse.of(dangerService.listDanger(type, pageReqDTO));
     }
 
+    @GetMapping("/vx/list")
+    @ApiOperation(value = "微信端-获取我的隐患列表")
+    public PageResponse<DangerResDTO> vxListDanger(@RequestParam @ApiParam(value = "1 我上报的 2 我整改的") Integer type,
+                                                   @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(dangerService.vxListDanger(type, pageReqDTO));
+    }
+
+    @GetMapping("/vx/nearby")
+    @ApiOperation(value = "微信端-获取附近隐患列表")
+    public PageResponse<DangerResDTO> vxNearbyDanger(@RequestParam @ApiParam(value = "纬度") Double lng,
+                                                     @RequestParam @ApiParam(value = "经度") Double lat,
+                                                     @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(dangerService.vxNearbyDanger(lng, lat, pageReqDTO));
+    }
+
     @GetMapping("/detail")
     @ApiOperation(value = "获取隐患详情")
     public DataResponse<DangerResDTO> getDangerDetail(@RequestParam String id) {

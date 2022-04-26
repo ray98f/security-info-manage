@@ -24,6 +24,10 @@ public interface LawMapper {
 
     List<LawCatalogResDTO> getBody(String deptId);
 
+    List<LawCatalogResDTO> getVxRoot(String userId);
+
+    List<LawCatalogResDTO> getVxBody(String userId);
+
     Integer selectIfLawCatalogHadChild(String route);
 
     Integer modifyLawCatalog(LawCatalogReqDTO lawCatalogReqDTO);

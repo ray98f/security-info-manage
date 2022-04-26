@@ -8,6 +8,7 @@ import com.security.info.manage.dto.res.SafeExpectCollectionUnionResDTO;
 import com.security.info.manage.dto.res.SafeExpectInfoResDTO;
 import com.security.info.manage.dto.res.SafeExpectResDTO;
 import com.security.info.manage.dto.res.SafeExpectUserResDTO;
+import com.security.info.manage.entity.SafeExpectUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +23,8 @@ public interface SafeExpectMapper {
 
     Page<SafeExpectResDTO> listSafeExpect(Page<SafeExpectResDTO> page);
 
+    Page<SafeExpectResDTO> vxListSafeExpect(Page<SafeExpectResDTO> page, String userId);
+
     SafeExpectResDTO getSafeExpectDetail(String id);
 
     SafeExpectInfoResDTO getSafeExpectInfoDetail(String id);
@@ -29,6 +32,8 @@ public interface SafeExpectMapper {
     SafeExpectInfoResDTO exportSafeExpectInfo(String id);
 
     SafeExpectCollectionUnionResDTO getSafeExpectCollectionUnionDetail(String id);
+
+    List<SafeExpectUser> getSafeExpectUserInfo(String id);
 
     Integer selectSafeExpectIsExist(SafeExpectReqDTO safeExpectReqDTO);
 
@@ -45,5 +50,7 @@ public interface SafeExpectMapper {
     Page<SafeExpectUserResDTO> listSafeExpectUser(Page<SafeExpectUserResDTO> page, String id);
 
     Integer signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
+
+    Integer vxSignSafeExpectUser(String id, String userId);
 
 }

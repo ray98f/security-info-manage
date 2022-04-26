@@ -19,6 +19,8 @@ public interface LawService {
 
     List<LawCatalogResDTO> listAllLawCatalog(String deptId);
 
+    List<LawCatalogResDTO> vxListAllLawCatalog();
+
     void modifyLawCatalog(LawCatalogReqDTO trainReqDTO);
 
     void addLawCatalog(LawCatalogReqDTO trainReqDTO);

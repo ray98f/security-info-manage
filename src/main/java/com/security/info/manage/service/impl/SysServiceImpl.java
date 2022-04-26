@@ -121,7 +121,7 @@ public class SysServiceImpl implements SysService {
         if (Objects.isNull(resDTO) || Objects.isNull(resDTO.getId())) {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
-        data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
+        data.put(TOKEN, TokenUtil.createLongTermToken(resDTO));
         return data;
     }
 

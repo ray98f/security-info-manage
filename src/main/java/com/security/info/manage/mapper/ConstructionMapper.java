@@ -44,7 +44,15 @@ public interface ConstructionMapper {
 
     Page<ConstructionResDTO> listConstruction(Page<ConstructionResDTO> page, String planId);
 
+    ConstructionResDTO getConstructionDetail(String id);
+
+    Page<ConstructionResDTO> vxListConstruction(Page<ConstructionResDTO> page, String userId);
+
     Integer addConstruction(ConstructionReqDTO constructionReqDTO);
+
+    Integer modifyConstruction(ConstructionReqDTO constructionReqDTO);
+
+    Integer deleteConstruction(ConstructionReqDTO constructionReqDTO);
 
     Integer importConstruction(List<ConstructionReqDTO> list, String planId);
 }

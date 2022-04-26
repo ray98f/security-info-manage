@@ -164,6 +164,17 @@ public class ConstructionServiceImpl implements ConstructionService {
     }
 
     @Override
+    public ConstructionResDTO getConstructionDetail(String id) {
+        return constructionMapper.getConstructionDetail(id);
+    }
+
+    @Override
+    public Page<ConstructionResDTO> vxListConstruction(PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return constructionMapper.vxListConstruction(pageReqDTO.of(), TokenUtil.getCurrentPersonNo());
+    }
+
+    @Override
     public void addConstruction(ConstructionReqDTO constructionReqDTO) {
         if (Objects.isNull(constructionReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
@@ -173,6 +184,30 @@ public class ConstructionServiceImpl implements ConstructionService {
         Integer result = constructionMapper.addConstruction(constructionReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
+    }
+
+    @Override
+    public void modifyConstruction(ConstructionReqDTO constructionReqDTO) {
+        if (Objects.isNull(constructionReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        constructionReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = constructionMapper.modifyConstruction(constructionReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteConstruction(ConstructionReqDTO constructionReqDTO) {
+        if (Objects.isNull(constructionReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        constructionReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = constructionMapper.deleteConstruction(constructionReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.DELETE_ERROR);
         }
     }
 

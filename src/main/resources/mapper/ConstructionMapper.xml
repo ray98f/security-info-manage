@@ -113,6 +113,32 @@
         order by c.date asc, c.sort asc, c.create_date desc
     </select>
 
+    <select id="getConstructionDetail" resultType="com.security.info.manage.dto.res.ConstructionResDTO">
+        select c.id, c.plan_id, c.type_id, c.date, c.sort, c.no, c.org_id, c.start_time, c.end_time, c.is_day, c.name, c.region,
+        c.electric_arrange, c.protect_measures, c.coordination_requirement, c.user_id, c.phone, c.remark, c.status,
+        ct.name as type_name, wp.name as plan_name, d.org_name as org_name, ue.real_name as user_name
+        from t_construction as c
+        left join t_construction_type as ct on c.type_id=ct.id and ct.is_delete=0
+        left join t_weak_plan as wp on c.plan_id=wp.id and wp.is_delete=0
+        left join sys_dept as d on c.org_id=d.id and d.is_delete=0
+        left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
+        where c.is_delete=0 and c.id=#{id}
+        order by c.date asc, c.sort asc, c.create_date desc
+    </select>
+
+    <select id="vxListConstruction" resultType="com.security.info.manage.dto.res.ConstructionResDTO">
+        select c.id, c.plan_id, c.type_id, c.date, c.sort, c.no, c.org_id, c.start_time, c.end_time, c.is_day, c.name, c.region,
+        c.electric_arrange, c.protect_measures, c.coordination_requirement, c.user_id, c.phone, c.remark, c.status,
+        ct.name as type_name, wp.name as plan_name, d.org_name as org_name, ue.real_name as user_name
+        from t_construction as c
+        left join t_construction_type as ct on c.type_id=ct.id and ct.is_delete=0
+        left join t_weak_plan as wp on c.plan_id=wp.id and wp.is_delete=0
+        left join sys_dept as d on c.org_id=d.id and d.is_delete=0
+        left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
+        where c.is_delete=0 and c.user_id=#{userId}
+        order by c.date asc, c.sort asc, c.create_date desc
+    </select>
+
     <insert id="addConstruction">
         insert into t_construction(id, plan_id, type_id, date,
         <if test="sort!=null">
@@ -128,6 +154,69 @@
         #{electricArrange}, #{protectMeasures}, #{coordinationRequirement},
         (select user_id from sys_user_ext where real_name=#{userName} and is_delete=0), #{phone}, #{remark}, #{createBy})
     </insert>
+
+    <update id="modifyConstruction">
+        update t_construction set
+        <if test="typeId!=null">
+            type_id=#{typeId},
+        </if>
+        <if test="date!=null">
+            date=#{date},
+        </if>
+        <if test="sort!=null">
+            sort=#{sort},
+        </if>
+        <if test="no!=null">
+            no=#{no},
+        </if>
+        <if test="orgId!=null">
+            org_id=#{orgId},
+        </if>
+        <if test="startTime!=null">
+            start_time=#{startTime},
+        </if>
+        <if test="endTime!=null">
+            end_time=#{endTime},
+        </if>
+        <if test="isDay!=null">
+            is_day=#{isDay},
+        </if>
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="region!=null">
+            region=#{region},
+        </if>
+        <if test="electricArrange!=null">
+            electric_arrange=#{electricArrange},
+        </if>
+        <if test="protectMeasures!=null">
+            protect_measures=#{protectMeasures},
+        </if>
+        <if test="coordinationRequirement!=null">
+            coordination_requirement=#{coordinationRequirement},
+        </if>
+        <if test="userName!=null">
+            user_id=(select user_id from sys_user_ext where real_name=#{userName} and is_delete=0),
+        </if>
+        <if test="phone!=null">
+            phone=#{phone},
+        </if>
+        <if test="remark!=null">
+            remark=#{remark},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="deleteConstruction">
+        update t_construction set
+        is_delete=1, update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
 
     <insert id="importConstruction">
         delete from t_construction where plan_id=#{planId} and is_delete=0;

@@ -17,6 +17,8 @@ public interface SafeExpectService {
 
     Page<SafeExpectResDTO> listSafeExpect(PageReqDTO pageReqDTO);
 
+    Page<SafeExpectResDTO> vxListSafeExpect(PageReqDTO pageReqDTO);
+
     SafeExpectResDTO getSafeExpectDetail(String id);
 
     void addSafeExpect(SafeExpectReqDTO safeExpectReqDTO);
@@ -28,6 +30,8 @@ public interface SafeExpectService {
     Page<SafeExpectUserResDTO> listSafeExpectUser(String id, PageReqDTO pageReqDTO);
 
     void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
+
+    void vxSignSafeExpectUser(String id);
 
     Map<String, Object> exportSafeExpectData(String id);
 

@@ -45,6 +45,12 @@ public class LawController {
         return DataResponse.of(lawService.listAllLawCatalog(deptId));
     }
 
+    @GetMapping("/vx/catalog/listAll")
+    @ApiOperation(value = "微信端-获取所有法律法规目录列表")
+    public DataResponse<List<LawCatalogResDTO>> vxListAllLawCatalog() {
+        return DataResponse.of(lawService.vxListAllLawCatalog());
+    }
+
     @PostMapping("/catalog/modify")
     @ApiOperation(value = "法律法规目录修改")
     public DataResponse<T> modifyLawCatalog(@RequestBody LawCatalogReqDTO lawCatalogReqDTO) {

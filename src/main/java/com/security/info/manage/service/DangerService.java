@@ -25,6 +25,10 @@ public interface DangerService {
 
     Page<DangerResDTO> listDanger(Integer type, PageReqDTO pageReqDTO);
 
+    Page<DangerResDTO> vxListDanger(Integer type, PageReqDTO pageReqDTO);
+
+    Page<DangerResDTO> vxNearbyDanger(Double lng, Double lat, PageReqDTO pageReqDTO);
+
     DangerResDTO getDangerDetail(String id);
 
     void modifyDanger(DangerReqDTO dangerReqDTO);

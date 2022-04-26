@@ -10,6 +10,15 @@
         order by se.create_date desc
     </select>
 
+    <select id="vxListSafeExpect" resultType="com.security.info.manage.dto.res.SafeExpectResDTO">
+        select se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
+        se.work_no, se.work_name, se.work_region, se.status from t_safe_expect as se
+        left join sys_user_ext as ue on ue.user_id=se.user_id and ue.is_delete=0 and ue.status=0
+        left join t_safe_expect_user as seu on seu.safe_expect_id=se.id
+        where se.is_delete=0 and (se.user_id=#{userId} or seu.user_id=#{userId})
+        order by se.create_date desc
+    </select>
+
     <select id="getSafeExpectDetail" resultType="com.security.info.manage.dto.res.SafeExpectResDTO">
         select se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
         se.work_no, se.work_name, se.work_region, se.status, group_concat(ue1.real_name) as user_names
@@ -54,6 +63,15 @@
         select id, safe_expect_id, task_completion, problem_measure, collection_union_time
         from t_safe_expect_collection_union
         where is_delete=0 and safe_expect_id=#{id}
+    </select>
+
+    <select id="getSafeExpectUserInfo" resultType="com.security.info.manage.entity.SafeExpectUser">
+        select seu.id, seu.user_id, seu.safe_expect_id, seu.sign_time, ue.real_name as user_name,
+        (case when now()>se.time and seu.is_sign!=-1 then 1 else 0 end) as is_absent, seu.is_sign
+        from t_safe_expect_user as seu
+        left join t_safe_expect as se on se.id=seu.safe_expect_id and se.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=seu.user_id and ue.is_delete=0 and ue.status=0
+        where seu.safe_expect_id=#{id}
     </select>
 
     <select id="selectSafeExpectIsExist" resultType="java.lang.Integer">
@@ -136,5 +154,11 @@
         update t_safe_expect_user set
         is_sign=#{isSign}, sign_time=now()
         where id=#{id}
+    </update>
+
+    <update id="vxSignSafeExpectUser">
+        update t_safe_expect_user set
+        is_sign=-1, sign_time=now()
+        where safe_expect_id=#{id} and user_id=#{userId}
     </update>
 </mapper>

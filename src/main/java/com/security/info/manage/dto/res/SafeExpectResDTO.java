@@ -1,11 +1,13 @@
 package com.security.info.manage.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.security.info.manage.entity.SafeExpectUser;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author frp
@@ -50,6 +52,9 @@ public class SafeExpectResDTO {
 
     @ApiModelProperty(value = "参与人员姓名")
     private String userNames;
+
+    @ApiModelProperty(value = "参与人员详情")
+    private List<SafeExpectUser> userInfo;
 
     @ApiModelProperty(value = "安全预想会详情")
     private SafeExpectInfoResDTO safeExpectInfo;

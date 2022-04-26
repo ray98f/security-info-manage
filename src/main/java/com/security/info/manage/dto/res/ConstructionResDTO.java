@@ -22,10 +22,10 @@ public class ConstructionResDTO {
     @ApiModelProperty(value = "周计划名称")
     private String planName;
 
-    @ApiModelProperty(value = "施工作业id")
+    @ApiModelProperty(value = "施工作业类型id")
     private String typeId;
 
-    @ApiModelProperty(value = "施工作业名称")
+    @ApiModelProperty(value = "施工作业类型名称")
     private String typeName;
 
     @ApiModelProperty(value = "作业日期")

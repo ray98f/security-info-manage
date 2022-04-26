@@ -74,6 +74,17 @@ public class LawServiceImpl implements LawService {
     }
 
     @Override
+    public List<LawCatalogResDTO> vxListAllLawCatalog() {
+        List<LawCatalogResDTO> extraRootList = lawMapper.getVxRoot(TokenUtil.getCurrentPersonNo());
+        if (Objects.isNull(extraRootList)) {
+            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+        }
+        List<LawCatalogResDTO> extraBodyList = lawMapper.getVxBody(TokenUtil.getCurrentPersonNo());
+        LawCatalogTreeToolUtils extraTree = new LawCatalogTreeToolUtils(extraRootList, extraBodyList);
+        return extraTree.getTree();
+    }
+
+    @Override
     public void modifyLawCatalog(LawCatalogReqDTO lawCatalogReqDTO) {
         if (Objects.isNull(lawCatalogReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);

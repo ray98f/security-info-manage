@@ -37,7 +37,15 @@ public interface ConstructionService {
 
     Page<ConstructionResDTO> listConstruction(String planId, PageReqDTO pageReqDTO);
 
+    ConstructionResDTO getConstructionDetail(String id);
+
+    Page<ConstructionResDTO> vxListConstruction(PageReqDTO pageReqDTO);
+
     void addConstruction(ConstructionReqDTO constructionReqDTO);
+
+    void modifyConstruction(ConstructionReqDTO constructionReqDTO);
+
+    void deleteConstruction(ConstructionReqDTO constructionReqDTO);
 
     void importConstruction(MultipartFile file, String planId);
 

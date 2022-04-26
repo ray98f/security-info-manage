@@ -94,7 +94,7 @@ public class ConstructionReqDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "状态 0 启用 1 停用")
+    @ApiModelProperty(value = "状态(0发布、1已完成、2已取消、3已过期)")
     private Integer status;
 
     @ApiModelProperty(value = "创建人id")
