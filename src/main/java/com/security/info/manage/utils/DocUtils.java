@@ -280,6 +280,29 @@ public class DocUtils {
         }
     }
 
+    public static byte[] getContent(MultipartFile multipartFile) throws IOException {
+        java.io.File file = FileUtils.transferToFile(multipartFile);
+        long fileSize = file.length();
+        if (fileSize > Integer.MAX_VALUE) {
+            System.out.println("file too big...");
+            return null;
+        }
+        FileInputStream fi = new FileInputStream(file);
+        byte[] buffer = new byte[(int) fileSize];
+        int offset = 0;
+        int numRead = 0;
+        while (offset < buffer.length
+                && (numRead = fi.read(buffer, offset, buffer.length - offset)) >= 0) {
+            offset += numRead;
+        }
+        // 确保所有数据均被读取
+        if (offset != buffer.length) {
+            throw new IOException("Could not completely read file " + file.getName());
+        }
+        fi.close();
+        return buffer;
+    }
+
     public static void main(String[] args) throws Exception {
         String basePath = "C:/Users/40302/Desktop/";
         String docPath = basePath + "222.doc";

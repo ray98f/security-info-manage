@@ -3,27 +3,29 @@ package com.security.info.manage.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.config.MinioConfig;
+import com.security.info.manage.config.repository.LawFileEsRepository;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.LawCatalogReqDTO;
 import com.security.info.manage.dto.req.LawCatalogUserRoleReqDTO;
 import com.security.info.manage.dto.req.LawReqDTO;
 import com.security.info.manage.dto.res.LawCatalogResDTO;
 import com.security.info.manage.dto.res.LawResDTO;
+import com.security.info.manage.entity.File;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.LawMapper;
 import com.security.info.manage.service.LawService;
-import com.security.info.manage.utils.DocUtils;
-import com.security.info.manage.utils.MinioUtils;
-import com.security.info.manage.utils.TokenUtil;
+import com.security.info.manage.utils.*;
 import com.security.info.manage.utils.treeTool.LawCatalogTreeToolUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author frp
@@ -47,6 +49,9 @@ public class LawServiceImpl implements LawService {
 
     @Autowired
     private MinioUtils minioUtils;
+
+    @Autowired
+    private LawFileEsRepository repository;
 
     @Override
     public Page<LawCatalogResDTO> listLawCatalog(PageReqDTO pageReqDTO) {
@@ -74,14 +79,59 @@ public class LawServiceImpl implements LawService {
     }
 
     @Override
-    public List<LawCatalogResDTO> vxListAllLawCatalog() {
-        List<LawCatalogResDTO> extraRootList = lawMapper.getVxRoot(TokenUtil.getCurrentPersonNo());
-        if (Objects.isNull(extraRootList)) {
-            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+    public Map<String, Object> vxListAllLawCatalog(String catalogId, String searchKey) {
+        Map<String, Object> data = new HashMap<>();
+        if (catalogId == null || "".equals(catalogId)) {
+            if (searchKey != null && !"".equals(searchKey)) {
+                List<LawResDTO> list = new ArrayList<>();
+                try {
+                    Iterable<File> items = repository.search(getLawSearchBoolQueryBuilder(searchKey));
+                    for (File item : items) {
+                        LawResDTO res = lawMapper.selectLawByFileId(item.getId(), TokenUtil.getCurrentPersonNo());
+                        if (Objects.isNull(res)) {
+                            continue;
+                        }
+                        item.setContent(null);
+                        res.setFileInfo(item);
+                        list.add(res);
+                    }
+                } catch (Exception e) {
+                    return data;
+                }
+                data.put("catalogPage", new ArrayList<>());
+                data.put("lawPage", list);
+            } else {
+                data.put("catalogPage", lawMapper.getVxRoot(TokenUtil.getCurrentPersonNo()));
+                data.put("lawPage", new ArrayList<>());
+            }
+            return data;
         }
-        List<LawCatalogResDTO> extraBodyList = lawMapper.getVxBody(TokenUtil.getCurrentPersonNo());
-        LawCatalogTreeToolUtils extraTree = new LawCatalogTreeToolUtils(extraRootList, extraBodyList);
-        return extraTree.getTree();
+        if (searchKey != null && !"".equals(searchKey)) {
+            List<LawResDTO> list = new ArrayList<>();
+            try {
+                List<String> catalogIds = lawMapper.selectCatalogIds(catalogId);
+                catalogIds.add(catalogId);
+                Iterable<File> items = repository.search(getLawSearchBoolQueryBuilder(searchKey));
+                for (File item : items) {
+                    LawResDTO res = lawMapper.selectLawByFileIdAndCatalogIds(catalogIds, item.getId(), TokenUtil.getCurrentPersonNo());
+                    if (Objects.isNull(res)) {
+                        continue;
+                    }
+                    item.setContent(null);
+                    res.setFileInfo(item);
+                    list.add(res);
+                }
+            } catch (Exception e) {
+                return data;
+            }
+            data.put("catalogPage", new ArrayList<>());
+            data.put("lawPage", list);
+            return data;
+        } else {
+            data.put("catalogPage", lawMapper.getVxBody(catalogId, TokenUtil.getCurrentPersonNo()));
+            data.put("lawPage", lawMapper.vxListLaw(catalogId, null));
+        }
+        return data;
     }
 
     @Override
@@ -160,20 +210,64 @@ public class LawServiceImpl implements LawService {
     }
 
     @Override
-    public String previewLaw(String url) {
+    public String previewLaw(String url, String fileName) {
         try {
-            if (url.contains(DOCX)) {
-                String docxHtml = DocUtils.docx2Html(url, "");
-                docxHtml = DocUtils.formatHtml(docxHtml);
-                return docxHtml.replace("___", "22");
-            }
-            if (url.contains(DOC)) {
-                String docHtml = DocUtils.doc2Html(url, "");
-                return DocUtils.formatHtml(docHtml);
-            }
+            MultipartFile file = FileUtils.createFileItem(url, fileName);
+            return TikaUtils.extractHtml(file);
+//            if (url.contains(DOCX)) {
+//                String docxHtml = DocUtils.docx2Html(url, "");
+//                docxHtml = DocUtils.formatHtml(docxHtml);
+//                return docxHtml.replace("___", "22");
+//            }
+//            if (url.contains(DOC)) {
+//                String docHtml = DocUtils.doc2Html(url, "");
+//                return DocUtils.formatHtml(docHtml);
+//            }
         } catch (Exception e) {
             throw new CommonException(ErrorCode.PREVIEW_ERROR);
         }
-        throw new CommonException(ErrorCode.PREVIEW_ERROR);
+//        throw new CommonException(ErrorCode.PREVIEW_ERROR);
+    }
+
+    @Override
+    public List<LawResDTO> lawSearch(String searchKey) {
+        List<LawResDTO> list = new ArrayList<>();
+        try {
+            Iterable<File> items = repository.search(getLawSearchBoolQueryBuilder(searchKey));
+            for (File item : items) {
+                LawResDTO res = lawMapper.selectLawByFileId(item.getId(), TokenUtil.getCurrentPersonNo());
+                if (Objects.isNull(res)) {
+                    continue;
+                }
+                item.setContent(null);
+                res.setFileInfo(item);
+                list.add(res);
+            }
+        } catch (Exception e) {
+            return list;
+        }
+        return list;
+    }
+
+    @Override
+    public List<File> lawAllSearch() {
+        List<File> list = new ArrayList<>();
+        try {
+            Iterable<File> items = repository.findAll();
+            for (File item : items) {
+                list.add(item);
+            }
+        } catch (Exception e) {
+            return list;
+        }
+        return list;
+    }
+
+    public static BoolQueryBuilder getLawSearchBoolQueryBuilder(String searchKey) {
+        BoolQueryBuilder queryBuilders = QueryBuilders.boolQuery();
+        queryBuilders.should(QueryBuilders.matchPhraseQuery("name", searchKey));
+        queryBuilders.should(QueryBuilders.matchPhraseQuery("content", searchKey));
+        System.out.println(queryBuilders.toString());
+        return queryBuilders;
     }
 }

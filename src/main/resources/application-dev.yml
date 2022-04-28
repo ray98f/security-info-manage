@@ -33,6 +33,12 @@ spring:
       login-timeout: 5
       maximum-pool-size: 30
       minimum-idle: 10
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: 192.168.30.110:9200
+      repositories:
+        enabled: true
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
@@ -72,3 +78,7 @@ minio:
   imgPath: http://zxgd.softether.net:9000
   accessKey: minio
   secretKey: minio123
+
+es:
+  url: 192.168.30.110:9200
+  index: law-file

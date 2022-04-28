@@ -32,17 +32,20 @@
     </select>
 
     <select id="getVxRoot" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
-        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
-        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
-        where lc.is_delete=0 and lc.parent_id='root' and lc.status=0
-        and lc.dept_id=(select main_dept from sys_user where id=#{userId} and is_delete=0)
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.sort, lc.status, lc.no
+        from t_law_catalog as lc
+        left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
+        where lc.is_delete=0 and lc.parent_id='root' and lc.status=0 and lcu.user_id=#{userId} and lcu.role like '%1%'
+        order by lc.sort
     </select>
 
     <select id="getVxBody" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
-        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
-        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
-        where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0
-        and lc.dept_id=(select main_dept from sys_user where id=#{userId} and is_delete=0)
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.sort, lc.status, lc.no
+        from t_law_catalog as lc
+        left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
+        where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0 and lcu.user_id=#{userId} and lcu.role like '%1%'
+        and lc.parent_id=#{catalogId}
+        order by lc.sort
     </select>
 
     <select id="selectIfLawCatalogHadChild" resultType="java.lang.Integer">
@@ -115,6 +118,19 @@
         order by l.create_date
     </select>
 
+    <select id="vxListLaw" resultType="com.security.info.manage.dto.res.LawResDTO">
+        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
+        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name
+        from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
+        left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0
+        where l.is_delete=0
+        <if test="catalogId!=null and catalogId!=''">
+            and l.catalog_id=#{catalogId}
+        </if>
+        order by l.create_date
+    </select>
+
     <insert id="addLaw">
         <foreach collection="fileIds" index="index" item="fileId" separator=";">
             insert into t_law(id, catalog_id, file_id, create_by)
@@ -130,4 +146,37 @@
         is_delete=1, update_by=#{createBy}
         where id=#{fileId} and is_delete=0;
     </update>
+
+    <select id="selectLawByFileId" resultType="com.security.info.manage.dto.res.LawResDTO">
+        select distinct l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
+        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name
+        from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
+        left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0
+        left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
+        where l.is_delete=0 and l.file_id=#{fileId} and lcu.user_id=#{userId} and lcu.role like '%1%'
+        limit 1
+    </select>
+
+    <select id="selectLawByFileIdAndCatalogIds" resultType="com.security.info.manage.dto.res.LawResDTO">
+        select distinct l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
+        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name
+        from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
+        left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0
+        left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
+        where l.is_delete=0 and l.file_id=#{fileId} and lcu.user_id=#{userId} and lcu.role like '%1%'
+        and l.catalog_id in (
+        <foreach collection="catalogIds" index="index" item="catalogId" separator=",">
+            #{catalogId}
+        </foreach>
+        )
+        limit 1
+    </select>
+
+    <select id="selectCatalogIds" resultType="java.lang.String">
+        select id from t_law_catalog where
+        route like concat((select CONCAT(route,',',id) from t_law_catalog where id=#{catalogId} and is_delete=0 and status=0),'%')
+        and status=0 and is_delete=0
+    </select>
 </mapper>

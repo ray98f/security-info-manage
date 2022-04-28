@@ -47,6 +47,6 @@ public class LawCatalogResDTO {
     @ApiModelProperty(value = "管理部门名称")
     private String deptName;
 
-    @ApiModelProperty(value = "子集")
+    @ApiModelProperty(value = "目录子集")
     private List<LawCatalogResDTO> children;
 }

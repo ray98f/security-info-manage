@@ -26,7 +26,7 @@ public interface LawMapper {
 
     List<LawCatalogResDTO> getVxRoot(String userId);
 
-    List<LawCatalogResDTO> getVxBody(String userId);
+    List<LawCatalogResDTO> getVxBody(String catalogId, String userId);
 
     Integer selectIfLawCatalogHadChild(String route);
 
@@ -36,10 +36,18 @@ public interface LawMapper {
 
     Integer addLawCatalogRole(LawCatalogUserRoleReqDTO lawCatalogUserRoleReqDTO);
 
+    List<LawResDTO> vxListLaw(String catalogId, String searchKey);
+
     Page<LawResDTO> listLaw(Page<LawResDTO> page, String catalogId, String name);
 
     Integer addLaw(LawReqDTO lawReqDTO);
 
     Integer deleteLaw(LawReqDTO lawReqDTO);
+
+    LawResDTO selectLawByFileId(String fileId, String userId);
+
+    LawResDTO selectLawByFileIdAndCatalogIds(List<String> catalogIds, String fileId, String userId);
+
+    List<String> selectCatalogIds(String catalogId);
 
 }

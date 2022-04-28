@@ -1,7 +1,11 @@
 package com.security.info.manage.utils;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.http.entity.ContentType;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
 import org.apache.poi.poifs.filesystem.DirectoryEntry;
@@ -19,6 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.Document;
 
@@ -33,6 +38,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -388,4 +395,39 @@ public class FileUtils {
         return htmlStream.toString();
     }
 
+    /**
+     * url转变为 MultipartFile对象
+     * @param url
+     * @param fileName
+     * @return
+     * @throws Exception
+     */
+    public static MultipartFile createFileItem(String url, String fileName) throws Exception{
+        FileItem item = null;
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setReadTimeout(30000);
+            conn.setConnectTimeout(30000);
+            //设置应用程序要从网络连接读取数据
+            conn.setDoInput(true);
+            conn.setRequestMethod("GET");
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream is = conn.getInputStream();
+                FileItemFactory factory = new DiskFileItemFactory(16, null);
+                String textFieldName = "uploadfile";
+                item = factory.createItem(textFieldName, ContentType.APPLICATION_OCTET_STREAM.toString(), false, fileName);
+                OutputStream os = item.getOutputStream();
+                int bytesRead = 0;
+                byte[] buffer = new byte[8192];
+                while ((bytesRead = is.read(buffer, 0, 8192)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.close();
+                is.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("文件下载失败", e);
+        }
+        return new CommonsMultipartFile(Objects.requireNonNull(item));
+    }
 }

@@ -7,8 +7,10 @@ import com.security.info.manage.dto.req.LawCatalogUserRoleReqDTO;
 import com.security.info.manage.dto.req.LawReqDTO;
 import com.security.info.manage.dto.res.LawCatalogResDTO;
 import com.security.info.manage.dto.res.LawResDTO;
+import com.security.info.manage.entity.File;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author frp
@@ -19,7 +21,7 @@ public interface LawService {
 
     List<LawCatalogResDTO> listAllLawCatalog(String deptId);
 
-    List<LawCatalogResDTO> vxListAllLawCatalog();
+    Map<String, Object> vxListAllLawCatalog(String catalogId, String searchKey);
 
     void modifyLawCatalog(LawCatalogReqDTO trainReqDTO);
 
@@ -33,6 +35,10 @@ public interface LawService {
 
     void deleteLaw(LawReqDTO lawReqDTO);
 
-    String previewLaw(String url);
+    String previewLaw(String url, String fileName);
+
+    List<LawResDTO> lawSearch(String searchKey);
+
+    List<File> lawAllSearch();
 
 }

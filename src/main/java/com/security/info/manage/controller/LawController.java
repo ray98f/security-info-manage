@@ -8,6 +8,7 @@ import com.security.info.manage.dto.req.LawCatalogUserRoleReqDTO;
 import com.security.info.manage.dto.req.LawReqDTO;
 import com.security.info.manage.dto.res.LawCatalogResDTO;
 import com.security.info.manage.dto.res.LawResDTO;
+import com.security.info.manage.entity.File;
 import com.security.info.manage.service.LawService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author frp
@@ -47,8 +49,9 @@ public class LawController {
 
     @GetMapping("/vx/catalog/listAll")
     @ApiOperation(value = "微信端-获取所有法律法规目录列表")
-    public DataResponse<List<LawCatalogResDTO>> vxListAllLawCatalog() {
-        return DataResponse.of(lawService.vxListAllLawCatalog());
+    public DataResponse<Map<String, Object>> vxListAllLawCatalog(@RequestParam(required = false) String catalogId,
+                                                                 @RequestParam(required = false) String searchKey) {
+        return DataResponse.of(lawService.vxListAllLawCatalog(catalogId, searchKey));
     }
 
     @PostMapping("/catalog/modify")
@@ -96,8 +99,21 @@ public class LawController {
 
     @GetMapping("/preview")
     @ApiOperation(value = "法律法规预览")
-    public DataResponse<String> previewLaw(@RequestParam String url) {
-        return DataResponse.of(lawService.previewLaw(url));
+    public DataResponse<String> previewLaw(@RequestParam String url,
+                                           @RequestParam String fileName) {
+        return DataResponse.of(lawService.previewLaw(url, fileName));
+    }
+
+    @GetMapping("/vx/search")
+    @ApiOperation(value = "法律法规文件搜索")
+    public DataResponse<List<LawResDTO>> lawSearch(@RequestParam String searchKey) {
+        return DataResponse.of(lawService.lawSearch(searchKey));
+    }
+
+    @GetMapping("/searchAll")
+    @ApiOperation(value = "获取所有法律法规文件")
+    public DataResponse<List<File>> lawAllSearch() {
+        return DataResponse.of(lawService.lawAllSearch());
     }
 
 }

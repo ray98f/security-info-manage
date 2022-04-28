@@ -1,12 +1,12 @@
 package com.security.info.manage.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.security.info.manage.entity.File;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author frp
@@ -25,6 +25,9 @@ public class LawResDTO {
 
     @ApiModelProperty(value = "文件名称")
     private String fileName;
+
+    @ApiModelProperty(value = "文件信息")
+    private File fileInfo;
 
     @ApiModelProperty(value = "分区")
     private String bizCode;
