@@ -174,6 +174,7 @@ public class ReadWordTable {
 
     public List<PhysicalResult> readTable(List<XWPFTable> tables) throws IOException {
         List<PhysicalResult> physicalResults = new ArrayList<>();
+        int j = 0;
         for (XWPFTable table : tables) {
             int tableRowsSize = table.getRows().size();
             for (int i = 0; i < tableRowsSize; i++) {
@@ -192,9 +193,10 @@ public class ReadWordTable {
                 physicalResult.setConclusion(table.getRow(i).getCell(8).getText());
                 physicalResult.setHandlingOpinions(table.getRow(i).getCell(9) == null ? null : table.getRow(i).getCell(9).getText());
                 physicalResult.setMedicalAdvice(table.getRow(i).getCell(10) == null ? table.getRow(i).getCell(7).getText() : table.getRow(i).getCell(10).getText());
-                physicalResult.setResult(i + 1);
+                physicalResult.setResult(j + 1);
                 physicalResults.add(physicalResult);
             }
+            j++;
         }
         clearTableInfo();
         return physicalResults;

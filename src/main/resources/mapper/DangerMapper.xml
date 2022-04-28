@@ -45,7 +45,7 @@
 
     <select id="listDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
         select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
-        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time,
+        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
@@ -81,7 +81,7 @@
 
     <select id="vxListDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
         select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
-        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time,
+        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
@@ -112,7 +112,7 @@
 
     <select id="vxNearbyDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
         select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
-        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time,
+        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
@@ -133,7 +133,7 @@
 
     <select id="getDangerDetail" resultType="com.security.info.manage.dto.res.DangerResDTO">
         select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
-        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time,
+        d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
@@ -230,8 +230,28 @@
 
     <insert id="addDanger">
         INSERT INTO t_danger (id, no, region_id, address, content, before_pic, rectify_term, check_dept_id, check_user_id,
-        check_time, is_build_prob, build_entry_id, build_score, build_conversion_score, is_prod_prob, prod_entry_id,
-        prod_entry_score, is_danger_prob, level, danger_category, is_push, create_by, prod_category, is_use
+        check_time,
+        <if test="isBuildProb!=null">
+            is_build_prob,
+        </if>
+        build_entry_id, build_score, build_conversion_score,
+        <if test="isProdProb!=null">
+            is_prod_prob,
+        </if>
+        prod_entry_id,
+        prod_entry_score,
+        <if test="isDangerProb!=null">
+            is_danger_prob,
+        </if>
+        level, danger_category,
+        <if test="isPush!=null">
+            is_push,
+        </if>
+        create_by,
+        <if test="isUse!=null">
+            is_use,
+        </if>
+        prod_category
         <if test="isUse==1">
             , status
         </if>
@@ -243,8 +263,27 @@
         <if test="checkDeptId==null or checkDeptId=='' or checkUserId==null or checkUserId==''">
             (select main_dept from sys_user where id=#{createBy} and is_delete=0), #{createBy},
         </if>
-        #{checkTime}, #{isBuildProb}, #{buildEntryId}, #{buildScore}, #{buildConversionScore}, #{isProdProb}, #{prodEntryId},
-        #{prodEntryScore}, #{isDangerProb}, #{level}, #{dangerCategory}, #{isPush}, #{createBy}, #{prodCategory}, #{isUse}
+        #{checkTime},
+        <if test="isBuildProb!=null">
+            #{isBuildProb},
+        </if>
+        #{buildEntryId}, #{buildScore}, #{buildConversionScore},
+        <if test="isDangerProb!=null">
+            #{isProdProb},
+        </if>
+        #{prodEntryId}, #{prodEntryScore},
+        <if test="isDangerProb!=null">
+            #{isDangerProb},
+        </if>
+        #{level}, #{dangerCategory},
+        <if test="isPush!=null">
+            #{isPush},
+        </if>
+        #{createBy},
+        <if test="isUse!=null">
+            #{isUse},
+        </if>
+        #{prodCategory}
         <if test="isUse==1">
             , 1
         </if>
