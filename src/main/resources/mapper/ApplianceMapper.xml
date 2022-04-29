@@ -95,7 +95,7 @@
     </insert>
 
     <select id="listApplianceConfig" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
@@ -109,7 +109,7 @@
     </select>
 
     <select id="vxListApplianceConfig" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
@@ -129,7 +129,7 @@
     </update>
 
     <select id="getApplianceConfigDetail" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no
@@ -190,7 +190,7 @@
     </update>
 
     <select id="userArchives" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">
-        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors,
+        select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
         d.org_name as dept_name, u.real_name as user_name, u.user_no

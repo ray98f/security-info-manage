@@ -207,6 +207,7 @@ public class LawServiceImpl implements LawService {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
         minioUtils.removeObject(LAW, lawReqDTO.getFileUrl().replaceFirst(minioConfig.getUrl() + LAW_PATH, ""));
+        repository.deleteById(lawReqDTO.getFileId());
     }
 
     @Override

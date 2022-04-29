@@ -138,7 +138,7 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public List<VxRegionResDTO> vxListAllRegion() {
-        List<RegionTypeResDTO> list = regionMapper.listAllRegionType();
+        List<RegionTypeResDTO> list = regionMapper.listFirstRegionType();
         List<VxRegionResDTO> res = new ArrayList<>();
         if (list != null && !list.isEmpty()) {
             for (RegionTypeResDTO regionTypeResDTO : list) {

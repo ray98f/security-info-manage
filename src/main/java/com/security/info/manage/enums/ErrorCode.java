@@ -187,7 +187,8 @@ public enum ErrorCode {
     POST_HAZARD_FACTOR_EXIST(32000012, "post.hazard.factor.exist"),
     CANT_DELETE_HAD_CHILD(32000012, "cant.delete.had.child"),
     CANT_UPDATE_HAD_CHILD(32000012, "cant.update.had.child"),
-    PREVIEW_ERROR(31000004, "preview.error");
+    PREVIEW_ERROR(31000004, "preview.error"),
+    CACHE_ERROR(3222222, "cache.error");
 
     private Integer code;
 

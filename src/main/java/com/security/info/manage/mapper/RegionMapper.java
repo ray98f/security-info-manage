@@ -22,6 +22,8 @@ public interface RegionMapper {
 
     List<RegionTypeResDTO> listAllRegionType();
 
+    List<RegionTypeResDTO> listFirstRegionType();
+
     Integer selectRegionTypeIsExist(RegionTypeReqDTO transportReqDTO);
 
     Integer modifyRegionType(RegionTypeReqDTO transportReqDTO);

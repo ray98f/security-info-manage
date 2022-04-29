@@ -39,6 +39,17 @@ spring:
       cluster-nodes: 192.168.30.110:9200
       repositories:
         enabled: true
+  redis:
+    cluster:
+      nodes: 192.168.30.108:7001, 192.168.30.109:7003, 192.168.30.110:7005, 192.168.30.108:7002, 192.168.30.109:7004, 192.168.30.110:7006
+    jedis:
+      pool:
+        max-active: 50
+        min-idle: 0
+        max-idle: 50
+        max-wait: -1
+    key-prefix: dev-
+#    key-prefix: test-
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
@@ -82,3 +93,10 @@ minio:
 es:
   url: 192.168.30.110:9200
   index: law-file
+
+pro:
+  name: security-info-manage
+
+redisson:
+  address: redis://192.168.30.108:6379
+  password: Zxwz123!@#

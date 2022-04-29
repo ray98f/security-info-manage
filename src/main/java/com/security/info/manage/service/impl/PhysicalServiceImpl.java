@@ -1,5 +1,6 @@
 package com.security.info.manage.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.config.MinioConfig;
@@ -25,14 +26,16 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,9 +43,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,6 +61,11 @@ import static com.security.info.manage.utils.Constants.XLSX;
 @Service
 @Slf4j
 public class PhysicalServiceImpl implements PhysicalService {
+
+    public static final String SERIAL_NUMBER_GZ_PHYSICAL = ":serial:num:physical:gz";
+    public static final String SERIAL_NUMBER_RZ_PHYSICAL = ":serial:num:physical:rz";
+    public static final String GZ_PHYSICAL_NO = "ZTT-GZ-";
+    public static final String RZ_PHYSICAL_NO = "ZTT-RZ-";
 
     @Autowired
     private PhysicalMapper physicalMapper;
@@ -73,6 +84,18 @@ public class PhysicalServiceImpl implements PhysicalService {
 
     @Autowired
     private MinioUtils minioUtils;
+
+    @Value("${pro.name}")
+    private String proName;
+
+    @Value("${spring.redis.key-prefix}")
+    private String keyPrefix;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Override
     public Page<PhysicalResDTO> listPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, PageReqDTO pageReqDTO) {
@@ -97,8 +120,37 @@ public class PhysicalServiceImpl implements PhysicalService {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
         physicalReqDTO.setId(TokenUtil.getUuId());
-        // todo 流水号生成
-        physicalReqDTO.setNo(TokenUtil.getUuId());
+        //流水号生成
+        String no;
+        if (physicalReqDTO.getType() == 1) {
+            no = proName + keyPrefix + SERIAL_NUMBER_GZ_PHYSICAL;
+        } else {
+            no = proName + keyPrefix + SERIAL_NUMBER_RZ_PHYSICAL;
+        }
+        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(no))) {
+            try {
+                stringRedisTemplate.opsForValue().set(no, "1", 25, TimeUnit.HOURS);
+            } catch (Exception e) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                e.printStackTrace(new PrintStream(out));
+                throw new CommonException(ErrorCode.CACHE_ERROR, no, out.toString());
+            }
+        }
+        int num = Integer.parseInt(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(no)));
+        String numStr = String.valueOf(num);
+        StringBuilder str = new StringBuilder(numStr);
+        for (int i = 0; i < 4 - numStr.length(); i++) {
+            str.insert(0, "0");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String today = sdf.format(new Date(System.currentTimeMillis()));
+        if (physicalReqDTO.getType() == 1) {
+            physicalReqDTO.setNo(GZ_PHYSICAL_NO + today + "-" + str);
+        } else {
+            physicalReqDTO.setNo(RZ_PHYSICAL_NO + today + "-" + str);
+        }
+        stringRedisTemplate.opsForValue().set(no, String.valueOf(num + 1), 0);
+
         physicalReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
         Integer result = physicalMapper.addPhysical(physicalReqDTO);
         if (result < 0) {

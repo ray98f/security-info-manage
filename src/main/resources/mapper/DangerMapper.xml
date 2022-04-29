@@ -128,6 +128,7 @@
         left join sys_entry_plate as ep2 on ep2.id=e2.plate_id
         left join sys_dept as d3 on d3.id=ep2.dept_id and d3.is_delete=0
         where d.is_delete=0 and r.lng>#{minLng} and #{maxLng}>r.lng and r.lat>#{minLat} and #{maxLat}>r.lat
+        and d.status in (2,3,4)
         order by d.create_date desc
     </select>
 
