@@ -37,6 +37,12 @@ public class DeptController {
         return DataResponse.success();
     }
 
+    @GetMapping("/sync/list")
+    @ApiOperation(value = "获取企业微信组织机构列表")
+    public DataResponse<List<DeptTreeResDTO>> listSyncDept() {
+        return DataResponse.of(deptService.listSyncDept());
+    }
+
     @GetMapping("/listTree")
     @ApiOperation(value = "公司层级结构获取")
     public DataResponse<List<DeptTreeResDTO>> listTree() {

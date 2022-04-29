@@ -25,6 +25,8 @@ public interface UserService {
      */
     void syncUser();
 
+    List<UserResDTO> listSyncUser();
+
     /**
      * 获取用户信息
      *

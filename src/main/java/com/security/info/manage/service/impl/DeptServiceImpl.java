@@ -79,6 +79,11 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    public List<DeptTreeResDTO> listSyncDept() {
+        return deptMapper.listSyncDept();
+    }
+
+    @Override
     public List<DeptTreeResDTO> listTree() {
         List<DeptTreeResDTO> extraRootList = deptMapper.getRoot();
         if (Objects.isNull(extraRootList)) {

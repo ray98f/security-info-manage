@@ -13,6 +13,8 @@ public interface DeptService {
 
     void syncDept(String orgId);
 
+    List<DeptTreeResDTO> listSyncDept();
+
     List<DeptTreeResDTO> listTree();
 
     List<DeptTreeResDTO> listFirst();

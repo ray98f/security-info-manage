@@ -119,6 +119,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserResDTO> listSyncUser() {
+        return userMapper.listSyncUser();
+    }
+
+    @Override
     public UserReqDTO selectUserInfo(LoginReqDTO loginReqDTO) {
         if (Objects.isNull(loginReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);

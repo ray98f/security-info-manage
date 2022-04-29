@@ -17,6 +17,8 @@ public interface DeptMapper {
 
     void syncOrg(List<VxDeptResDTO> list, String userId);
 
+    List<DeptTreeResDTO> listSyncDept();
+
     List<DeptTreeResDTO> getBody();
 
     List<DeptTreeResDTO> getRoot();

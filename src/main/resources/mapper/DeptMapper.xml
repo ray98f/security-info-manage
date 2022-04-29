@@ -11,6 +11,10 @@
         ;
     </insert>
 
+    <select id="listSyncDept" resultType="com.security.info.manage.dto.res.DeptTreeResDTO">
+        select id, parent_id, org_code, org_name, sort, user_ids, create_date from sys_dept where is_delete=0
+    </select>
+
     <select id="getBody" resultType="com.security.info.manage.dto.res.DeptTreeResDTO">
         select id, parent_id, org_code, org_name, sort, user_ids, create_date from sys_dept where id!='1' and is_delete=0
     </select>

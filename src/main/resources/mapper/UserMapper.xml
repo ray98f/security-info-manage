@@ -93,6 +93,14 @@
         where user_id=#{userReqDTO.id} and is_delete=0
     </update>
 
+    <select id="listSyncUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name
+        from sys_user as u
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        where u.is_delete=0
+        group by u.id
+    </select>
+
     <select id="listAllUser" resultType="com.security.info.manage.dto.res.UserResDTO">
         select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
         d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u

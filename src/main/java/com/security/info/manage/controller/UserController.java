@@ -45,6 +45,12 @@ public class UserController {
         return DataResponse.success();
     }
 
+    @GetMapping("/sync/list")
+    @ApiOperation(value = "获取所有用户")
+    public DataResponse<List<UserResDTO>> listSyncUser(){
+        return DataResponse.of(userService.listSyncUser());
+    }
+
     /**
      * 修改密码
      *

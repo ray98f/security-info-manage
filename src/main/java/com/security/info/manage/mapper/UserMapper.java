@@ -45,6 +45,8 @@ public interface UserMapper {
      */
     void insertUser(List<VxUserResDTO> list, String doName);
 
+    List<UserResDTO> listSyncUser();
+
     List<String> selectUserIds();
 
     void deleteUser(List<String> list, String doName);
