@@ -15,6 +15,8 @@ public class Constants {
 
     public static final String ERR_MSG = "errmsg";
 
+    public static final String MSG = "msg";
+
     public static final String VX_GET_CODE2SESSION = "https://qyapi.weixin.qq.com/cgi-bin/miniprogram/jscode2session?grant_type=authorization_code";
 
     public static final String VX_GET_ACCESS_TOKEN = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
@@ -28,6 +30,22 @@ public class Constants {
     public static final String VX_GET_USER_SIMPLE_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/simplelist";
 
     public static final String VX_GET_USER_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/list";
+
+    public static final String ZTT_4G_LOGIN = "/icvs/login";
+
+    public static final String ZTT_4G_LIST_EQUIPMENT = "/icvs/CAS/C_CAS_QueryPUIDSets";
+
+    public static final String ZTT_4G_LIST_VIDEO = "/icvs/CAS/C_CAS_QueryPUIDRes";
+
+    public static final String ZTT_4G_LIVE_STREAM = "/icvs/stream.flv";
+
+    public static final String ZTT_4G_PLAYBACK_FILES = "/icvs/CSS/C_CSS_QueryStorageFiles";
+
+    public static final String ZTT_4G_PLAYBACK_STREAM = "/icvs/CSS/VODFile.flv";
+
+    public static final String ZTT_4G_START_TALK = "/icvs/audio/startTalk";
+
+    public static final String ZTT_4G_STOP_TALK = "/icvs/audio/stopTalk";
 
     public static final String XLS = "xls";
 

@@ -188,7 +188,9 @@ public enum ErrorCode {
     CANT_DELETE_HAD_CHILD(32000012, "cant.delete.had.child"),
     CANT_UPDATE_HAD_CHILD(32000012, "cant.update.had.child"),
     PREVIEW_ERROR(31000004, "preview.error"),
-    CACHE_ERROR(3222222, "cache.error");
+    CACHE_ERROR(3222222, "cache.error"),
+    USER_NAME_EXIST(32000009, "user.name.exist"),
+    ZTT_4G_ERROR(4000000, "ztt.4g.error");
 
     private Integer code;
 

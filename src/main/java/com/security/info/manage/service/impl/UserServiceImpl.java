@@ -124,7 +124,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserReqDTO selectUserInfo(LoginReqDTO loginReqDTO) {
+    public UserReqDTO selectUserInfo(LoginReqDTO loginReqDTO) throws Exception {
         if (Objects.isNull(loginReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
@@ -135,7 +135,7 @@ public class UserServiceImpl implements UserService {
         if (userInfo.getStatus() == 1) {
             throw new CommonException(ErrorCode.USER_DISABLE);
         }
-        if (!loginReqDTO.getPassword().equals(AesUtils.decrypt(userInfo.getPassword()))) {
+        if (!loginReqDTO.getPassword().equals(MyAESUtil.decrypt(userInfo.getPassword()))) {
             throw new CommonException(ErrorCode.LOGIN_PASSWORD_ERROR);
         }
         userInfo.setRoleIds(userMapper.selectUserRoles(userInfo.getId()));
@@ -150,8 +150,8 @@ public class UserServiceImpl implements UserService {
         if (!MyAESUtil.encrypt(passwordReqDTO.getOldPwd()).equals(userMapper.selectOldPassword(passwordReqDTO))) {
             throw new CommonException(ErrorCode.PWD_ERROR);
         }
-        passwordReqDTO.setOldPwd(AesUtils.encrypt(passwordReqDTO.getOldPwd()));
-        passwordReqDTO.setNewPwd(AesUtils.encrypt(passwordReqDTO.getNewPwd()));
+        passwordReqDTO.setOldPwd(MyAESUtil.encrypt(passwordReqDTO.getOldPwd()));
+        passwordReqDTO.setNewPwd(MyAESUtil.encrypt(passwordReqDTO.getNewPwd()));
         int result = userMapper.changePwd(passwordReqDTO, TokenUtil.getCurrentUserName());
         if (result < 0) {
             throw new CommonException(ErrorCode.USER_PWD_CHANGE_FAIL);
@@ -159,12 +159,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(UserReqDTO userReqDTO) {
+    public void editUser(UserReqDTO userReqDTO) throws Exception {
         if (Objects.isNull(userReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        userReqDTO.setPassword(AesUtils.encrypt(userReqDTO.getPassword()));
-        Integer result = userMapper.editUser(userReqDTO, TokenUtil.getCurrentUserName());
+        Integer result = userMapper.selectUserNameIsExist(userReqDTO.getUserName());
+        if (result > 0) {
+            throw new CommonException(ErrorCode.USER_NAME_EXIST);
+        }
+        userReqDTO.setPassword(MyAESUtil.encrypt(userReqDTO.getPassword()));
+        result = userMapper.editUser(userReqDTO, TokenUtil.getCurrentUserName());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

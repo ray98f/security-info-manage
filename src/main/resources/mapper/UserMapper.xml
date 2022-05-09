@@ -67,6 +67,10 @@
         where user_name=#{passwordReqDTO.userName} and password=#{passwordReqDTO.oldPwd}
     </update>
 
+    <select id="selectUserNameIsExist" resultType="java.lang.Integer">
+        select count(1) from sys_user_ext where user_name=#{userName} and is_delete=0 limit 1
+    </select>
+
     <update id="editUser">
         update sys_user_ext
         <set>

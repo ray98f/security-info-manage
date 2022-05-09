@@ -3,7 +3,7 @@
 <mapper namespace="com.security.info.manage.mapper.SafeExpectMapper">
 
     <select id="listSafeExpect" resultType="com.security.info.manage.dto.res.SafeExpectResDTO">
-        select se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
+        select distinct se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
         se.work_no, se.work_name, se.work_region, se.status from t_safe_expect as se
         left join sys_user_ext as ue on ue.user_id=se.user_id and ue.is_delete=0 and ue.status=0
         where se.is_delete=0
@@ -11,7 +11,7 @@
     </select>
 
     <select id="vxListSafeExpect" resultType="com.security.info.manage.dto.res.SafeExpectResDTO">
-        select se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
+        select distinct se.id, se.user_id, ue.real_name as user_name, se.address, se.time, se.work_id,
         se.work_no, se.work_name, se.work_region, se.status from t_safe_expect as se
         left join sys_user_ext as ue on ue.user_id=se.user_id and ue.is_delete=0 and ue.status=0
         left join t_safe_expect_user as seu on seu.safe_expect_id=se.id

@@ -19,9 +19,7 @@ public class ElasticSearchConfig {
 
     @Bean
     RestHighLevelClient configRestHighLevelClient() throws Exception {
-
         String[] esUrlArr = esUrl.split(",");
-
         List<HttpHost> httpHosts = new ArrayList<>();
         for (String es : esUrlArr) {
             String[] esUrlPort = es.split(":");

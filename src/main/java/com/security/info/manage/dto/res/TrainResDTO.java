@@ -38,7 +38,7 @@ public class TrainResDTO {
     @ApiModelProperty(value = "图片")
     private String pic;
 
-    @ApiModelProperty(value = "图片")
+    @ApiModelProperty(value = "图片文件")
     private List<File> picFile;
 
     @ApiModelProperty(value = "地点")
@@ -46,6 +46,9 @@ public class TrainResDTO {
 
     @ApiModelProperty(value = "培训课件")
     private String courseware;
+
+    @ApiModelProperty(value = "课件文件")
+    private List<File> coursewareFile;
 
     @ApiModelProperty(value = "培训人")
     private String lecturer;

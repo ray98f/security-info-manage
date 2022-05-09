@@ -72,7 +72,7 @@ public class UserController {
      */
     @PostMapping("/modify")
     @ApiOperation(value = "修改用户信息")
-    public DataResponse<T> edit(@RequestBody @Valid UserReqDTO userReqDTO) {
+    public DataResponse<T> edit(@RequestBody @Valid UserReqDTO userReqDTO) throws Exception {
         userService.editUser(userReqDTO);
         return DataResponse.success();
     }

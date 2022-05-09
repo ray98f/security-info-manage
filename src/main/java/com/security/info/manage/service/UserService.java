@@ -33,7 +33,7 @@ public interface UserService {
      * @param loginReqDTO
      * @return
      */
-    UserReqDTO selectUserInfo(LoginReqDTO loginReqDTO);
+    UserReqDTO selectUserInfo(LoginReqDTO loginReqDTO) throws Exception;
 
     /**
      * 修改密码
@@ -47,7 +47,7 @@ public interface UserService {
      *
      * @param userReqDTO
      */
-    void editUser(UserReqDTO userReqDTO);
+    void editUser(UserReqDTO userReqDTO) throws Exception;
 
     /**
      * 获取所有用户列表

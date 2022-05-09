@@ -62,6 +62,8 @@ public interface UserMapper {
      */
     Integer changePwd(PasswordReqDTO passwordReqDTO, String updateBy);
 
+    Integer selectUserNameIsExist(String userName);
+
     /**
      * 修改用户
      *

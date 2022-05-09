@@ -100,3 +100,10 @@ pro:
 redisson:
   address: redis://192.168.30.108:6379
   password: Zxwz123!@#
+
+ztt-4g:
+  url: 192.168.30.58
+  port: 1854
+  address: 183.249.1.202
+  user: admin
+  password: Zttddjxb123

@@ -19,6 +19,9 @@ public class PhysicalUserResDTO {
     @ApiModelProperty(value = "id")
     private String id;
 
+    @ApiModelProperty(value = "体检类型 1 岗中 2 新人")
+    private Integer type;
+
     @ApiModelProperty(value = "体检流程id")
     private String physicalId;
 

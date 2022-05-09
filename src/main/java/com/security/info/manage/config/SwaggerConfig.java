@@ -20,13 +20,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * description:
- *
- * @author chentong
- * @version 1.0
- * @date 2020/12/10 16:20
- */
 @Configuration
 @EnableSwagger2
 @EnableKnife4j

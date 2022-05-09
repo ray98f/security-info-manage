@@ -62,6 +62,9 @@ public class TrainServiceImpl implements TrainService {
                 if (resDTO.getPic() != null && !"".equals(resDTO.getPic())) {
                     resDTO.setPicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getPic().split(","))));
                 }
+                if (resDTO.getCourseware() != null && !"".equals(resDTO.getCourseware())) {
+                    resDTO.setCoursewareFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getCourseware().split(","))));
+                }
             }
         }
         page.setRecords(list);
@@ -76,6 +79,9 @@ public class TrainServiceImpl implements TrainService {
         }
         if (res.getPic() != null && !"".equals(res.getPic())) {
             res.setPicFile(fileMapper.selectFileInfo(Arrays.asList(res.getPic().split(","))));
+        }
+        if (res.getCourseware() != null && !"".equals(res.getCourseware())) {
+            res.setCoursewareFile(fileMapper.selectFileInfo(Arrays.asList(res.getCourseware().split(","))));
         }
         return res;
     }
