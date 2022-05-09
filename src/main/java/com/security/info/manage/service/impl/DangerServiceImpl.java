@@ -58,8 +58,84 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
+    public void addPlate(EntryPlate entryPlate) {
+        if (Objects.isNull(entryPlate)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = dangerMapper.selectPlateIsExist(entryPlate);
+        if (result > 0) {
+            throw new CommonException(ErrorCode.DATA_EXIST);
+        }
+        entryPlate.setId(TokenUtil.getUuId());
+        result = dangerMapper.addPlate(entryPlate);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
+    }
+
+    @Override
+    public void modifyPlate(EntryPlate entryPlate) {
+        if (Objects.isNull(entryPlate)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = dangerMapper.selectPlateIsExist(entryPlate);
+        if (result > 0) {
+            throw new CommonException(ErrorCode.DATA_EXIST);
+        }
+        result = dangerMapper.modifyPlate(entryPlate);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void deletePlate(EntryPlate entryPlate) {
+        if (Objects.isNull(entryPlate)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = dangerMapper.deletePlate(entryPlate);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.DELETE_ERROR);
+        }
+    }
+
+    @Override
     public List<EntryPlate.Entry> listEntry(String plateId) {
         return dangerMapper.listEntry(plateId);
+    }
+
+    @Override
+    public void addEntry(EntryPlate.Entry entry) {
+        if (Objects.isNull(entry)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        entry.setId(TokenUtil.getUuId());
+        Integer result = dangerMapper.addEntry(entry);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
+    }
+
+    @Override
+    public void modifyEntry(EntryPlate.Entry entry) {
+        if (Objects.isNull(entry)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = dangerMapper.modifyEntry(entry);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteEntry(EntryPlate.Entry entry) {
+        if (Objects.isNull(entry)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = dangerMapper.deleteEntry(entry);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.DELETE_ERROR);
+        }
     }
 
     @Override

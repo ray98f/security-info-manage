@@ -22,7 +22,21 @@ public interface DangerMapper {
 
     List<EntryPlate> listPlate(Integer type, String deptId);
 
+    Integer selectPlateIsExist(EntryPlate entryPlate);
+
+    Integer addPlate(EntryPlate entryPlate);
+
+    Integer modifyPlate(EntryPlate entryPlate);
+
+    Integer deletePlate(EntryPlate entryPlate);
+
     List<EntryPlate.Entry> listEntry(String plateId);
+
+    Integer addEntry(EntryPlate.Entry entry);
+
+    Integer modifyEntry(EntryPlate.Entry entry);
+
+    Integer deleteEntry(EntryPlate.Entry entry);
 
     Integer selectUserStatus(String dangerId, String userId);
 

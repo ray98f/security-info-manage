@@ -46,10 +46,52 @@ public class DangerController {
         return DataResponse.of(dangerService.listPlate(type, deptId));
     }
 
+    @PostMapping("/addPlate")
+    @ApiOperation(value = "新增隐患板块")
+    public DataResponse<T> addPlate(@RequestBody EntryPlate entryPlate) {
+        dangerService.addPlate(entryPlate);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/modifyPlate")
+    @ApiOperation(value = "修改隐患板块")
+    public DataResponse<T> modifyPlate(@RequestBody EntryPlate entryPlate) {
+        dangerService.modifyPlate(entryPlate);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/deletePlate")
+    @ApiOperation(value = "删除隐患板块")
+    public DataResponse<T> deletePlate(@RequestBody EntryPlate entryPlate) {
+        dangerService.deletePlate(entryPlate);
+        return DataResponse.success();
+    }
+
     @GetMapping("/listEntry")
     @ApiOperation(value = "获取隐患词条列表")
     public DataResponse<List<EntryPlate.Entry>> listEntry(@RequestParam String plateId) {
         return DataResponse.of(dangerService.listEntry(plateId));
+    }
+
+    @PostMapping("/addEntry")
+    @ApiOperation(value = "新增隐患词条")
+    public DataResponse<T> addEntry(@RequestBody EntryPlate.Entry entry) {
+        dangerService.addEntry(entry);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/modifyEntry")
+    @ApiOperation(value = "修改隐患词条")
+    public DataResponse<T> modifyEntry(@RequestBody EntryPlate.Entry entry) {
+        dangerService.modifyEntry(entry);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/deleteEntry")
+    @ApiOperation(value = "删除隐患词条")
+    public DataResponse<T> deleteEntry(@RequestBody EntryPlate.Entry entry) {
+        dangerService.deleteEntry(entry);
+        return DataResponse.success();
     }
 
     @GetMapping("/list")

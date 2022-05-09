@@ -19,11 +19,70 @@
         where type=#{type} and dept_id=#{deptId}
     </select>
 
+    <select id="selectPlateIsExist" resultType="java.lang.Integer">
+        select count(1) from sys_entry_plate
+        where plate_name=#{plateName} and type=#{type}
+        <if test="id!=null and id!=''">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="addPlate">
+        insert into sys_entry_plate(id, type, dept_id, plate_name, proportion)
+        value (#{id}, #{type}, #{deptId}, #{plateName}, #{proportion})
+    </insert>
+
+    <update id="modifyPlate">
+        update sys_entry_plate set
+        <trim suffixOverrides=",">
+            <if test="type!=null">
+                type=#{type},
+            </if>
+            <if test="deptId!=null">
+                dept_id=#{deptId},
+            </if>
+            <if test="plateName!=null">
+                plate_name=#{plateName},
+            </if>
+            <if test="proportion!=null">
+                proportion=#{proportion},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <delete id="deletePlate">
+        delete from sys_entry_plate where id=#{id}
+    </delete>
+
     <select id="listEntry" resultType="com.security.info.manage.entity.EntryPlate$Entry">
         select id, plate_id, content
         from sys_entry
         where plate_id=#{plateId}
     </select>
+
+    <insert id="addEntry">
+        insert into sys_entry(id, plate_id, content)
+        value (#{id}, #{plateId}, #{content})
+    </insert>
+
+    <update id="modifyEntry">
+        update sys_entry set
+        <trim suffixOverrides=",">
+            <if test="plateId!=null">
+                plate_id=#{plateId},
+            </if>
+            <if test="content!=null">
+                content=#{content},
+            </if>
+        </trim>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteEntry">
+        delete from sys_entry where id=#{id}
+    </delete>
 
     <select id="selectUserStatus" resultType="java.lang.Integer">
         select count(1) from t_danger_examine

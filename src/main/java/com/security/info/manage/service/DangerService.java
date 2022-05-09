@@ -21,7 +21,19 @@ public interface DangerService {
 
     List<EntryPlate> listPlate(Integer type, String deptId);
 
+    void addPlate(EntryPlate entryPlate);
+
+    void modifyPlate(EntryPlate entryPlate);
+
+    void deletePlate(EntryPlate entryPlate);
+
     List<EntryPlate.Entry> listEntry(String plateId);
+
+    void addEntry(EntryPlate.Entry entry);
+
+    void modifyEntry(EntryPlate.Entry entry);
+
+    void deleteEntry(EntryPlate.Entry entry);
 
     Page<DangerResDTO> listDanger(Integer type, PageReqDTO pageReqDTO);
 
