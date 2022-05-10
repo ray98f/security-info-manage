@@ -193,22 +193,24 @@
 
     <select id="listPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
-        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no, p.type,
         pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
         left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
         left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
+        left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
         where pu.physical_id=#{id} and pu.is_delete=0
         order by pu.create_date desc
     </select>
 
     <select id="selectPhysicalUserById" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
-        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no, p.type,
         pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
         left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
         left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
+        left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
         where pu.id=#{id} and pu.is_delete=0
     </select>
 

@@ -266,6 +266,8 @@ public class LawServiceImpl implements LawService {
 
     public static BoolQueryBuilder getLawSearchBoolQueryBuilder(String searchKey) {
         BoolQueryBuilder queryBuilders = QueryBuilders.boolQuery();
+        queryBuilders.must(QueryBuilders.existsQuery("name"));
+        queryBuilders.must(QueryBuilders.existsQuery("content"));
         queryBuilders.should(QueryBuilders.matchPhraseQuery("name", searchKey));
         queryBuilders.should(QueryBuilders.matchPhraseQuery("content", searchKey));
         System.out.println(queryBuilders.toString());
