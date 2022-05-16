@@ -16,7 +16,16 @@
     <select id="listPlate" resultType="com.security.info.manage.entity.EntryPlate">
         select id, type, dept_id, plate_name, proportion
         from sys_entry_plate
-        where type=#{type} and dept_id=#{deptId}
+        <if test="type!=null or (deptId!=null and deptId!='')">
+            <trim prefix="where" suffixOverrides="and">
+                <if test="type!=null">
+                    type=#{type} and
+                </if>
+                <if test="deptId!=null and deptId!=''">
+                    dept_id=#{deptId} and
+                </if>
+            </trim>
+        </if>
     </select>
 
     <select id="selectPlateIsExist" resultType="java.lang.Integer">

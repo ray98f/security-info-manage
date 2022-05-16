@@ -23,9 +23,15 @@ public interface HazardFactorService {
 
     void addHazardFactor(HazardFactor hazardFactor);
 
+    void modifyHazardFactor(HazardFactor hazardFactor);
+
+    void deleteHazardFactor(HazardFactor hazardFactor);
+
     void addPostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO);
 
     void modifyPostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO);
+
+    void deletePostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO);
 
     Page<PostHazardFactorResDTO> listPostHazardFactor(PageReqDTO pageReqDTO);
 }

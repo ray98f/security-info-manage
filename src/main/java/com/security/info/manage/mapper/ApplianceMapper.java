@@ -40,6 +40,8 @@ public interface ApplianceMapper {
 
     ApplianceConfigResDTO getApplianceConfigDetail(String id);
 
+    void deleteApplianceConfig(String id, String userId);
+
     Integer changeAppliance(ApplianceConfigResDTO applianceConfigResDTO);
 
     List<ApplianceConfigResDTO> listExpiredAppliance();

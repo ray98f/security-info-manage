@@ -98,6 +98,13 @@ public class ApplianceController {
         return DataResponse.of(applianceService.getApplianceConfigDetail(id));
     }
 
+    @PostMapping("/user/delete")
+    @ApiOperation(value = "删除劳保用品配备")
+    public DataResponse<T> deleteApplianceConfig(@RequestBody ApplianceConfigResDTO applianceConfigResDTO) {
+        applianceService.deleteApplianceConfig(applianceConfigResDTO.getId());
+        return DataResponse.success();
+    }
+
     @PostMapping("/user/change")
     @ApiOperation(value = "更换劳保用品")
     public DataResponse<T> changeAppliance(@RequestBody ApplianceConfigReqDTO applianceConfigReqDTO) {

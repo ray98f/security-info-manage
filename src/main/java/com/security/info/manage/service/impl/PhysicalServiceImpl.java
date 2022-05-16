@@ -64,8 +64,12 @@ public class PhysicalServiceImpl implements PhysicalService {
 
     public static final String SERIAL_NUMBER_GZ_PHYSICAL = ":serial:num:physical:gz";
     public static final String SERIAL_NUMBER_RZ_PHYSICAL = ":serial:num:physical:rz";
+    public static final String SERIAL_NUMBER_PT_PHYSICAL = ":serial:num:physical:pt";
+    public static final String SERIAL_NUMBER_LG_PHYSICAL = ":serial:num:physical:lg";
     public static final String GZ_PHYSICAL_NO = "ZTT-GZ-";
     public static final String RZ_PHYSICAL_NO = "ZTT-RZ-";
+    public static final String PT_PHYSICAL_NO = "ZTT-PT-";
+    public static final String LG_PHYSICAL_NO = "ZTT-LG-";
 
     @Autowired
     private PhysicalMapper physicalMapper;
@@ -124,8 +128,12 @@ public class PhysicalServiceImpl implements PhysicalService {
         String no;
         if (physicalReqDTO.getType() == 1) {
             no = proName + keyPrefix + SERIAL_NUMBER_GZ_PHYSICAL;
-        } else {
+        } else if (physicalReqDTO.getType() == 2) {
             no = proName + keyPrefix + SERIAL_NUMBER_RZ_PHYSICAL;
+        } else if (physicalReqDTO.getType() == 3) {
+            no = proName + keyPrefix + SERIAL_NUMBER_PT_PHYSICAL;
+        } else {
+            no = proName + keyPrefix + SERIAL_NUMBER_LG_PHYSICAL;
         }
         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(no))) {
             try {
@@ -146,11 +154,14 @@ public class PhysicalServiceImpl implements PhysicalService {
         String today = sdf.format(new Date(System.currentTimeMillis()));
         if (physicalReqDTO.getType() == 1) {
             physicalReqDTO.setNo(GZ_PHYSICAL_NO + today + "-" + str);
-        } else {
+        } else if (physicalReqDTO.getType() == 2) {
             physicalReqDTO.setNo(RZ_PHYSICAL_NO + today + "-" + str);
+        } else if (physicalReqDTO.getType() == 3) {
+            physicalReqDTO.setNo(PT_PHYSICAL_NO + today + "-" + str);
+        } else {
+            physicalReqDTO.setNo(LG_PHYSICAL_NO + today + "-" + str);
         }
         stringRedisTemplate.opsForValue().set(no, String.valueOf(num + 1), 0);
-
         physicalReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
         Integer result = physicalMapper.addPhysical(physicalReqDTO);
         if (result < 0) {
@@ -339,6 +350,7 @@ public class PhysicalServiceImpl implements PhysicalService {
             physicalMapper.physicalResultImport(physicalResultImportReqDTO);
             result = physicalMapper.uploadFilePhysical(fileRes.getId(), id, TokenUtil.getCurrentPersonNo(), 1);
         } else if ("physical-user-word".equals(bizCode)) {
+            physicalResultImportReqDTO.setId(physicalMapper.selectPhysicalIdByPhysicalUserId(id));
             physicalMapper.physicalResultImport(physicalResultImportReqDTO);
             result = physicalMapper.uploadFilePhysicalUser(fileRes.getId(), id, TokenUtil.getCurrentPersonNo(), 1);
         }
@@ -451,9 +463,9 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
-    public Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO) {
+    public Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO, Integer type) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return physicalMapper.listPhysicalWarn(pageReqDTO.of());
+        return physicalMapper.listPhysicalWarn(pageReqDTO.of(), type);
     }
 
     @Override

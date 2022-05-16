@@ -41,8 +41,8 @@ public class DangerController {
 
     @GetMapping("/listPlate")
     @ApiOperation(value = "获取隐患板块列表")
-    public DataResponse<List<EntryPlate>> listPlate(@RequestParam Integer type,
-                                                    @RequestParam String deptId) {
+    public DataResponse<List<EntryPlate>> listPlate(@RequestParam(required = false) Integer type,
+                                                    @RequestParam(required = false) String deptId) {
         return DataResponse.of(dangerService.listPlate(type, deptId));
     }
 

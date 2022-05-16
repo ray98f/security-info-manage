@@ -35,6 +35,8 @@ public interface ApplianceService {
 
     ApplianceConfigResDTO getApplianceConfigDetail(String id);
 
+    void deleteApplianceConfig(String id);
+
     void changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO);
 
     Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO);

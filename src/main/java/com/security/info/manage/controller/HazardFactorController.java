@@ -60,6 +60,20 @@ public class HazardFactorController {
         return DataResponse.success();
     }
 
+    @PostMapping("/modify")
+    @ApiOperation(value = "编辑禁忌证危害因素")
+    public DataResponse<T> modifyHazardFactor(@RequestBody HazardFactor hazardFactor) {
+        hazardFactorService.modifyHazardFactor(hazardFactor);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/delete")
+    @ApiOperation(value = "删除禁忌证危害因素")
+    public DataResponse<T> deleteHazardFactor(@RequestBody HazardFactor hazardFactor) {
+        hazardFactorService.deleteHazardFactor(hazardFactor);
+        return DataResponse.success();
+    }
+
     @PostMapping("/post/add")
     @ApiOperation(value = "新增岗位危害因素配置")
     public DataResponse<T> addPostHazardFactor(@RequestBody PostHazardFactorReqDTO postHazardFactorReqDTO) {
@@ -71,6 +85,13 @@ public class HazardFactorController {
     @ApiOperation(value = "修改岗位危害因素配置")
     public DataResponse<T> modifyPostHazardFactor(@RequestBody PostHazardFactorReqDTO postHazardFactorReqDTO) {
         hazardFactorService.modifyPostHazardFactor(postHazardFactorReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/post/delete")
+    @ApiOperation(value = "删除岗位危害因素配置")
+    public DataResponse<T> deletePostHazardFactor(@RequestBody PostHazardFactorReqDTO postHazardFactorReqDTO) {
+        hazardFactorService.deletePostHazardFactor(postHazardFactorReqDTO);
         return DataResponse.success();
     }
 

@@ -119,6 +119,30 @@ public class HazardFactorServiceImpl implements HazardFactorService {
     }
 
     @Override
+    public void modifyHazardFactor(HazardFactor hazardFactor) {
+        if (Objects.isNull(hazardFactor)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        hazardFactor.setCreateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = hazardFactorMapper.modifyHazardFactor(hazardFactor);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteHazardFactor(HazardFactor hazardFactor) {
+        if (Objects.isNull(hazardFactor)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        hazardFactor.setCreateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = hazardFactorMapper.deleteHazardFactor(hazardFactor);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.DELETE_ERROR);
+        }
+    }
+
+    @Override
     public void addPostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO) {
         if (Objects.isNull(postHazardFactorReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
@@ -147,6 +171,17 @@ public class HazardFactorServiceImpl implements HazardFactorService {
         result = hazardFactorMapper.modifyPostHazardFactor(postHazardFactorReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void deletePostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO) {
+        if (Objects.isNull(postHazardFactorReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = hazardFactorMapper.deletePostHazardFactor(postHazardFactorReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.DELETE_ERROR);
         }
     }
 

@@ -27,11 +27,17 @@ public interface HazardFactorMapper {
 
     Integer addHazardFactor(HazardFactor hazardFactor);
 
+    Integer modifyHazardFactor(HazardFactor hazardFactor);
+
+    Integer deleteHazardFactor(HazardFactor hazardFactor);
+
     Integer selectPostHazardFactorIsExist(String postId);
 
     Integer addPostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO);
 
     Integer modifyPostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO);
+
+    Integer deletePostHazardFactor(PostHazardFactorReqDTO postHazardFactorReqDTO);
 
     Page<PostHazardFactorResDTO> listPostHazardFactor(Page<PostHazardFactorResDTO> page);
 

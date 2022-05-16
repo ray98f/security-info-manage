@@ -61,6 +61,8 @@ public interface PhysicalMapper {
 
     void editPhysical(PhysicalResultImportReqDTO physicalResultImportReqDTO);
 
+    String selectPhysicalIdByPhysicalUserId(String id);
+
     void physicalResultImport(PhysicalResultImportReqDTO physicalResultImportReqDTO);
 
     Integer uploadFilePhysical(String url, String id, String userId, Integer type);
@@ -81,7 +83,7 @@ public interface PhysicalMapper {
 
     void addPhysicalWarning(List<PhysicalUserResDTO> list);
 
-    Page<PhysicalWarnResDTO> listPhysicalWarn(Page<PhysicalWarnResDTO> page);
+    Page<PhysicalWarnResDTO> listPhysicalWarn(Page<PhysicalWarnResDTO> page, Integer type);
 
     Integer handlePhysicalWarn(String id);
 }

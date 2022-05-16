@@ -141,6 +141,12 @@
         where auc.is_delete=0 and auc.id=#{id}
     </select>
 
+    <update id="deleteApplianceConfig">
+        update t_appliance_user_config set
+        is_delete=1, update_by=#{userId}
+        where id=#{id} and is_delete=0
+    </update>
+
     <update id="changeAppliance">
         update t_appliance_user_config set change_reason=#{changeReason}, status=2 where id=#{id} and is_delete=0;
         insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,

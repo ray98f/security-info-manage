@@ -32,6 +32,42 @@
         #{checkCycle}, #{healthCheck}, #{afterCheck}, #{contraindication}, #{createBy})
     </insert>
 
+    <update id="modifyHazardFactor">
+        update t_hazard_factor set
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="beforeCheckProj!=null">
+            before_check_proj=#{beforeCheckProj},
+        </if>
+        <if test="onCheckProj!=null">
+            on_check_proj=#{onCheckProj},
+        </if>
+        <if test="afterCheckProj!=null">
+            after_check_proj=#{afterCheckProj},
+        </if>
+        <if test="checkCycle!=null">
+            check_cycle=#{checkCycle},
+        </if>
+        <if test="healthCheck!=null">
+            health_check=#{healthCheck},
+        </if>
+        <if test="afterCheck!=null">
+            after_check=#{afterCheck},
+        </if>
+        <if test="contraindication!=null">
+            contraindication=#{contraindication},
+        </if>
+        update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="deleteHazardFactor">
+        update t_hazard_factor set
+        is_delete=1, update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
+
     <select id="selectPostHazardFactorIsExist" resultType="java.lang.Integer">
         select count(1) from t_post_hazard_config where post_id=#{postId} limit 1
     </select>
@@ -53,6 +89,10 @@
                 (replace(uuid(),"-",""), #{postId}, #{hazardFactorId})
             </foreach>
         </if>
+    </delete>
+
+    <delete id="deletePostHazardFactor">
+        delete from t_post_hazard_config where post_id=#{postId}
     </delete>
 
     <select id="listPostHazardFactor" resultType="com.security.info.manage.dto.res.PostHazardFactorResDTO">

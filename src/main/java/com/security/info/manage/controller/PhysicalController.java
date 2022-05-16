@@ -166,8 +166,9 @@ public class PhysicalController {
 
     @GetMapping("/warn/list")
     @ApiOperation(value = "获取体检预警列表")
-    public PageResponse<PhysicalWarnResDTO> listPhysicalWarn(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(physicalService.listPhysicalWarn(pageReqDTO));
+    public PageResponse<PhysicalWarnResDTO> listPhysicalWarn(@RequestParam(required = false) Integer type,
+                                                             @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(physicalService.listPhysicalWarn(pageReqDTO, type));
     }
 
     @PostMapping("/warn/handle")

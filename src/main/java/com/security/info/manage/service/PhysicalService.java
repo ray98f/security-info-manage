@@ -53,7 +53,7 @@ public interface PhysicalService {
 
     Page<PhysicalUserResDTO> vxMinePhysical(PageReqDTO pageReqDTO);
 
-    Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO);
+    Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO, Integer type);
 
     void handlePhysicalWarn(String id);
 }

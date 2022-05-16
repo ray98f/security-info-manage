@@ -194,6 +194,11 @@ public class ApplianceServiceImpl implements ApplianceService {
     }
 
     @Override
+    public void deleteApplianceConfig(String id) {
+        applianceMapper.deleteApplianceConfig(id, TokenUtil.getCurrentPersonNo());
+    }
+
+    @Override
     public void changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO) {
         if (Objects.isNull(applianceConfigReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);

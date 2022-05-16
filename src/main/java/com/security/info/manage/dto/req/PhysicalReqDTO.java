@@ -24,7 +24,7 @@ public class PhysicalReqDTO {
     @ApiModelProperty(value = "医院流水号")
     private String hospitalNo;
 
-    @ApiModelProperty(value = "体检类型")
+    @ApiModelProperty(value = "体检类型 1 岗中体检 2 新人体检 3 普通体检 4 离岗体检")
     private Integer type;
 
     @ApiModelProperty(value = "体检起始时间")
