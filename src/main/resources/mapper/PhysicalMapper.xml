@@ -128,26 +128,39 @@
         update t_physical_user set is_delete=1, update_by=#{createBy}
         where physical_id=#{id} and physical_no=#{no} and is_delete=0;
         <if test="users!=null and users.size()>0">
-            insert into t_physical_user(id, physical_id, physical_no,
-            <if test="type==1">
-                user_id,
-            </if>
-            <if test="type==2">
-                new_user_id,
-            </if>
-            user_name, mobile, create_by)
-            values
-            <foreach collection="users" index="index" item="user" separator=",">
-                (replace(uuid(),"-",""), #{id}, #{no},
+            <foreach collection="users" index="index" item="user">
+                insert into t_physical_user(id, physical_id, physical_no,
+                <if test="type==1">
+                    user_id,
+                </if>
+                <if test="type==2">
+                    new_user_id,
+                </if>
+                user_name, mobile, create_by)
+                value (replace(uuid(),"-",""), #{id}, #{no},
                 <if test="type==1">
                     #{user.id},
                 </if>
                 <if test="type==2">
                     #{user.id},
                 </if>
-                #{user.name}, #{user.mobile}, #{createBy})
+                #{user.name}, #{user.mobile}, #{createBy});
+                <if test="type==4">
+                    insert into t_physical_warning(id, type, physical_id, physical_user_id, warning_time, info)
+                    select replace(uuid(),"-",""), 4, #{id},
+                    (select id from t_physical_user where user_name=#{user.name}
+                    <if test="user.mobile!=null">
+                        and mobile=#{user.mobile}
+                    </if>
+                    and physical_id=#{id} and is_delete=0 and result is null and 3>status), now(), "离岗体检预警"
+                    from dual
+                    WHERE exists (select id from t_physical_user where user_name=#{user.name}
+                    <if test="user.mobile!=null">
+                        and mobile=#{user.mobile}
+                    </if>
+                    and physical_id=#{id} and is_delete=0 and result is null and 3>status);
+                </if>
             </foreach>
-            ;
         </if>
     </update>
 
