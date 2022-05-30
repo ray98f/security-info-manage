@@ -44,6 +44,12 @@ public class SysController {
         return DataResponse.of(sysService.login(loginReqDTO));
     }
 
+    @GetMapping("/scan/login")
+    @ApiOperation(value = "扫码登录")
+    public DataResponse<Map<String, Object>> scanLogin(@RequestParam String code) {
+        return DataResponse.of(sysService.scanLogin(code));
+    }
+
     @GetMapping("/vx/audit/status")
     @ApiOperation(value = "微信小程序审核状态")
     public DataResponse<Map<String, Integer>> vxAuditStatus() {

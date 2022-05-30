@@ -31,6 +31,10 @@ public class Constants {
 
     public static final String VX_GET_USER_LIST = "https://qyapi.weixin.qq.com/cgi-bin/user/list";
 
+    public static final String VX_GET_USERINFO = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo";
+
+    public static final String VX_MESSAGE_SEND = "https://qyapi.weixin.qq.com/cgi-bin/message/send";
+
     public static final String ZTT_4G_LOGIN = "/icvs/login";
 
     public static final String ZTT_4G_LIST_EQUIPMENT = "/icvs/CAS/C_CAS_QueryPUIDSets";

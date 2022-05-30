@@ -32,7 +32,6 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -98,9 +97,6 @@ public class PhysicalServiceImpl implements PhysicalService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    @Autowired
-    private RedissonClient redissonClient;
-
     @Override
     public Page<PhysicalResDTO> listPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
@@ -115,9 +111,6 @@ public class PhysicalServiceImpl implements PhysicalService {
         return page;
     }
 
-    /**
-     * todo 体检流程创建修改时，新消息通知
-     */
     @Override
     public void addPhysical(PhysicalReqDTO physicalReqDTO) {
         if (Objects.isNull(physicalReqDTO)) {
@@ -171,6 +164,8 @@ public class PhysicalServiceImpl implements PhysicalService {
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
         }
+        // todo 体检流程创建修改时，新消息通知
+
     }
 
     @Override

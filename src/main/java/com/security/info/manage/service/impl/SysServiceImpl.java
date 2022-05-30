@@ -79,6 +79,34 @@ public class SysServiceImpl implements SysService {
     }
 
     @Override
+    public Map<String, Object> scanLogin(String code) {
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, corpsecret);
+        if (accessToken == null) {
+            throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
+        }
+        String url = Constants.VX_GET_USERINFO + "?access_token=" + accessToken.getToken() + "&code=" + code;
+        UriComponents uriComponents = UriComponentsBuilder.fromUriString(url)
+                .build()
+                .expand()
+                .encode();
+        URI uri = uriComponents.toUri();
+        JSONObject res = restTemplate.getForEntity(uri, JSONObject.class).getBody();
+        if (!Constants.SUCCESS.equals(Objects.requireNonNull(res).getString(Constants.ERR_CODE))) {
+            throw new CommonException(ErrorCode.VX_ERROR, String.valueOf(res.get(Constants.ERR_MSG)));
+        }
+        if (res.getString("UserId") == null) {
+            throw new CommonException(ErrorCode.USER_ERROR);
+        }
+        Map<String, Object> data = new HashMap<>(1);
+        UserResDTO resDTO = sysMapper.selectUserById(res.getString("UserId"));
+        if (Objects.isNull(resDTO) || Objects.isNull(resDTO.getId())) {
+            throw new CommonException(ErrorCode.USER_ERROR);
+        }
+        data.put(TOKEN, TokenUtil.createLongTermToken(resDTO));
+        return data;
+    }
+
+    @Override
     public Map<String, Object> vxLoginSimple(LoginReqDTO loginReqDTO) throws Exception {
         if (Objects.isNull(loginReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);

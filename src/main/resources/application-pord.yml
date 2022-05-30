@@ -21,9 +21,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.30.110:3306/security_info?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://127.0.0.1:3306/security_info?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true&allowPublicKeyRetrieval=true
     username: root
-    password: Zxwz123!@#
+    password: Ztt123#@!
     hikari:
       read-only: false
       connection-timeout: 60000
@@ -36,19 +36,19 @@ spring:
   data:
     elasticsearch:
       cluster-name: elasticsearch
-      cluster-nodes: 192.168.30.110:9200
+      cluster-nodes: 127.0.0.1:9200
       repositories:
         enabled: true
   redis:
-    cluster:
-      nodes: 192.168.30.108:7001, 192.168.30.109:7003, 192.168.30.110:7005, 192.168.30.108:7002, 192.168.30.109:7004, 192.168.30.110:7006
+    host: 127.0.0.1
+    port: 6379
     jedis:
       pool:
         max-active: 50
         min-idle: 0
         max-idle: 50
         max-wait: -1
-    key-prefix: dev-
+    key-prefix: pord-
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
@@ -87,20 +87,20 @@ vx-business:
   agentid: 1000014
 
 minio:
-  url: http://zxgd.softether.net:9000
-  imgPath: http://zxgd.softether.net:9000
-  accessKey: minio
-  secretKey: minio123
+  url: http://security.zttgs.com:380
+  imgPath: http://security.zttgs.com:380
+  accessKey: zttadmin
+  secretKey: ztt_123#@!
 
 es:
-  url: 192.168.30.110:9200
+  url: 127.0.0.1:9200
   index: law-file
 
 pro:
   name: security-info-manage
 
 ztt-4g:
-  url: 192.168.30.58
+  url: 183.249.1.202
   port: 1854
   address: 183.249.1.202
   user: admin

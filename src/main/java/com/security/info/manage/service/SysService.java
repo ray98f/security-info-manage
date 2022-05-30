@@ -24,6 +24,8 @@ public interface SysService {
 
     Map<String, Object> login(LoginReqDTO loginReqDTO) throws Exception;
 
+    Map<String, Object> scanLogin(String code);
+
     Map<String, Object> vxLoginSimple(LoginReqDTO loginReqDTO) throws Exception;
 
     Map<String, Object> vxLogin(String code);
