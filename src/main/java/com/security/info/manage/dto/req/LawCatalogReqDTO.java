@@ -36,6 +36,9 @@ public class LawCatalogReqDTO {
     @ApiModelProperty(value = "状态 0 启用 1 停用")
     private Integer status;
 
+    @ApiModelProperty(value = "是否为公共目录 0 否 1 是")
+    private Integer isPublic;
+
     @ApiModelProperty(value = "管理部门id")
     private String deptId;
 

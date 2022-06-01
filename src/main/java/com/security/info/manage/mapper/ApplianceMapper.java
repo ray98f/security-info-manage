@@ -32,7 +32,9 @@ public interface ApplianceMapper {
 
     void importApplianceConfig(List<ApplianceConfigReqDTO> list);
 
-    Page<ApplianceConfigResDTO> listApplianceConfig(Page<ApplianceConfigResDTO> page);
+    List<ApplianceConfigResDTO> listApplianceConfig();
+
+    Page<ApplianceConfigResDTO> pageApplianceConfig(Page<ApplianceConfigResDTO> page);
 
     Page<ApplianceConfigResDTO> vxListApplianceConfig(Page<ApplianceConfigResDTO> page, String userId);
 

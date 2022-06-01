@@ -51,6 +51,9 @@ public class SysServiceImpl implements SysService {
     @Value("${vx-business.corpsecret}")
     private String corpsecret;
 
+    @Value("${vx-business.appcorpsecret}")
+    private String appcorpsecret;
+
     @Autowired
     private SysMapper sysMapper;
 
@@ -80,7 +83,7 @@ public class SysServiceImpl implements SysService {
 
     @Override
     public Map<String, Object> scanLogin(String code) {
-        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, corpsecret);
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
         }
@@ -97,11 +100,12 @@ public class SysServiceImpl implements SysService {
         if (res.getString("UserId") == null) {
             throw new CommonException(ErrorCode.USER_ERROR);
         }
-        Map<String, Object> data = new HashMap<>(1);
+        Map<String, Object> data = new HashMap<>(2);
         UserResDTO resDTO = sysMapper.selectUserById(res.getString("UserId"));
         if (Objects.isNull(resDTO) || Objects.isNull(resDTO.getId())) {
             throw new CommonException(ErrorCode.USER_ERROR);
         }
+        data.put("userInfo", resDTO);
         data.put(TOKEN, TokenUtil.createLongTermToken(resDTO));
         return data;
     }

@@ -139,6 +139,10 @@
         order by c.date asc, c.sort asc, c.create_date desc
     </select>
 
+    <select id="selectUserId" resultType="java.lang.String">
+        select user_id from sys_user_ext where real_name=#{userName} and is_delete=0
+    </select>
+
     <insert id="addConstruction">
         insert into t_construction(id, plan_id, type_id, date,
         <if test="sort!=null">

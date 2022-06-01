@@ -48,6 +48,8 @@ public interface ConstructionMapper {
 
     Page<ConstructionResDTO> vxListConstruction(Page<ConstructionResDTO> page, String userId);
 
+    String selectUserId(String userName);
+
     Integer addConstruction(ConstructionReqDTO constructionReqDTO);
 
     Integer modifyConstruction(ConstructionReqDTO constructionReqDTO);

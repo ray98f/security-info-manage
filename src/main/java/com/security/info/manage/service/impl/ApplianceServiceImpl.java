@@ -2,19 +2,15 @@ package com.security.info.manage.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.base.Joiner;
 import com.security.info.manage.dto.PageReqDTO;
-import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
-import com.security.info.manage.dto.req.ApplianceReqDTO;
-import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
-import com.security.info.manage.dto.req.TrainDetailReqDTO;
-import com.security.info.manage.dto.res.ApplianceConfigResDTO;
-import com.security.info.manage.dto.res.ApplianceResDTO;
-import com.security.info.manage.dto.res.ApplianceTypeTreeResDTO;
-import com.security.info.manage.dto.res.ApplianceWarnResDTO;
+import com.security.info.manage.dto.req.*;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.ApplianceMapper;
 import com.security.info.manage.service.ApplianceService;
+import com.security.info.manage.service.MsgService;
 import com.security.info.manage.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -28,14 +24,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.security.info.manage.utils.Constants.XLS;
 import static com.security.info.manage.utils.Constants.XLSX;
@@ -49,6 +45,9 @@ public class ApplianceServiceImpl implements ApplianceService {
 
     @Autowired
     private ApplianceMapper applianceMapper;
+
+    @Autowired
+    private MsgService msgService;
 
     @Override
     public Page<ApplianceResDTO> listAppliance(PageReqDTO pageReqDTO) {
@@ -169,9 +168,41 @@ public class ApplianceServiceImpl implements ApplianceService {
     }
 
     @Override
+    public void exportApplianceConfig(HttpServletResponse response) {
+        // 列名
+        List<String> listName = Arrays.asList("年度", "工号", "姓名", "部门名称", "涉及相关作业类型", "接触职业病危害因素", "用品编号", "用品名称", "领取数量", "领取时间", "有效期", "更换原因", "备注", "是否已确认", "状态");
+        List<ApplianceConfigResDTO> applianceConfigList = applianceMapper.listApplianceConfig();
+        // 列名 数据
+        List<Map<String, String>> list = new ArrayList<>();
+        if (applianceConfigList != null && !applianceConfigList.isEmpty()) {
+            for (ApplianceConfigResDTO applianceConfigResDTO : applianceConfigList) {
+                Map<String, String> map = new HashMap<>();
+                map.put("年度", applianceConfigResDTO.getYear().toString());
+                map.put("工号", applianceConfigResDTO.getUserNo());
+                map.put("姓名", applianceConfigResDTO.getUserName());
+                map.put("部门名称", applianceConfigResDTO.getDeptName());
+                map.put("涉及相关作业类型", applianceConfigResDTO.getWorkType());
+                map.put("接触职业病危害因素", applianceConfigResDTO.getHazardFactors());
+                map.put("用品编号", applianceConfigResDTO.getApplianceCode());
+                map.put("用品名称", applianceConfigResDTO.getApplianceName());
+                map.put("领取数量", applianceConfigResDTO.getNum().toString());
+                map.put("领取时间", applianceConfigResDTO.getReceivingTime().toString());
+                map.put("有效期", applianceConfigResDTO.getEffectiveTime().toString());
+                map.put("更换原因", applianceConfigResDTO.getChangeReason());
+                map.put("备注", applianceConfigResDTO.getRemark());
+                map.put("是否已确认", applianceConfigResDTO.getIsConfirm() == 0 ? "否" : "是");
+                map.put("状态", applianceConfigResDTO.getStatus() == 0 ? "未到期" : (applianceConfigResDTO.getStatus() == 1 ? "已到期" : "已更换"));
+                list.add(map);
+            }
+        }
+        // 将需要写入Excel的数据传入
+        ExcelPortUtil.excelPort("劳保用品配备信息", listName, list, null, response);
+    }
+
+    @Override
     public Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return applianceMapper.listApplianceConfig(pageReqDTO.of());
+        return applianceMapper.pageApplianceConfig(pageReqDTO.of());
     }
 
     @Override
@@ -213,6 +244,11 @@ public class ApplianceServiceImpl implements ApplianceService {
             Integer result = applianceMapper.changeAppliance(applianceConfigResDTO);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
+            } else {
+                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                vxSendTextMsgReqDTO.setTouser(applianceConfigResDTO.getUserId());
+                vxSendTextMsgReqDTO.setContent("您有一条新的劳保用品配备，请前往小程序确认。");
+                msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         }
     }

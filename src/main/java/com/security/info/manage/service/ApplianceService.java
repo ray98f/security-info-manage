@@ -8,6 +8,7 @@ import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.res.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -26,6 +27,8 @@ public interface ApplianceService {
     void deleteAppliance(ApplianceReqDTO applianceReqDTO);
 
     void importApplianceConfig(MultipartFile file);
+
+    void exportApplianceConfig(HttpServletResponse response);
 
     Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO);
 

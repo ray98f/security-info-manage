@@ -2,13 +2,16 @@ package com.security.info.manage.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.base.Joiner;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.DangerReqDTO;
+import com.security.info.manage.dto.req.VxSendTextMsgReqDTO;
 import com.security.info.manage.dto.res.DangerExamineResDTO;
 import com.security.info.manage.dto.res.DangerResDTO;
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.entity.EntryPlate;
+import com.security.info.manage.entity.User;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.FileMapper;
@@ -16,6 +19,7 @@ import com.security.info.manage.mapper.DangerMapper;
 import com.security.info.manage.mapper.SysMapper;
 import com.security.info.manage.service.DangerService;
 import com.security.info.manage.service.DeptService;
+import com.security.info.manage.service.MsgService;
 import com.security.info.manage.utils.ObjectUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author frp
@@ -46,6 +51,9 @@ public class DangerServiceImpl implements DangerService {
 
     @Autowired
     private FileMapper fileMapper;
+
+    @Autowired
+    private MsgService msgService;
 
     @Override
     public List<DeptTreeResDTO> listDept(Integer type) {
@@ -225,6 +233,11 @@ public class DangerServiceImpl implements DangerService {
         result = dangerMapper.modifyDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
+        } else if (result > 0 && dangerReqDTO.getIsUse() == 1) {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
+            vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 
@@ -239,6 +252,11 @@ public class DangerServiceImpl implements DangerService {
         Integer result = dangerMapper.addDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        } else if (result > 0 && dangerReqDTO.getIsUse() == 1) {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
+            vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 
@@ -271,6 +289,11 @@ public class DangerServiceImpl implements DangerService {
                     Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
                     if (result < 0) {
                         throw new CommonException(ErrorCode.UPDATE_ERROR);
+                    } else if (result > 0) {
+                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
+                        vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
                     }
                     break;
                 }
@@ -281,6 +304,11 @@ public class DangerServiceImpl implements DangerService {
                     Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
                     if (result < 0) {
                         throw new CommonException(ErrorCode.UPDATE_ERROR);
+                    } else if (result > 0) {
+                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
+                        vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
                     }
                     break;
                 }
@@ -297,6 +325,11 @@ public class DangerServiceImpl implements DangerService {
             Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, checkUserId);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
+            } else if (result > 0) {
+                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                vxSendTextMsgReqDTO.setTouser(checkUserId);
+                vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+                msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         }
     }

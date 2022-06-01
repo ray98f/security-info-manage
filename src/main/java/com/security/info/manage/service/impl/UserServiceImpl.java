@@ -167,7 +167,9 @@ public class UserServiceImpl implements UserService {
         if (result > 0) {
             throw new CommonException(ErrorCode.USER_NAME_EXIST);
         }
-        userReqDTO.setPassword(MyAESUtil.encrypt(userReqDTO.getPassword()));
+        if (userReqDTO.getPassword() != null && !"".equals(userReqDTO.getPassword())) {
+            userReqDTO.setPassword(MyAESUtil.encrypt(userReqDTO.getPassword()));
+        }
         result = userMapper.editUser(userReqDTO, TokenUtil.getCurrentUserName());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);

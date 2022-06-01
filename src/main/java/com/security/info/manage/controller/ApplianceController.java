@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -70,6 +71,13 @@ public class ApplianceController {
     @ApiOperation(value = "劳保用品配备导入")
     public DataResponse<T> importApplianceConfig(@RequestParam MultipartFile file) {
         applianceService.importApplianceConfig(file);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/user/export")
+    @ApiOperation(value = "劳保用品配备导出")
+    public DataResponse<T> exportApplianceConfig(HttpServletResponse response) {
+        applianceService.exportApplianceConfig(response);
         return DataResponse.success();
     }
 

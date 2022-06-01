@@ -3,7 +3,7 @@
 <mapper namespace="com.security.info.manage.mapper.LawMapper">
 
     <select id="listLawCatalog" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
-        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.no,
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.no, lc.is_public,
         case when group_concat(distinct lc1.name) is null then 'root' else group_concat(distinct lc1.name) end as route_name,
         lc.dept_id, d.org_name as dept_name, lc.sort, lc.status
         from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
@@ -14,7 +14,8 @@
     </select>
 
     <select id="getRoot" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
-        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name,
+        lc.sort, lc.status, lc.no, lc.is_public
         from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
         where lc.is_delete=0 and lc.parent_id='root' and lc.status=0
         <if test="deptId!=null and deptId!=''">
@@ -23,7 +24,8 @@
     </select>
 
     <select id="getBody" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
-        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name, lc.sort, lc.status, lc.no
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name,
+        lc.sort, lc.status, lc.no, lc.is_public
         from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
         where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0
         <if test="deptId!=null and deptId!=''">
@@ -32,18 +34,18 @@
     </select>
 
     <select id="getVxRoot" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
-        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.sort, lc.status, lc.no
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.sort, lc.status, lc.no, lc.is_public
         from t_law_catalog as lc
         left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
-        where lc.is_delete=0 and lc.parent_id='root' and lc.status=0 and lcu.user_id=#{userId} and lcu.role like '%1%'
+        where lc.is_delete=0 and lc.parent_id='root' and lc.status=0 and ((lcu.user_id=#{userId} and lcu.role like '%1%') or lc.is_public=1)
         order by lc.sort
     </select>
 
     <select id="getVxBody" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
-        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.sort, lc.status, lc.no
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.sort, lc.status, lc.no, lc.is_public
         from t_law_catalog as lc
         left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
-        where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0 and lcu.user_id=#{userId} and lcu.role like '%1%'
+        where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0 and ((lcu.user_id=#{userId} and lcu.role like '%1%') or lc.is_public=1)
         and lc.parent_id=#{catalogId}
         order by lc.sort
     </select>
@@ -81,13 +83,24 @@
         <if test="status!=null">
             status=#{status},
         </if>
+        <if test="isPublic!=null">
+            is_public=#{isPublic},
+        </if>
         update_by=#{userId}, update_date=now()
         where id=#{id} and is_delete=0
     </update>
 
     <insert id="addLawCatalog">
-        INSERT INTO t_law_catalog (id, no, name, eng_name, code, parent_id, route, dept_id, sort, status, create_by)
-        value (#{id}, #{no}, #{name}, #{engName}, #{code}, #{parentId}, #{route}, #{deptId}, #{sort}, #{status}, #{userId})
+        INSERT INTO t_law_catalog (id, no, name, eng_name, code, parent_id, route, dept_id, sort, status,
+        <if test="isPublic!=null">
+            is_public,
+        </if>
+        create_by)
+        value (#{id}, #{no}, #{name}, #{engName}, #{code}, #{parentId}, #{route}, #{deptId}, #{sort}, #{status},
+        <if test="isPublic!=null">
+            #{isPublic},
+        </if>
+        #{userId})
     </insert>
 
     <insert id="addLawCatalogRole">

@@ -2,10 +2,12 @@ package com.security.info.manage.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.base.Joiner;
 import com.security.info.manage.config.MinioConfig;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.SafeExpectModifyReqDTO;
 import com.security.info.manage.dto.req.SafeExpectReqDTO;
+import com.security.info.manage.dto.req.VxSendTextMsgReqDTO;
 import com.security.info.manage.dto.res.SafeExpectCollectionUnionResDTO;
 import com.security.info.manage.dto.res.SafeExpectInfoResDTO;
 import com.security.info.manage.dto.res.SafeExpectResDTO;
@@ -15,6 +17,7 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.SafeExpectMapper;
 import com.security.info.manage.service.FileService;
+import com.security.info.manage.service.MsgService;
 import com.security.info.manage.service.SafeExpectService;
 import com.security.info.manage.utils.*;
 import io.minio.MinioClient;
@@ -46,6 +49,9 @@ public class SafeExpectServiceImpl implements SafeExpectService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private MsgService msgService;
 
     @Autowired
     private MinioClient client;
@@ -102,6 +108,11 @@ public class SafeExpectServiceImpl implements SafeExpectService {
                 result = safeExpectMapper.insertSafeExpectUser(safeExpectReqDTO.getId(), safeExpectReqDTO.getUserIds());
                 if (result < 0) {
                     throw new CommonException(ErrorCode.INSERT_ERROR);
+                } else if (result > 0) {
+                    VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                    vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(safeExpectReqDTO.getUserIds()));
+                    vxSendTextMsgReqDTO.setContent("您有一条新的安全预想会参会通知，请前往小程序查看。");
+                    msgService.sendTextMsg(vxSendTextMsgReqDTO);
                 }
             }
         }

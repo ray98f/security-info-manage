@@ -26,7 +26,7 @@ public class MyJsonConfig extends WebMvcConfigurationSupport {
                 // 将String类型的null转成""形式
                 SerializerFeature.WriteNullStringAsEmpty,
                 // 将Number类型的null转成0
-//                SerializerFeature.WriteNullNumberAsZero,
+                SerializerFeature.WriteNullNumberAsZero,
                 // 将List类型的null转成[],而不是""
                 SerializerFeature.WriteNullListAsEmpty,
                 // Boolean类型的null转成false

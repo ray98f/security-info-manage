@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
-import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
-import com.security.info.manage.dto.req.ConstructionReqDTO;
-import com.security.info.manage.dto.req.ConstructionTypeReqDTO;
-import com.security.info.manage.dto.req.WeekPlanReqDTO;
+import com.security.info.manage.dto.req.*;
 import com.security.info.manage.dto.res.ConstructionResDTO;
 import com.security.info.manage.dto.res.ConstructionTypeResDTO;
 import com.security.info.manage.dto.res.WeekPlanResDTO;
@@ -15,6 +12,7 @@ import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.ConstructionMapper;
 import com.security.info.manage.service.ConstructionService;
+import com.security.info.manage.service.MsgService;
 import com.security.info.manage.utils.DateUtils;
 import com.security.info.manage.utils.FileUtils;
 import com.security.info.manage.utils.TokenUtil;
@@ -49,6 +47,9 @@ public class ConstructionServiceImpl implements ConstructionService {
 
     @Autowired
     private ConstructionMapper constructionMapper;
+
+    @Autowired
+    private MsgService msgService;
 
     @Override
     public Page<ConstructionTypeResDTO> listConstructionType(PageReqDTO pageReqDTO) {
@@ -184,6 +185,11 @@ public class ConstructionServiceImpl implements ConstructionService {
         Integer result = constructionMapper.addConstruction(constructionReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        } else {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(constructionMapper.selectUserId(constructionReqDTO.getUserName()));
+            vxSendTextMsgReqDTO.setContent("您有一条施工作业通知，请前往小程序查看详情。");
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 
@@ -196,6 +202,11 @@ public class ConstructionServiceImpl implements ConstructionService {
         Integer result = constructionMapper.modifyConstruction(constructionReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
+        } else {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(constructionMapper.selectUserId(constructionReqDTO.getUserName()));
+            vxSendTextMsgReqDTO.setContent("您有一条施工作业通知，请前往小程序查看详情。");
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 

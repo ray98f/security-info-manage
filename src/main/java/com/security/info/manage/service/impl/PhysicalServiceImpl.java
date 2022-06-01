@@ -3,19 +3,24 @@ package com.security.info.manage.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.base.Joiner;
 import com.security.info.manage.config.MinioConfig;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.req.PhysicalResultImportReqDTO;
+import com.security.info.manage.dto.req.VxSendTextMsgReqDTO;
 import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.File;
 import com.security.info.manage.entity.PhysicalFeedback;
+import com.security.info.manage.entity.PhysicalResult;
+import com.security.info.manage.entity.User;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.PhysicalMapper;
 import com.security.info.manage.mapper.UserMapper;
 import com.security.info.manage.service.FileService;
+import com.security.info.manage.service.MsgService;
 import com.security.info.manage.service.PhysicalService;
 import com.security.info.manage.utils.*;
 import io.minio.MinioClient;
@@ -50,6 +55,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.security.info.manage.utils.Constants.XLS;
 import static com.security.info.manage.utils.Constants.XLSX;
@@ -72,6 +78,9 @@ public class PhysicalServiceImpl implements PhysicalService {
 
     @Autowired
     private PhysicalMapper physicalMapper;
+
+    @Autowired
+    private MsgService msgService;
 
     @Autowired
     private FileService fileService;
@@ -119,14 +128,18 @@ public class PhysicalServiceImpl implements PhysicalService {
         physicalReqDTO.setId(TokenUtil.getUuId());
         //流水号生成
         String no;
+        String typeName = "";
         if (physicalReqDTO.getType() == 1) {
             no = proName + keyPrefix + SERIAL_NUMBER_GZ_PHYSICAL;
+            typeName = "岗中体检";
         } else if (physicalReqDTO.getType() == 2) {
             no = proName + keyPrefix + SERIAL_NUMBER_RZ_PHYSICAL;
         } else if (physicalReqDTO.getType() == 3) {
             no = proName + keyPrefix + SERIAL_NUMBER_PT_PHYSICAL;
+            typeName = "普通体检";
         } else {
             no = proName + keyPrefix + SERIAL_NUMBER_LG_PHYSICAL;
+            typeName = "离岗体检";
         }
         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(no))) {
             try {
@@ -164,8 +177,13 @@ public class PhysicalServiceImpl implements PhysicalService {
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
         }
-        // todo 体检流程创建修改时，新消息通知
-
+        if (physicalReqDTO.getType() != 2) {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            List<String> userIds = physicalReqDTO.getUsers().stream().map(User::getId).collect(Collectors.toList());
+            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
+            vxSendTextMsgReqDTO.setContent("您有一条新" + typeName + "，请前往小程序查看处理。");
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+        }
     }
 
     @Override
@@ -351,6 +369,12 @@ public class PhysicalServiceImpl implements PhysicalService {
         }
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
+        } else {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            List<String> userIds = physicalMapper.selectUserIdByPhysicalUserId(physicalResultImportReqDTO.getUsers().stream().map(PhysicalResult::getPhysicalUserId).collect(Collectors.toList()));
+            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
+            vxSendTextMsgReqDTO.setContent("您的体检结果已录入，请前往小程序确认。");
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 

@@ -130,7 +130,7 @@
         <if test="users!=null and users.size()>0">
             <foreach collection="users" index="index" item="user">
                 insert into t_physical_user(id, physical_id, physical_no,
-                <if test="type==1">
+                <if test="type!=2">
                     user_id,
                 </if>
                 <if test="type==2">
@@ -138,7 +138,7 @@
                 </if>
                 user_name, mobile, create_by)
                 value (replace(uuid(),"-",""), #{id}, #{no},
-                <if test="type==1">
+                <if test="type!=2">
                     #{user.id},
                 </if>
                 <if test="type==2">
@@ -323,6 +323,18 @@
         select physical_id from t_physical_user where id=#{id} and is_delete=0
     </select>
 
+    <select id="selectUserIdByPhysicalUserId" resultType="java.lang.String">
+        select user_id from t_physical_user
+        where user_id is not null and is_delete=0 and status=3
+        <if test="list.size()>0">
+            and id in (
+            <foreach collection="list" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
+        </if>
+    </select>
+
     <insert id="physicalResultImport">
         <foreach collection="users" index="index" item="user" separator="">
             <if test="user.result==1">
@@ -477,7 +489,7 @@
     </update>
 
     <select id="listExpiredPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
-        select pu.id, pu.physical_id, pu.user_name from t_physical_user as pu
+        select pu.id, pu.physical_id, pu.user_name, pu.user_id from t_physical_user as pu
         left join t_physical as p on pu.physical_id=p.id and p.is_delete=0
         where now()>p.end_time and 3>pu.status and pu.is_delete=0
     </select>
