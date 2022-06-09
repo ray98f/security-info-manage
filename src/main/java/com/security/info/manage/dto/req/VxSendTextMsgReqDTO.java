@@ -28,8 +28,8 @@ public class VxSendTextMsgReqDTO {
     @ApiModelProperty(value = "企业应用的id，整型")
     private Integer agentid;
 
-    @ApiModelProperty(value = "消息内容，最长不超过2048个字节，超过将截断（支持id转译）")
-    private String content;
+    @ApiModelProperty(value = "消息内容")
+    private Content text;
 
     @ApiModelProperty(value = "表示是否是保密消息，0表示可对外分享，1表示不能分享且内容显示水印，默认为0")
     private Integer safe;
@@ -42,4 +42,15 @@ public class VxSendTextMsgReqDTO {
 
     @ApiModelProperty(value = "表示是否重复消息检查的时间间隔，默认1800s，最大不超过4小时")
     private Integer duplicate_check_interval;
+
+    @Data
+    public static class Content {
+
+        @ApiModelProperty(value = "消息内容，最长不超过2048个字节，超过将截断（支持id转译）")
+        private String content;
+
+        public Content(String content) {
+            this.content = content;
+        }
+    }
 }

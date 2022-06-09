@@ -244,10 +244,10 @@ public class ApplianceServiceImpl implements ApplianceService {
             Integer result = applianceMapper.changeAppliance(applianceConfigResDTO);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
-            } else {
+            } else if (applianceConfigResDTO.getUserId() != null && !"".equals(applianceConfigResDTO.getUserId())) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(applianceConfigResDTO.getUserId());
-                vxSendTextMsgReqDTO.setContent("您有一条新的劳保用品配备，请前往小程序确认。");
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的劳保用品配备，请前往小程序确认。"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         }

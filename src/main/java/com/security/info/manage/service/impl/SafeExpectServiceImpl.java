@@ -1,5 +1,7 @@
 package com.security.info.manage.service.impl;
 
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.base.Joiner;
@@ -27,12 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -102,16 +106,15 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         result = safeExpectMapper.addSafeExpect(safeExpectReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
-        }
-        if (result > 0) {
+        } else {
             if (safeExpectReqDTO.getUserIds() != null && safeExpectReqDTO.getUserIds().size() > 0) {
                 result = safeExpectMapper.insertSafeExpectUser(safeExpectReqDTO.getId(), safeExpectReqDTO.getUserIds());
                 if (result < 0) {
                     throw new CommonException(ErrorCode.INSERT_ERROR);
-                } else if (result > 0) {
+                } else if (safeExpectReqDTO.getUserIds() != null && !safeExpectReqDTO.getUserIds().isEmpty()) {
                     VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                     vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(safeExpectReqDTO.getUserIds()));
-                    vxSendTextMsgReqDTO.setContent("您有一条新的安全预想会参会通知，请前往小程序查看。");
+                    vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的安全预想会参会通知，请前往小程序查看。"));
                     msgService.sendTextMsg(vxSendTextMsgReqDTO);
                 }
             }
@@ -122,6 +125,29 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     public void modifySafeExpect(SafeExpectModifyReqDTO safeExpectModifyReqDTO) {
         if (Objects.isNull(safeExpectModifyReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectReqDTO())) {
+            Integer result = safeExpectMapper.selectSafeExpectIsExist(safeExpectModifyReqDTO.getSafeExpectReqDTO());
+            if (result > 0) {
+                throw new CommonException(ErrorCode.DATA_EXIST);
+            }
+            safeExpectModifyReqDTO.getSafeExpectReqDTO().setCreateBy(TokenUtil.getCurrentPersonNo());
+            result = safeExpectMapper.modifySafeExpect(safeExpectModifyReqDTO.getSafeExpectReqDTO());
+            if (result < 0) {
+                throw new CommonException(ErrorCode.UPDATE_ERROR);
+            } else {
+                if (safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds() != null && safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds().size() > 0) {
+                    result = safeExpectMapper.insertSafeExpectUser(safeExpectModifyReqDTO.getSafeExpectReqDTO().getId(), safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds());
+                    if (result < 0) {
+                        throw new CommonException(ErrorCode.INSERT_ERROR);
+                    } else if (safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds() != null && !safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds().isEmpty()) {
+                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                        vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds()));
+                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的安全预想会参会通知，请前往小程序查看。"));
+                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
+                    }
+                }
+            }
         }
         if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectInfo())) {
             Integer result = safeExpectMapper.modifySafeExpectInfo(safeExpectModifyReqDTO.getSafeExpectInfo());
@@ -146,6 +172,25 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         Integer result = safeExpectMapper.deleteSafeExpect(safeExpectReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
+        }
+    }
+
+    @Override
+    public void cancelSafeExpect(SafeExpectReqDTO safeExpectReqDTO) {
+        if (Objects.isNull(safeExpectReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        List<String> userIds = safeExpectMapper.selectUserIdById(safeExpectReqDTO.getId());
+        if (!Objects.isNull(userIds) && !userIds.isEmpty()) {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条安全预想会已取消，请前往小程序查看。"));
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+        }
+        safeExpectReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = safeExpectMapper.cancelSafeExpect(safeExpectReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
     }
 
@@ -187,6 +232,8 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         Map<String, Object> dataMap = ObjectUtils.objectToMap(safeExpectResDTO);
         dataMap.putAll(ObjectUtils.objectToMap(safeExpectInfoResDTO));
         dataMap.putAll(ObjectUtils.objectToMap(safeExpectCollectionUnionResDTO));
+        dataMap.put("safeExpectQr", QrCodeUtil.generateAsBase64("https://security.zttgs.com:3443/security/#/doublePrevent/safeMeeting", initQrConfig(), "png"));
+        dataMap.put("constructionQr", QrCodeUtil.generateAsBase64("https://security.zttgs.com:3443/security/#/doublePrevent/constructionWeekPlanDetail?id=" + safeExpectResDTO.getWorkId(), initQrConfig(), "png"));
         return dataMap;
     }
 
@@ -222,6 +269,17 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         client.putObject(args);
         String url = minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
         return fileService.insertFile(url, bizCode, oldName);
+    }
+
+    private static QrConfig initQrConfig() {
+        QrConfig config = new QrConfig(300, 300);
+        // 设置边距，既二维码和背景之间的边距
+        config.setMargin(2);
+        // 设置前景色，既二维码颜色（青色）
+        config.setForeColor(Color.BLACK.getRGB());
+        // 设置背景色（灰色）
+        config.setBackColor(Color.WHITE.getRGB());
+        return config;
     }
 
 }

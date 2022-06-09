@@ -161,9 +161,15 @@
     </update>
 
     <update id="deleteRisk">
-        update t_risk_info set
-        is_delete=1, update_by=#{createBy}, update_date=now()
-        where id=#{id} and is_delete=0
+        <if test="ids.size()>0">
+            update t_risk_info set
+            is_delete=1, update_by=#{userId}, update_date=now()
+            where is_delete=0 and id in (
+            <foreach collection="ids" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
+        </if>
     </update>
 
     <insert id="importRisk">

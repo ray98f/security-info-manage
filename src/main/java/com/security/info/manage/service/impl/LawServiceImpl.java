@@ -54,26 +54,35 @@ public class LawServiceImpl implements LawService {
     private LawFileEsRepository repository;
 
     @Override
-    public Page<LawCatalogResDTO> listLawCatalog(PageReqDTO pageReqDTO) {
-        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        Page<LawCatalogResDTO> page = lawMapper.listLawCatalog(pageReqDTO.of());
-        List<LawCatalogResDTO> list = page.getRecords();
-        if (list != null && !list.isEmpty()) {
-            for (LawCatalogResDTO res : list) {
-                res.setRouteName(res.getRouteName().replace("root", "").replaceAll(",", "/") + "/" + res.getName());
+    public List<LawCatalogResDTO> listLawCatalog() {
+        List<LawCatalogResDTO> extraRootList = lawMapper.getRoot();
+        if (Objects.isNull(extraRootList)) {
+            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+        }
+        List<LawCatalogResDTO> extraBodyList = lawMapper.getBody();
+        if (!extraRootList.isEmpty()) {
+            for (LawCatalogResDTO res : extraRootList) {
+                String s = res.getRouteName().replace("root", "").replaceAll(",", "/");
+                res.setRouteName(("".equals(s) ? s : "/" + s) + "/" + res.getName());
             }
         }
-        page.setRecords(list);
-        return page;
+        if (extraBodyList != null && !extraBodyList.isEmpty()) {
+            for (LawCatalogResDTO res : extraBodyList) {
+                String s = res.getRouteName().replace("root", "").replaceAll(",", "/");
+                res.setRouteName(("".equals(s) ? s : "/" + s) + "/" + res.getName());
+            }
+        }
+        LawCatalogTreeToolUtils extraTree = new LawCatalogTreeToolUtils(extraRootList, extraBodyList);
+        return extraTree.getTree();
     }
 
     @Override
     public List<LawCatalogResDTO> listAllLawCatalog(String deptId) {
-        List<LawCatalogResDTO> extraRootList = lawMapper.getRoot(deptId);
+        List<LawCatalogResDTO> extraRootList = lawMapper.getRootByDeptId(deptId);
         if (Objects.isNull(extraRootList)) {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
-        List<LawCatalogResDTO> extraBodyList = lawMapper.getBody(deptId);
+        List<LawCatalogResDTO> extraBodyList = lawMapper.getBodyByDeptId(deptId);
         LawCatalogTreeToolUtils extraTree = new LawCatalogTreeToolUtils(extraRootList, extraBodyList);
         return extraTree.getTree();
     }
@@ -162,6 +171,23 @@ public class LawServiceImpl implements LawService {
         Integer result = lawMapper.addLawCatalog(lawCatalogReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteLawCatalog(LawCatalogReqDTO lawCatalogReqDTO) {
+        if (Objects.isNull(lawCatalogReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        Integer result = lawMapper.selectIfLawCatalogHadChild(lawCatalogReqDTO.getRoute());
+        Integer result1 = lawMapper.selectIfLawCatalogHadLaw(lawCatalogReqDTO.getId());
+        if (result > 0 || result1 > 0) {
+            throw new CommonException(ErrorCode.CANT_DELETE_HAD_CHILD);
+        }
+        lawCatalogReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
+        result = lawMapper.deleteLawCatalog(lawCatalogReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.DELETE_ERROR);
         }
     }
 

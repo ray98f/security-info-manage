@@ -69,8 +69,8 @@ public class RegionController {
 
     @GetMapping("/list")
     @ApiOperation(value = "获取区域列表")
-    public PageResponse<RegionResDTO> listRegion(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(regionService.listRegion(pageReqDTO));
+    public DataResponse<List<RegionResDTO>> listRegion() {
+        return DataResponse.of(regionService.listRegion());
     }
 
     @GetMapping("/detail")
@@ -108,6 +108,13 @@ public class RegionController {
     @ApiOperation(value = "区域新增")
     public DataResponse<T> addRegion(@RequestBody RegionReqDTO regionReqDTO) {
         regionService.addRegion(regionReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/delete")
+    @ApiOperation(value = "区域删除")
+    public DataResponse<T> deleteRegion(@RequestBody RegionReqDTO regionReqDTO) {
+        regionService.deleteRegion(regionReqDTO);
         return DataResponse.success();
     }
 

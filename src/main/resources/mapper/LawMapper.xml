@@ -14,6 +14,26 @@
     </select>
 
     <select id="getRoot" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.no, lc.is_public,
+        case when group_concat(distinct lc1.name) is null then 'root' else group_concat(distinct lc1.name) end as route_name,
+        lc.dept_id, d.org_name as dept_name, lc.sort, lc.status
+        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
+        left join t_law_catalog as lc1 on find_in_set(lc1.id,lc.route)>0
+        where lc.is_delete=0 and lc.parent_id='root'
+        group by lc.id
+    </select>
+
+    <select id="getBody" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+        select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.no, lc.is_public,
+        case when group_concat(distinct lc1.name) is null then 'root' else group_concat(distinct lc1.name) end as route_name,
+        lc.dept_id, d.org_name as dept_name, lc.sort, lc.status
+        from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
+        left join t_law_catalog as lc1 on find_in_set(lc1.id,lc.route)>0
+        where lc.is_delete=0 and lc.parent_id!='root'
+        group by lc.id
+    </select>
+
+    <select id="getRootByDeptId" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
         select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name,
         lc.sort, lc.status, lc.no, lc.is_public
         from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
@@ -23,7 +43,7 @@
         </if>
     </select>
 
-    <select id="getBody" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
+    <select id="getBodyByDeptId" resultType="com.security.info.manage.dto.res.LawCatalogResDTO">
         select lc.id, lc.name, lc.eng_name, lc.code, lc.parent_id, lc.route, lc.dept_id, d.org_name as dept_name,
         lc.sort, lc.status, lc.no, lc.is_public
         from t_law_catalog as lc left join sys_dept as d on lc.dept_id=d.id and d.is_delete=0
@@ -51,7 +71,11 @@
     </select>
 
     <select id="selectIfLawCatalogHadChild" resultType="java.lang.Integer">
-        select count(1) from t_law_catalog where route like CONCAT(#{route},',','%') and status=0 and is_delete=0 limit 1
+        select count(1) from t_law_catalog where route like CONCAT(#{route},',',id,'%') and status=0 and is_delete=0 limit 1
+    </select>
+
+    <select id="selectIfLawCatalogHadLaw" resultType="java.lang.Integer">
+        select count(1) from t_law where catalog_id=#{id} and is_delete=0 and status=0 limit 1
     </select>
 
     <update id="modifyLawCatalog">
@@ -102,6 +126,15 @@
         </if>
         #{userId})
     </insert>
+
+    <update id="deleteLawCatalog">
+        update t_law_catalog set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0;
+        update t_law set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where catalog_id=#{id} and is_delete=0;
+    </update>
 
     <insert id="addLawCatalogRole">
         <foreach collection="userIds" index="index" item="userId" separator="">

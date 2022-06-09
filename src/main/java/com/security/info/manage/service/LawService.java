@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public interface LawService {
 
-    Page<LawCatalogResDTO> listLawCatalog(PageReqDTO pageReqDTO);
+    List<LawCatalogResDTO> listLawCatalog();
 
     List<LawCatalogResDTO> listAllLawCatalog(String deptId);
 
@@ -26,6 +26,8 @@ public interface LawService {
     void modifyLawCatalog(LawCatalogReqDTO trainReqDTO);
 
     void addLawCatalog(LawCatalogReqDTO trainReqDTO);
+
+    void deleteLawCatalog(LawCatalogReqDTO trainReqDTO);
 
     void addLawCatalogRole(LawCatalogUserRoleReqDTO lawCatalogUserRoleReqDTO);
 

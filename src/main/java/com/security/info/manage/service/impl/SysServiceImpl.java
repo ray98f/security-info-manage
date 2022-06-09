@@ -54,6 +54,9 @@ public class SysServiceImpl implements SysService {
     @Value("${vx-business.appcorpsecret}")
     private String appcorpsecret;
 
+    @Value("${vx-business.pccorpsecret}")
+    private String pccorpsecret;
+
     @Autowired
     private SysMapper sysMapper;
 
@@ -83,7 +86,7 @@ public class SysServiceImpl implements SysService {
 
     @Override
     public Map<String, Object> scanLogin(String code) {
-        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, pccorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
         }
@@ -106,7 +109,7 @@ public class SysServiceImpl implements SysService {
             throw new CommonException(ErrorCode.USER_ERROR);
         }
         data.put("userInfo", resDTO);
-        data.put(TOKEN, TokenUtil.createLongTermToken(resDTO));
+        data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
         return data;
     }
 
@@ -121,7 +124,7 @@ public class SysServiceImpl implements SysService {
         }
         Map<String, Object> data = new HashMap<>(16);
         data.put("userInfo", resDTO);
-        data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
+        data.put(TOKEN, TokenUtil.createLongTermToken(resDTO));
         return data;
     }
 
@@ -130,11 +133,11 @@ public class SysServiceImpl implements SysService {
         if (Objects.isNull(code)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, corpsecret);
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
         }
-        String url = Constants.VX_GET_CODE2SESSION + "&access_token=" + accessToken.getToken() + "&js_code=CODE=" + code;
+        String url = Constants.VX_GET_CODE2SESSION + "&access_token=" + accessToken.getToken() + "&js_code=" + code;
         UriComponents uriComponents = UriComponentsBuilder.fromUriString(url)
                 .build()
                 .expand()

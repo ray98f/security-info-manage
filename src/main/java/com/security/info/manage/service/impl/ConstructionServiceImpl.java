@@ -159,9 +159,9 @@ public class ConstructionServiceImpl implements ConstructionService {
     }
 
     @Override
-    public Page<ConstructionResDTO> listConstruction(String planId, PageReqDTO pageReqDTO) {
+    public Page<ConstructionResDTO> listConstruction(String planId, String startTime, String endTime, String name, String planName, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return constructionMapper.listConstruction(pageReqDTO.of(), planId);
+        return constructionMapper.listConstruction(pageReqDTO.of(), planId, startTime, endTime, name, planName);
     }
 
     @Override
@@ -186,10 +186,13 @@ public class ConstructionServiceImpl implements ConstructionService {
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
         } else {
-            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-            vxSendTextMsgReqDTO.setTouser(constructionMapper.selectUserId(constructionReqDTO.getUserName()));
-            vxSendTextMsgReqDTO.setContent("您有一条施工作业通知，请前往小程序查看详情。");
-            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            String userId = constructionMapper.selectUserId(constructionReqDTO.getUserName());
+            if (userId != null && !"".equals(userId)) {
+                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                vxSendTextMsgReqDTO.setTouser(userId);
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条施工作业通知，请前往小程序查看详情。"));
+                msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            }
         }
     }
 
@@ -203,20 +206,19 @@ public class ConstructionServiceImpl implements ConstructionService {
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         } else {
-            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-            vxSendTextMsgReqDTO.setTouser(constructionMapper.selectUserId(constructionReqDTO.getUserName()));
-            vxSendTextMsgReqDTO.setContent("您有一条施工作业通知，请前往小程序查看详情。");
-            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            String userId = constructionMapper.selectUserId(constructionReqDTO.getUserName());
+            if (userId != null && !"".equals(userId)) {
+                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                vxSendTextMsgReqDTO.setTouser(userId);
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条施工作业通知，请前往小程序查看详情。"));
+                msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            }
         }
     }
 
     @Override
-    public void deleteConstruction(ConstructionReqDTO constructionReqDTO) {
-        if (Objects.isNull(constructionReqDTO)) {
-            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
-        }
-        constructionReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-        Integer result = constructionMapper.deleteConstruction(constructionReqDTO);
+    public void deleteConstruction(List<String> ids) {
+        Integer result = constructionMapper.deleteConstruction(ids, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }

@@ -102,8 +102,12 @@ public class ConstructionController {
     @GetMapping("/list")
     @ApiOperation(value = "获取施工作业列表")
     public PageResponse<ConstructionResDTO> listConstruction(@RequestParam(required = false) @ApiParam(value = "周计划id") String planId,
+                                                             @RequestParam(required = false) @ApiParam(value = "开始时间") String startTime,
+                                                             @RequestParam(required = false) @ApiParam(value = "结束时间") String endTime,
+                                                             @RequestParam(required = false) @ApiParam(value = "作业名称") String name,
+                                                             @RequestParam(required = false) @ApiParam(value = "周计划名称") String planName,
                                                              @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(constructionService.listConstruction(planId, pageReqDTO));
+        return PageResponse.of(constructionService.listConstruction(planId, startTime, endTime, name, planName, pageReqDTO));
     }
 
     @GetMapping("/detail")
@@ -134,8 +138,8 @@ public class ConstructionController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "施工作业删除")
-    public DataResponse<T> deleteConstruction(@RequestBody ConstructionReqDTO constructionReqDTO) {
-        constructionService.deleteConstruction(constructionReqDTO);
+    public DataResponse<T> deleteConstruction(@RequestBody List<String> ids) {
+        constructionService.deleteConstruction(ids);
         return DataResponse.success();
     }
 

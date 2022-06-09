@@ -79,6 +79,34 @@
         order by r.create_date asc
     </select>
 
+    <select id="listRegionRoot" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        case when group_concat(distinct r1.name) is null then 'root' else group_concat(distinct r1.name) end as parent_names,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
+        left join t_region as r1 on find_in_set(r1.id,r.parent_ids)>0
+        where r.is_delete=0 and r.parent_id=0
+        group by r.id
+        order by r.create_date asc
+    </select>
+
+    <select id="listRegionBody" resultType="com.security.info.manage.dto.res.RegionResDTO">
+        select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
+        case when group_concat(distinct r1.name) is null then 'root' else group_concat(distinct r1.name) end as parent_names,
+        r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
+        rl.chromatography as level_chromatography, rl.color as level_color, rl.name as level_name
+        from t_region as r
+        left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
+        left join sys_risk_level as rl on rl.id=r.level
+        left join t_region as r1 on find_in_set(r1.id,r.parent_ids)>0
+        where r.is_delete=0 and r.parent_id!=0
+        group by r.id
+        order by r.create_date asc
+    </select>
+
     <select id="listAllRegionRoot" resultType="com.security.info.manage.dto.res.RegionResDTO">
         select r.id, r.type_id, r.parent_id, r.parent_ids, r.name, r.lng, r.lat, r.code, r.level, r.remark, r.pic,
         r.qr_code, r.response_unit, r.response_work_area, r.status, r.create_date, rt.name as type_name, r.main_risk, r.main_prevent,
@@ -205,6 +233,12 @@
             status=#{status},
         </if>
         update_by=#{userId}, update_date=now()
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="deleteRegion">
+        update t_region set
+        is_delete=1, update_by=#{userId}, update_date=now()
         where id=#{id} and is_delete=0
     </update>
 </mapper>

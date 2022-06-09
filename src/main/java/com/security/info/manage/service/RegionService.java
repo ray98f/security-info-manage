@@ -26,7 +26,7 @@ public interface RegionService {
 
     void deleteRegionType(RegionTypeReqDTO regionTypeReqDTO);
 
-    Page<RegionResDTO> listRegion(PageReqDTO pageReqDTO);
+    List<RegionResDTO> listRegion();
 
     RegionResDTO getRegionDetail(String id);
 
@@ -39,5 +39,7 @@ public interface RegionService {
     void modifyRegion(RegionReqDTO regionReqDTO);
 
     void addRegion(RegionReqDTO regionReqDTO);
+
+    void deleteRegion(RegionReqDTO regionReqDTO);
 
 }

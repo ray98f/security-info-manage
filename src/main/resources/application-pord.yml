@@ -82,7 +82,8 @@ excluded:
 vx-business:
   corpid: ww56aa612b390c11d2
   corpsecret: B9L_KTNLvjUtrqnn6A1A0fAeN8PdDtlpMivmHZ1kd2Y
-  appcorpsecret: yIUCfWtEkRCXe3-98wZCfI7K448wGztfNiAWrGxXWoE
+  appcorpsecret: r5cMqRKzRwFoQNzqL3usi_bI9sv3Cz-VZ3-xqU86XEM
+  pccorpsecret: yIUCfWtEkRCXe3-98wZCfI7K448wGztfNiAWrGxXWoE
   appid: 1000014
   agentid: 1000016
 

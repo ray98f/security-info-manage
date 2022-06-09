@@ -5,11 +5,13 @@ import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.RiskInfoReqDTO;
 import com.security.info.manage.dto.req.TransportReqDTO;
+import com.security.info.manage.dto.res.ApplianceConfigResDTO;
 import com.security.info.manage.dto.res.RiskInfoResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.RiskMapper;
 import com.security.info.manage.service.RiskService;
+import com.security.info.manage.utils.ExcelPortUtil;
 import com.security.info.manage.utils.FileUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
@@ -95,12 +98,8 @@ public class RiskServiceImpl implements RiskService {
     }
 
     @Override
-    public void deleteRisk(RiskInfoReqDTO riskInfoReqDTO) {
-        if (Objects.isNull(riskInfoReqDTO)) {
-            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
-        }
-        riskInfoReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-        Integer result = riskMapper.deleteRisk(riskInfoReqDTO);
+    public void deleteRisk(List<String> ids) {
+        Integer result = riskMapper.deleteRisk(ids, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
@@ -123,7 +122,7 @@ public class RiskServiceImpl implements RiskService {
             }
             Sheet sheet = Objects.requireNonNull(workbook).getSheetAt(1);
             int rows = sheet.getLastRowNum();
-            if(rows == 0){
+            if (rows == 0) {
                 throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
             }
             if (type == 1) {
@@ -241,6 +240,47 @@ public class RiskServiceImpl implements RiskService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void exportRisk(HttpServletResponse response, Integer type) {
+        List<RiskInfoResDTO> resDTOList = riskMapper.exportRisk(type);
+        List<String> listName = new ArrayList<>();
+        List<Map<String, String>> list = new ArrayList<>();
+        if (type == 1) {
+            if (resDTOList != null && !resDTOList.isEmpty()) {
+                for (RiskInfoResDTO resDTO : resDTOList) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("风险项类型", "1".equals(resDTO.getType()) ? "运营类" : "生产类");
+                    map.put("所属专业模块", resDTO.getModules());
+                    map.put("主要风险点", resDTO.getRiskPoints());
+                    map.put("主风险点分项", resDTO.getMainRiskPoints());
+                    map.put("风险描述-危险源及其可能造成的后果(运营类)", resDTO.getDescribeResult());
+                    map.put("风险定量评价-L(运营类)", resDTO.getRiskEvaluationL());
+                    map.put("风险定量评价-C(运营类)", resDTO.getRiskEvaluationC());
+                    map.put("风险定量评价-D(运营类)", resDTO.getRiskEvaluationD());
+                    map.put("风险等级", resDTO.getLevel() == 1 ? "重大风险" : resDTO.getLevel() == 2 ? "较大风险" : resDTO.getLevel() == 3 ? "一般风险" : "较小风险");
+                    map.put("风险管控措施-技术措施", resDTO.getTechnicalMeasures());
+                    map.put("风险管控措施-管理措施", resDTO.getManageMeasures());
+                    map.put("风险管控措施-教育措施", resDTO.getEducationMeasures());
+                    map.put("风险管控措施-个体防护", resDTO.getIndividualProtection());
+                    map.put("风险管控措施-应急措施", resDTO.getEmergencyMeasure());
+                    map.put("措施指定依据(关联法律、法规、规章、制度文档)", resDTO.getBasis());
+                    map.put("责任部门", resDTO.getResponsibilityDept());
+                    map.put("责任中心", resDTO.getResponsibilityCenter());
+                    map.put("责任岗位", resDTO.getResponsibilityPost());
+                    map.put("责任人", resDTO.getResponsibilityUser());
+                    list.add(map);
+                }
+            }
+            listName = Arrays.asList("风险项类型", "所属专业模块", "主要风险点", "主风险点分项", "风险描述-危险源及其可能造成的后果(运营类)",
+                    "风险定量评价-L(运营类)", "风险定量评价-C(运营类)", "风险定量评价-D(运营类)", "风险等级", "风险管控措施-技术措施",
+                    "风险管控措施-管理措施", "风险管控措施-教育措施", "风险管控措施-个体防护", "风险管控措施-应急措施",
+                    "措施指定依据(关联法律、法规、规章、制度文档)", "责任部门", "责任中心", "责任岗位", "责任人");
+        } else if (type == 2) {
+            listName = Arrays.asList("年度", "工号", "姓名", "部门名称", "涉及相关作业类型", "接触职业病危害因素", "用品编号", "用品名称", "领取数量", "领取时间", "有效期", "更换原因", "备注", "是否已确认", "状态");
+        }
+        ExcelPortUtil.excelPort("劳保用品配备信息", listName, list, null, response);
     }
 
 }

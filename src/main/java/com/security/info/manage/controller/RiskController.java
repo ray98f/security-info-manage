@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author frp
@@ -61,8 +63,8 @@ public class RiskController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "风险删除")
-    public DataResponse<T> deleteRisk(@RequestBody RiskInfoReqDTO riskInfoReqDTO) {
-        riskService.deleteRisk(riskInfoReqDTO);
+    public DataResponse<T> deleteRisk(@RequestBody List<String> ids) {
+        riskService.deleteRisk(ids);
         return DataResponse.success();
     }
 
@@ -70,6 +72,14 @@ public class RiskController {
     @ApiOperation(value = "风险导入")
     public DataResponse<T> importRisk(@RequestParam MultipartFile file, Integer type) {
         riskService.importRisk(file, type);
+        return DataResponse.success();
+    }
+
+    @GetMapping("/export")
+    @ApiOperation(value = "风险导出")
+    public DataResponse<T> exportRisk(@RequestParam Integer type,
+                                      HttpServletResponse response) {
+        riskService.exportRisk(response, type);
         return DataResponse.success();
     }
 

@@ -180,9 +180,11 @@ public class PhysicalServiceImpl implements PhysicalService {
         if (physicalReqDTO.getType() != 2) {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             List<String> userIds = physicalReqDTO.getUsers().stream().map(User::getId).collect(Collectors.toList());
-            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
-            vxSendTextMsgReqDTO.setContent("您有一条新" + typeName + "，请前往小程序查看处理。");
-            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            if (!userIds.isEmpty()) {
+                vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新" + typeName + "，请前往小程序查看处理。"));
+                msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            }
         }
     }
 
@@ -371,10 +373,12 @@ public class PhysicalServiceImpl implements PhysicalService {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         } else {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-            List<String> userIds = physicalMapper.selectUserIdByPhysicalUserId(physicalResultImportReqDTO.getUsers().stream().map(PhysicalResult::getPhysicalUserId).collect(Collectors.toList()));
-            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
-            vxSendTextMsgReqDTO.setContent("您的体检结果已录入，请前往小程序确认。");
-            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            List<String> userIds = physicalMapper.selectUserIdByPhysicalUserId(physicalMapper.selectPhysicalUserWhenImportResult(physicalResultImportReqDTO));
+            if (!userIds.isEmpty()) {
+                vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您的体检结果已录入，请前往小程序确认。"));
+                msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            }
         }
     }
 

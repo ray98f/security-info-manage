@@ -110,6 +110,18 @@
         <if test="planId!=null and planId!=''">
             and c.plan_id=#{planId}
         </if>
+        <if test="name!=null and name!=''">
+            and c.name like concat('%', #{name},'%')
+        </if>
+        <if test="planName!=null and planName!=''">
+            and wp.name like concat('%', #{planName},'%')
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and #{endTime}>=c.end_time
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and c.start_time>=#{startTime}
+        </if>
         order by c.date asc, c.sort asc, c.create_date desc
     </select>
 
@@ -217,9 +229,15 @@
     </update>
 
     <update id="deleteConstruction">
-        update t_construction set
-        is_delete=1, update_by=#{createBy}
-        where id=#{id} and is_delete=0
+        <if test="ids.size()>0">
+            update t_construction set
+            is_delete=1, update_by=#{userId}
+            where is_delete=0 and id in (
+            <foreach collection="ids" index="index" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
+        </if>
     </update>
 
     <insert id="importConstruction">

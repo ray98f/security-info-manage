@@ -18,6 +18,8 @@ public interface RiskMapper {
 
     Page<RiskInfoResDTO> listRisk(Page<RiskInfoResDTO> page, Integer level, Integer type, String module);
 
+    List<RiskInfoResDTO> exportRisk(Integer type);
+
     RiskInfoResDTO getRiskDetail(String id);
 
     Integer selectRiskIsExist(RiskInfoReqDTO riskInfoReqDTO);
@@ -26,7 +28,7 @@ public interface RiskMapper {
 
     Integer addRisk(RiskInfoReqDTO riskInfoReqDTO);
 
-    Integer deleteRisk(RiskInfoReqDTO riskInfoReqDTO);
+    Integer deleteRisk(List<String> ids, String userId);
 
     void importRisk(List<RiskInfoReqDTO> list);
 }

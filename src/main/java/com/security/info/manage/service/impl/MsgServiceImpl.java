@@ -12,6 +12,9 @@ import com.security.info.manage.utils.VxApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,8 +30,8 @@ public class MsgServiceImpl implements MsgService {
     @Value("${vx-business.corpid}")
     private String corpid;
 
-    @Value("${vx-business.appcorpsecret}")
-    private String appcorpsecret;
+    @Value("${vx-business.pccorpsecret}")
+    private String pccorpsecret;
 
     @Value("${vx-business.agentid}")
     private Integer agentid;
@@ -38,26 +41,18 @@ public class MsgServiceImpl implements MsgService {
 
     @Override
     public void sendTextMsg(VxSendTextMsgReqDTO vxSendTextMsgReqDTO) {
-        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, pccorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
         }
         String url = Constants.VX_MESSAGE_SEND + "?access_token=" + accessToken.getToken();
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("touser", vxSendTextMsgReqDTO.getTouser());
-//        jsonObject.put("toparty", vxSendTextMsgReqDTO.getToparty());
-//        jsonObject.put("totag", vxSendTextMsgReqDTO.getTotag());
-//        jsonObject.put("msgtype", vxSendTextMsgReqDTO.getMsgtype());
-//        jsonObject.put("agentid", vxSendTextMsgReqDTO.getAgentid());
-//        jsonObject.put("content", vxSendTextMsgReqDTO.getContent());
-//        jsonObject.put("safe", vxSendTextMsgReqDTO.getSafe());
-//        jsonObject.put("enable_id_trans", vxSendTextMsgReqDTO.getEnable_id_trans());
-//        jsonObject.put("enable_duplicate_check", vxSendTextMsgReqDTO.getEnable_duplicate_check());
-//        jsonObject.put("duplicate_check_interval", vxSendTextMsgReqDTO.getDuplicate_check_interval());
-//        JSONObject res = restTemplate.postForEntity(url, jsonObject, JSONObject.class).getBody();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("application/json;UTF-8"));
+        headers.add("charset","UTF-8");
         vxSendTextMsgReqDTO.setMsgtype("text");
         vxSendTextMsgReqDTO.setAgentid(agentid);
-        JSONObject res = restTemplate.postForEntity(url, JSONObject.toJSONString(vxSendTextMsgReqDTO), JSONObject.class).getBody();
+        HttpEntity<String> strEntity = new HttpEntity<>(JSONObject.toJSONString(vxSendTextMsgReqDTO), headers);
+        JSONObject res = restTemplate.postForObject(url, strEntity, JSONObject.class);
         if (!Constants.SUCCESS.equals(Objects.requireNonNull(res).getString(Constants.ERR_CODE))) {
             throw new CommonException(ErrorCode.VX_ERROR, String.valueOf(res.get(Constants.ERR_MSG)));
         }
@@ -65,13 +60,17 @@ public class MsgServiceImpl implements MsgService {
 
     @Override
     public void sendMiniProgramMsg(VxSendMiniProgramMsgReqDTO vxSendMiniProgramMsgReqDTO) {
-        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, pccorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
         }
         String url = Constants.VX_MESSAGE_SEND + "?access_token=" + accessToken.getToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("application/json;UTF-8"));
+        headers.add("charset","UTF-8");
         vxSendMiniProgramMsgReqDTO.setMsgtype("miniprogram_notice");
-        JSONObject res = restTemplate.postForEntity(url, JSONObject.toJSONString(vxSendMiniProgramMsgReqDTO), JSONObject.class).getBody();
+        HttpEntity<String> strEntity = new HttpEntity<>(JSONObject.toJSONString(vxSendMiniProgramMsgReqDTO), headers);
+        JSONObject res = restTemplate.postForObject(url, strEntity, JSONObject.class);
         if (!Constants.SUCCESS.equals(Objects.requireNonNull(res).getString(Constants.ERR_CODE))) {
             throw new CommonException(ErrorCode.VX_ERROR, String.valueOf(res.get(Constants.ERR_MSG)));
         }

@@ -34,6 +34,10 @@ public interface RegionMapper {
 
     Page<RegionResDTO> listRegion(Page<PostResDTO> page);
 
+    List<RegionResDTO> listRegionRoot();
+
+    List<RegionResDTO> listRegionBody();
+
     List<RegionResDTO> listAllRegionRoot();
 
     List<RegionResDTO> listAllRegionBody();
@@ -51,5 +55,7 @@ public interface RegionMapper {
     Integer modifyRegion(RegionReqDTO regionReqDTO);
 
     Integer addRegion(RegionReqDTO regionReqDTO);
+
+    Integer deleteRegion(RegionReqDTO regionReqDTO);
 
 }

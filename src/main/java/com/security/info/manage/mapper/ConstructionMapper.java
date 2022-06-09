@@ -42,7 +42,7 @@ public interface ConstructionMapper {
 
     Integer deleteWeekPlan(WeekPlanReqDTO weekPlanReqDTO);
 
-    Page<ConstructionResDTO> listConstruction(Page<ConstructionResDTO> page, String planId);
+    Page<ConstructionResDTO> listConstruction(Page<ConstructionResDTO> page, String planId, String startTime, String endTime, String name, String planName);
 
     ConstructionResDTO getConstructionDetail(String id);
 
@@ -54,7 +54,7 @@ public interface ConstructionMapper {
 
     Integer modifyConstruction(ConstructionReqDTO constructionReqDTO);
 
-    Integer deleteConstruction(ConstructionReqDTO constructionReqDTO);
+    Integer deleteConstruction(List<String> ids, String userId);
 
     Integer importConstruction(List<ConstructionReqDTO> list, String planId);
 }

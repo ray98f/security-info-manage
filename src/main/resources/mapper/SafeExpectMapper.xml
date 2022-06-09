@@ -98,6 +98,32 @@
         </foreach>
     </insert>
 
+    <update id="modifySafeExpect">
+        update t_safe_expect set
+        <if test="userId!=null">
+            user_id=#{userId},
+        </if>
+        <if test="address!=null">
+            address=#{address},
+        </if>
+        <if test="time!=null">
+            time=#{time},
+        </if>
+        <if test="workId!=null">
+            work_id=#{workId},
+        </if>
+        <if test="workNo!=null">
+            work_no=#{workNo},
+        </if>
+        <if test="workName!=null">
+            work_name=#{workName},
+        </if>
+        <if test="workRegion!=null">
+            work_region=#{workRegion},
+        </if>
+        where id=#{id} and is_delete=0;
+    </update>
+
     <insert id="modifySafeExpectInfo">
         INSERT INTO t_safe_expect_info (id, safe_expect_id, weather, work_temperature, wind_power, relative_humidity,
         work_content, work_environment, safe_tools, transport_modes, overhaul_equipment_status, describe_person_factor,
@@ -143,6 +169,17 @@
         where safe_expect_id=#{id} and is_delete=0;
     </update>
 
+    <select id="selectUserIdById" resultType="java.lang.String">
+        select distinct user_id from t_safe_expect_user where safe_expect_id=#{id}
+    </select>
+
+    <update id="cancelSafeExpect">
+        update t_safe_expect set
+        status=3, update_by=#{createBy}
+        where id=#{id} and is_delete=0;
+        delete from t_safe_expect_user where safe_expect_id=#{id};
+    </update>
+
     <select id="listSafeExpectUser" resultType="com.security.info.manage.dto.res.SafeExpectUserResDTO">
         select s.id, s.user_id, u.real_name as user_name, s.safe_expect_id, s.is_sign, s.sign_time
         from t_safe_expect_user as s left join sys_user_ext as u on u.user_id=s.user_id and u.is_delete=0 and u.status=0
@@ -160,5 +197,10 @@
         update t_safe_expect_user set
         is_sign=-1, sign_time=now()
         where safe_expect_id=#{id} and user_id=#{userId}
+    </update>
+
+    <update id="modifySafeExpectStatus">
+        update t_safe_expect set
+        status=1 where now()>=time and is_delete=0 and status=0
     </update>
 </mapper>

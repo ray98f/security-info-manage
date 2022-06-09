@@ -27,6 +27,8 @@ public interface SafeExpectService {
 
     void deleteSafeExpect(SafeExpectReqDTO safeExpectReqDTO);
 
+    void cancelSafeExpect(SafeExpectReqDTO safeExpectReqDTO);
+
     Page<SafeExpectUserResDTO> listSafeExpectUser(String id, PageReqDTO pageReqDTO);
 
     void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);

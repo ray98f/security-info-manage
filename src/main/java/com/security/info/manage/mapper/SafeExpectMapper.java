@@ -41,16 +41,24 @@ public interface SafeExpectMapper {
 
     Integer insertSafeExpectUser(String id, List<String> list);
 
+    Integer modifySafeExpect(SafeExpectReqDTO safeExpectReqDTO);
+
     Integer modifySafeExpectInfo(SafeExpectInfoReqDTO safeExpectInfoReqDTO);
 
     Integer modifySafeExpectCollectionUnion(SafeExpectCollectionUnionReqDTO safeExpectCollectionUnionReqDTO);
 
     Integer deleteSafeExpect(SafeExpectReqDTO safeExpectReqDTO);
 
+    List<String> selectUserIdById(String id);
+
+    Integer cancelSafeExpect(SafeExpectReqDTO safeExpectReqDTO);
+
     Page<SafeExpectUserResDTO> listSafeExpectUser(Page<SafeExpectUserResDTO> page, String id);
 
     Integer signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
 
     Integer vxSignSafeExpectUser(String id, String userId);
+
+    void modifySafeExpectStatus();
 
 }

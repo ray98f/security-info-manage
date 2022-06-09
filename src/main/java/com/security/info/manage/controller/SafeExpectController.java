@@ -75,6 +75,13 @@ public class SafeExpectController {
         return DataResponse.success();
     }
 
+    @PostMapping("/cancel")
+    @ApiOperation(value = "安全预想会取消")
+    public DataResponse<T> cancelSafeExpect(@RequestBody SafeExpectReqDTO safeExpectReqDTO) {
+        safeExpectService.cancelSafeExpect(safeExpectReqDTO);
+        return DataResponse.success();
+    }
+
     @GetMapping("/user/list")
     @ApiOperation(value = "安全预想会人员签到列表")
     public PageResponse<SafeExpectUserResDTO> listSafeExpectUser(@RequestParam String id,

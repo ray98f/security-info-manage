@@ -89,18 +89,24 @@ public class RegionServiceImpl implements RegionService {
         }
     }
     @Override
-    public Page<RegionResDTO> listRegion(PageReqDTO pageReqDTO) {
-        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        Page<RegionResDTO> page = regionMapper.listRegion(pageReqDTO.of());
-        List<RegionResDTO> list = page.getRecords();
-        if (list != null && !list.isEmpty()) {
-            for (RegionResDTO regionResDTO : list) {
+    public List<RegionResDTO> listRegion() {
+        List<RegionResDTO> root = regionMapper.listRegionRoot();
+        if (root != null && !root.isEmpty()) {
+            for (RegionResDTO regionResDTO : root) {
                 String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
-                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
+                regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
             }
         }
-        page.setRecords(list);
-        return page;
+        List<RegionResDTO> body = regionMapper.listRegionBody();
+        if (body != null && !body.isEmpty()) {
+            for (RegionResDTO regionResDTO : body) {
+                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+                regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
+
+            }
+        }
+        RegionTreeToolUtils res = new RegionTreeToolUtils(root, body);
+        return res.getTree();
     }
 
     @Override
@@ -188,6 +194,18 @@ public class RegionServiceImpl implements RegionService {
         result = regionMapper.addRegion(regionReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteRegion(RegionReqDTO regionReqDTO) {
+        if (Objects.isNull(regionReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        regionReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
+        Integer result = regionMapper.deleteRegion(regionReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.DELETE_ERROR);
         }
     }
 }

@@ -233,10 +233,10 @@ public class DangerServiceImpl implements DangerService {
         result = dangerMapper.modifyDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
-        } else if (result > 0 && dangerReqDTO.getIsUse() == 1) {
+        } else if (dangerReqDTO.getIsUse() == 1 && dangerReqDTO.getExamineUserId() != null) {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
-            vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -252,10 +252,10 @@ public class DangerServiceImpl implements DangerService {
         Integer result = dangerMapper.addDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
-        } else if (result > 0 && dangerReqDTO.getIsUse() == 1) {
+        } else if (dangerReqDTO.getIsUse() == 1 && dangerReqDTO.getExamineUserId() != null) {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
-            vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -289,10 +289,10 @@ public class DangerServiceImpl implements DangerService {
                     Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
                     if (result < 0) {
                         throw new CommonException(ErrorCode.UPDATE_ERROR);
-                    } else if (result > 0) {
+                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
                         VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                         vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
-                        vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
                         msgService.sendTextMsg(vxSendTextMsgReqDTO);
                     }
                     break;
@@ -304,10 +304,10 @@ public class DangerServiceImpl implements DangerService {
                     Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
                     if (result < 0) {
                         throw new CommonException(ErrorCode.UPDATE_ERROR);
-                    } else if (result > 0) {
+                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
                         VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                         vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
-                        vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
                         msgService.sendTextMsg(vxSendTextMsgReqDTO);
                     }
                     break;
@@ -325,10 +325,10 @@ public class DangerServiceImpl implements DangerService {
             Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, checkUserId);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
-            } else if (result > 0) {
+            } else if (!"".equals(checkUserId)) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(checkUserId);
-                vxSendTextMsgReqDTO.setContent("您有一条新的隐患排查审批通知，请前往小程序查看处理。");
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         }

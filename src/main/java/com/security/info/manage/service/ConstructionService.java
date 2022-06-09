@@ -8,6 +8,8 @@ import com.security.info.manage.dto.req.WeekPlanReqDTO;
 import com.security.info.manage.dto.res.ConstructionResDTO;
 import com.security.info.manage.dto.res.ConstructionTypeResDTO;
 import com.security.info.manage.dto.res.WeekPlanResDTO;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -35,7 +37,7 @@ public interface ConstructionService {
 
     void deleteWeekPlan(WeekPlanReqDTO weekPlanReqDTO);
 
-    Page<ConstructionResDTO> listConstruction(String planId, PageReqDTO pageReqDTO);
+    Page<ConstructionResDTO> listConstruction(String planId, String startTime, String endTime, String name, String planName, PageReqDTO pageReqDTO);
 
     ConstructionResDTO getConstructionDetail(String id);
 
@@ -45,7 +47,7 @@ public interface ConstructionService {
 
     void modifyConstruction(ConstructionReqDTO constructionReqDTO);
 
-    void deleteConstruction(ConstructionReqDTO constructionReqDTO);
+    void deleteConstruction(List<String> ids);
 
     void importConstruction(MultipartFile file, String planId);
 

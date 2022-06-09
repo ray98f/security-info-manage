@@ -335,6 +335,15 @@
         </if>
     </select>
 
+    <select id="selectPhysicalUserWhenImportResult" resultType="java.lang.String">
+        select id from t_physical_user where user_name in (
+        <foreach collection="users" index="index" item="user" separator=",">
+            #{user.name}
+        </foreach>
+        )
+        and physical_id=#{id} and is_delete=0 and result is not null and 3=status
+    </select>
+
     <insert id="physicalResultImport">
         <foreach collection="users" index="index" item="user" separator="">
             <if test="user.result==1">

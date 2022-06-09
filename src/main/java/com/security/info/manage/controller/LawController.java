@@ -37,8 +37,8 @@ public class LawController {
 
     @GetMapping("/catalog/list")
     @ApiOperation(value = "获取法律法规目录列表")
-    public PageResponse<LawCatalogResDTO> listLawCatalog(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(lawService.listLawCatalog(pageReqDTO));
+    public DataResponse<List<LawCatalogResDTO>> listLawCatalog() {
+        return DataResponse.of(lawService.listLawCatalog());
     }
 
     @GetMapping("/catalog/listAll")
@@ -65,6 +65,13 @@ public class LawController {
     @ApiOperation(value = "法律法规目录新增")
     public DataResponse<T> addLawCatalog(@RequestBody LawCatalogReqDTO lawCatalogReqDTO) {
         lawService.addLawCatalog(lawCatalogReqDTO);
+        return DataResponse.success();
+    }
+
+    @PostMapping("/catalog/delete")
+    @ApiOperation(value = "法律法规目录删除")
+    public DataResponse<T> deleteLawCatalog(@RequestBody LawCatalogReqDTO lawCatalogReqDTO) {
+        lawService.deleteLawCatalog(lawCatalogReqDTO);
         return DataResponse.success();
     }
 

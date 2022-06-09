@@ -65,6 +65,8 @@ public interface PhysicalMapper {
 
     List<String> selectUserIdByPhysicalUserId(List<String> list);
 
+    List<String> selectPhysicalUserWhenImportResult(PhysicalResultImportReqDTO physicalResultImportReqDTO);
+
     void physicalResultImport(PhysicalResultImportReqDTO physicalResultImportReqDTO);
 
     Integer uploadFilePhysical(String url, String id, String userId, Integer type);

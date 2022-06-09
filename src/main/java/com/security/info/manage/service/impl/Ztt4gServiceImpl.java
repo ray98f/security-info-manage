@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author frp
@@ -66,7 +67,9 @@ public class Ztt4gServiceImpl implements Ztt4gService {
         URI uri = uriComponents.toUri();
         JSONArray res = restTemplate.getForEntity(uri, JSONArray.class).getBody();
         String str = Objects.requireNonNull(res).toJSONString().replaceAll("\\$", "puid");
-        return JSONArray.parseArray(str, Ztt4GEquipmentResDTO.class);
+        List<Ztt4GEquipmentResDTO> list = JSONArray.parseArray(str, Ztt4GEquipmentResDTO.class);
+        list = list.stream().sorted(Comparator.comparing(Ztt4GEquipmentResDTO::getOnlineFlag).reversed().thenComparing(Ztt4GEquipmentResDTO::getPuid)).collect(Collectors.toList());
+        return list;
     }
 
     @Override

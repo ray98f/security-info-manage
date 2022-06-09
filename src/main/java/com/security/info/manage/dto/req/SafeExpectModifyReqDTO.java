@@ -8,6 +8,9 @@ import lombok.Data;
  */
 @Data
 public class SafeExpectModifyReqDTO {
+
+    @ApiModelProperty(value = "预想会")
+    private SafeExpectReqDTO safeExpectReqDTO;
     
     @ApiModelProperty(value = "预想会详情")
     private SafeExpectInfoReqDTO safeExpectInfo;
