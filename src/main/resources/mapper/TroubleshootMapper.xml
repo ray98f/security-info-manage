@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.security.info.manage.mapper.TroubleshootMapper">
+
+    <select id="listTroubleshootType" resultType="com.security.info.manage.dto.res.TroubleshootTypeResDTO">
+        select a.id, a.code, a.name, a.status
+        from t_troubleshoot_type as a
+        where a.is_delete=0
+        <if test="name!=null and name!=''">
+            and a.name like concat('%', #{name},'%')
+        </if>
+        order by a.create_date desc
+    </select>
+
+    <select id="listAllTroubleshootType" resultType="com.security.info.manage.dto.res.TroubleshootTypeResDTO">
+        select a.id, a.code, a.name, a.status
+        from t_troubleshoot_type as a
+        where a.is_delete=0 and a.status=0
+    </select>
+
+    <select id="getTroubleshootTypeDetail" resultType="com.security.info.manage.dto.res.TroubleshootTypeResDTO">
+        select a.id, a.code, a.name, a.status
+        from t_troubleshoot_type as a
+        where a.is_delete=0 and a.id=#{id}
+    </select>
+
+    <select id="selectTroubleshootTypeIsExist" resultType="java.lang.Integer">
+        select count(1) from t_troubleshoot_type where name=#{name} and is_delete=0
+        <if test="id!=null and id!=''">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="insertTroubleshootType">
+        insert into t_troubleshoot_type(id, code, name, status, create_by)
+        value (#{id}, #{code}, #{name}, #{status}, #{createBy})
+    </insert>
+
+    <update id="modifyTroubleshootType">
+        update t_troubleshoot_type set
+        <if test="code!=null">
+            code=#{code},
+        </if>
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="status!=null">
+            status=#{status},
+        </if>
+        update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="deleteTroubleshootType">
+        update t_troubleshoot_type set
+        is_delete=1, update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <select id="listTroubleshoot" resultType="com.security.info.manage.dto.res.TroubleshootResDTO">
+        select a.id, a.type_id, a.name, a.pdf, b.name as type_name
+        from t_troubleshoot as a
+        left join t_troubleshoot_type as b on b.id=a.type_id and b.is_delete=0 and b.status=0
+        where a.is_delete=0
+        <if test="name!=null and name!=''">
+            and a.name like concat('%', #{name},'%')
+        </if>
+        <if test="typeId!=null and typeId!=''">
+            and a.type_id=#{typeId}
+        </if>
+        order by a.create_date desc
+    </select>
+
+    <select id="getTroubleshootDetail" resultType="com.security.info.manage.dto.res.TroubleshootResDTO">
+        select a.id, a.type_id, a.name, a.pdf, b.name as type_name
+        from t_troubleshoot as a
+        left join t_troubleshoot_type as b on b.id=a.type_id and b.is_delete=0 and b.status=0
+        where a.is_delete=0 and a.id=#{id}
+    </select>
+
+    <select id="selectTroubleshootIsExist" resultType="java.lang.Integer">
+        select count(1) from t_troubleshoot where name=#{name} and is_delete=0
+        <if test="id!=null and id!=''">
+            and id!=#{id}
+        </if>
+        limit 1
+    </select>
+
+    <insert id="insertTroubleshoot">
+        insert into t_troubleshoot(id, type_id, name, pdf, create_by)
+        value (#{id}, #{typeId}, #{name}, #{pdf}, #{createBy})
+    </insert>
+
+    <update id="modifyTroubleshoot">
+        update t_troubleshoot set
+        <if test="typeId!=null">
+            type_id=#{typeId},
+        </if>
+        <if test="name!=null">
+            name=#{name},
+        </if>
+        <if test="pdf!=null">
+            pdf=#{pdf},
+        </if>
+        update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
+
+    <update id="deleteTroubleshoot">
+        update t_troubleshoot set
+        is_delete=1, update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
+
+</mapper>
