@@ -40,10 +40,11 @@ public class TrainController {
 
     @GetMapping("/list")
     @ApiOperation(value = "获取健康培训列表")
-    public PageResponse<TrainResDTO> listTrain(@RequestParam(required = false) String startTime,
+    public PageResponse<TrainResDTO> listTrain(@RequestParam(required = false) String name,
+                                               @RequestParam(required = false) String startTime,
                                                @RequestParam(required = false) String endTime,
                                                @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(trainService.listTrain(startTime, endTime, pageReqDTO));
+        return PageResponse.of(trainService.listTrain(name, startTime, endTime, pageReqDTO));
     }
 
     @GetMapping("/detail")

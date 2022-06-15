@@ -108,9 +108,9 @@ public class ConstructionServiceImpl implements ConstructionService {
     }
 
     @Override
-    public Page<WeekPlanResDTO> listWeekPlan(PageReqDTO pageReqDTO) {
+    public Page<WeekPlanResDTO> listWeekPlan(PageReqDTO pageReqDTO, String startTime, String endTime, String name) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return constructionMapper.listWeekPlan(pageReqDTO.of());
+        return constructionMapper.listWeekPlan(pageReqDTO.of(), startTime, endTime, name);
     }
 
     @Override

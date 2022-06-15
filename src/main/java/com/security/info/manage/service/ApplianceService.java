@@ -6,6 +6,7 @@ import com.security.info.manage.dto.req.ApplianceConfigReqDTO;
 import com.security.info.manage.dto.req.ApplianceReqDTO;
 import com.security.info.manage.dto.req.ApplianceTypeReqDTO;
 import com.security.info.manage.dto.res.*;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public interface ApplianceService {
 
-    Page<ApplianceResDTO> listAppliance(PageReqDTO pageReqDTO);
+    Page<ApplianceResDTO> listAppliance(String name, PageReqDTO pageReqDTO);
 
     ApplianceResDTO getApplianceDetail(String id);
 
@@ -30,7 +31,7 @@ public interface ApplianceService {
 
     void exportApplianceConfig(HttpServletResponse response);
 
-    Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO);
+    Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO, String name, Integer status, String startTime, String endTime);
 
     Page<ApplianceConfigResDTO> vxListApplianceConfig(PageReqDTO pageReqDTO);
 

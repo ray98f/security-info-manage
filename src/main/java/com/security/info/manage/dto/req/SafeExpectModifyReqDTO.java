@@ -10,7 +10,7 @@ import lombok.Data;
 public class SafeExpectModifyReqDTO {
 
     @ApiModelProperty(value = "预想会")
-    private SafeExpectReqDTO safeExpectReqDTO;
+    private SafeExpectReqDTO safeExpect;
     
     @ApiModelProperty(value = "预想会详情")
     private SafeExpectInfoReqDTO safeExpectInfo;

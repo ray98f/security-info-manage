@@ -7,6 +7,15 @@
         se.work_no, se.work_name, se.work_region, se.status from t_safe_expect as se
         left join sys_user_ext as ue on ue.user_id=se.user_id and ue.is_delete=0 and ue.status=0
         where se.is_delete=0
+        <if test="name!=null and name!=''">
+            and se.work_name like concat('%', #{name},'%')
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and se.time>=#{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and #{endTime}>=se.time
+        </if>
         order by se.create_date desc
     </select>
 
@@ -32,12 +41,14 @@
 
     <select id="getSafeExpectInfoDetail" resultType="com.security.info.manage.dto.res.SafeExpectInfoResDTO">
         select s.id, s.safe_expect_id, s.weather, s.work_temperature, s.wind_power, s.relative_humidity, s.work_content,
-        s.work_environment, s.safe_tools, s.transport_modes, s.overhaul_equipment_status,
-        s.describe_person_factor, s.describe_object_factor, s.describe_environment_factor, s.describe_manage_factor,
-        s.describe_may_occur, s.describe_occupational_hazards, s.risk_level, rl.name as risk_level_name,
+        s.work_environment, s.safe_tools, s.transport_modes, s.overhaul_equipment_status, s.risk_id, r.main_risk_points as risk_name,
+        s.template_id, s.describe_person_factor, s.describe_object_factor, s.describe_environment_factor,
+        s.describe_manage_factor, s.describe_may_occur, s.describe_occupational_hazards, s.risk_level, rl.name as risk_level_name,
         rl.chromatography as risk_level_color, s.risk_control_measures, s.work_attention_matter, s.safe_technical_disclosure
         from t_safe_expect_info as s
         left join sys_risk_level as rl on rl.id=s.risk_level
+        left join t_risk_info as r on r.id=s.risk_id and r.is_delete=0
+        left join t_safe_expect_template as t on t.id=s.template_id
         where s.is_delete=0 and s.safe_expect_id=#{id}
         group by s.id
     </select>
@@ -72,6 +83,10 @@
         left join t_safe_expect as se on se.id=seu.safe_expect_id and se.is_delete=0
         left join sys_user_ext as ue on ue.user_id=seu.user_id and ue.is_delete=0 and ue.status=0
         where seu.safe_expect_id=#{id}
+    </select>
+
+    <select id="selectUserIsSign" resultType="java.lang.Integer">
+        select is_sign from t_safe_expect_user where safe_expect_id=#{id} and user_id=#{userId}
     </select>
 
     <select id="selectSafeExpectIsExist" resultType="java.lang.Integer">
@@ -121,22 +136,23 @@
         <if test="workRegion!=null">
             work_region=#{workRegion},
         </if>
+        update_by=#{createBy}
         where id=#{id} and is_delete=0;
     </update>
 
     <insert id="modifySafeExpectInfo">
-        INSERT INTO t_safe_expect_info (id, safe_expect_id, weather, work_temperature, wind_power, relative_humidity,
+        INSERT INTO t_safe_expect_info (id, safe_expect_id, weather, work_temperature, wind_power, relative_humidity, risk_id, template_id,
         work_content, work_environment, safe_tools, transport_modes, overhaul_equipment_status, describe_person_factor,
         describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur, describe_occupational_hazards,
         risk_level, risk_control_measures, work_attention_matter, safe_technical_disclosure, create_by)
-        select replace(uuid(),"-",""), #{safeExpectId}, #{weather}, #{workTemperature}, #{windPower}, #{relativeHumidity},
+        select replace(uuid(),"-",""), #{safeExpectId}, #{weather}, #{workTemperature}, #{windPower}, #{relativeHumidity}, #{riskId}, #{templateId},
         #{workContent}, #{workEnvironment}, #{safeTools}, #{transportModes}, #{overhaulEquipmentStatus}, #{describePersonFactor},
         #{describeObjectFactor}, #{describeEnvironmentFactor}, #{describeManageFactor}, #{describeMayOccur}, #{describeOccupationalHazards},
         #{riskLevel}, #{riskControlMeasures},  #{workAttentionMatter},  #{safeTechnicalDisclosure}, #{createBy}
         FROM DUAL
         WHERE not exists (SELECT id FROM t_safe_expect_info WHERE safe_expect_id=#{safeExpectId} and is_delete=0);
         update t_safe_expect_info set
-        weather=#{weather}, work_temperature=#{workTemperature}, wind_power=#{windPower}, relative_humidity=#{relativeHumidity},
+        weather=#{weather}, work_temperature=#{workTemperature}, wind_power=#{windPower}, relative_humidity=#{relativeHumidity}, risk_id=#{riskId}, template_id=#{templateId},
         work_content=#{workContent}, work_environment=#{workEnvironment}, safe_tools=#{safeTools}, transport_modes=#{transportModes},
         overhaul_equipment_status=#{overhaulEquipmentStatus}, describe_person_factor=#{describePersonFactor},
         describe_object_factor=#{describeObjectFactor}, describe_environment_factor=#{describeEnvironmentFactor},
@@ -153,7 +169,9 @@
         WHERE not exists (SELECT id FROM t_safe_expect_collection_union WHERE safe_expect_id=#{safeExpectId} and is_delete=0);
         update t_safe_expect_collection_union set
         task_completion=#{taskCompletion}, problem_measure=#{problemMeasure},collection_union_time=#{collectionUnionTime}, update_by=#{createBy}
-        where safe_expect_id=#{safeExpectId} and is_delete=0
+        where safe_expect_id=#{safeExpectId} and is_delete=0;
+        update t_safe_expect set
+        status=2 where id=#{safeExpectId} and is_delete=0;
     </insert>
 
     <update id="deleteSafeExpect">
@@ -203,4 +221,22 @@
         update t_safe_expect set
         status=1 where now()>=time and is_delete=0 and status=0
     </update>
+
+    <select id="selectSafeExpectTemplateNum" resultType="java.lang.Integer">
+        select count(*) from t_safe_expect_template where user_id=#{userId}
+    </select>
+
+    <insert id="insertSafeExpectTemplate">
+        insert into t_safe_expect_template(id, risk_id, user_id, work_content, work_environment, work_attention_matter, safe_technical_disclosure)
+        select replace(uuid(),"-",""), #{safeExpectInfo.riskId}, #{userId}, #{safeExpectInfo.workContent},
+        #{safeExpectInfo.workEnvironment}, #{safeExpectInfo.workAttentionMatter}, #{safeExpectInfo.safeTechnicalDisclosure}
+        from dual
+        WHERE not exists (SELECT id FROM t_safe_expect_template WHERE work_content=#{safeExpectInfo.workContent} and work_environment=#{safeExpectInfo.workEnvironment}
+        and work_attention_matter=#{safeExpectInfo.workAttentionMatter} and safe_technical_disclosure=#{safeExpectInfo.safeTechnicalDisclosure})
+    </insert>
+
+    <select id="listSafeExpectTemplate" resultType="com.security.info.manage.dto.res.SafeExpectTemplateResDTO">
+        select id, risk_id, user_id, work_content, work_environment, work_attention_matter, safe_technical_disclosure
+        from t_safe_expect_template where user_id=#{userId} and risk_id=#{riskId}
+    </select>
 </mapper>

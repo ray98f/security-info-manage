@@ -27,6 +27,12 @@ public class SafeExpectInfoReqDTO {
     @ApiModelProperty(value = "相对湿度")
     private String relativeHumidity;
 
+    @ApiModelProperty(value = "风险id")
+    private String riskId;
+
+    @ApiModelProperty(value = "模板id")
+    private String templateId;
+
     @ApiModelProperty(value = "作业内容")
     private String workContent;
 
@@ -74,4 +80,7 @@ public class SafeExpectInfoReqDTO {
 
     @ApiModelProperty(value = "创建人")
     private String createBy;
+
+    @ApiModelProperty(value = "是否存为模板 0 否 1 是")
+    private Integer isTemplate;
 }

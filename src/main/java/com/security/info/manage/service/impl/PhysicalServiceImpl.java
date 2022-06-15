@@ -44,14 +44,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,9 +105,35 @@ public class PhysicalServiceImpl implements PhysicalService {
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public Page<PhysicalResDTO> listPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, PageReqDTO pageReqDTO) {
+    public void exportPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, HttpServletResponse response) {
+        List<String> listName = Arrays.asList("序号", "流水号", "医院流水号", "体检类型", "体检起始时间", "应检人数", "受检人数", "检查结果");
+        List<PhysicalResDTO> physicals = physicalMapper.listAllPhysical(sStartTime, sEndTime, eStartTime, eEndTime, type);
+        ArrayList<Map<String, String>> list = new ArrayList<>();
+        if (physicals != null && !physicals.isEmpty()) {
+            for (PhysicalResDTO resDTO : physicals) {
+                resDTO.setResult(physicalMapper.countPhysicalUser(resDTO.getId()));
+                Map<String, String> map = new HashMap<>();
+                map.put("序号", resDTO.getId());
+                map.put("流水号", resDTO.getNo());
+                map.put("医院流水号", resDTO.getHospitalNo());
+                map.put("体检类型", resDTO.getType() == 1 ? "岗中体检" : resDTO.getType() == 2 ? "新人体检" : resDTO.getType() == 3 ? "普通体检" : "离岗体检");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                map.put("体检起始时间", sdf.format(resDTO.getStartTime()) + " 至 " + sdf.format(resDTO.getEndTime()));
+                map.put("应检人数", resDTO.getEstimateNum().toString());
+                map.put("受检人数", resDTO.getActualNum().toString());
+                map.put("检查结果", "正常: " + resDTO.getResult().getNormalNum() + "人；复查: " + resDTO.getResult().getReviewNum() + "人；职业禁忌证: " + resDTO.getResult().getTabooNum() + "人");
+                list.add(map);
+            }
+        }
+        if (list.size() > 0) {
+            ExcelPortUtil.excelPort("企业体检汇总档案", listName, list, null, response);
+        }
+    }
+
+    @Override
+    public Page<PhysicalResDTO> listPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, Integer isBusiness, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        Page<PhysicalResDTO> page = physicalMapper.listPhysical(pageReqDTO.of(), sStartTime, sEndTime, eStartTime, eEndTime, type);
+        Page<PhysicalResDTO> page = physicalMapper.listPhysical(pageReqDTO.of(), sStartTime, sEndTime, eStartTime, eEndTime, type, isBusiness);
         List<PhysicalResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (PhysicalResDTO res : list) {
@@ -397,9 +421,9 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
-    public Page<PhysicalFeedbackResDTO> listFeedback(String name, PageReqDTO pageReqDTO) {
+    public Page<PhysicalFeedbackResDTO> listFeedback(String name, String startTime, String endTime, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return physicalMapper.listFeedback(pageReqDTO.of(), name);
+        return physicalMapper.listFeedback(pageReqDTO.of(), name, startTime, endTime);
     }
 
     @Override

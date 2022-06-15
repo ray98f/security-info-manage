@@ -4,17 +4,28 @@
 
     <select id="listTrain" resultType="com.security.info.manage.dto.res.TrainResDTO">
         select t.id, t.user_ids, group_concat(distinct d.real_name) as user_names, t.content,
-        t.train_time, t.lecturer, t.pic, t.address, t.courseware
+        t.train_time, t.lecturer, t.pic, t.address, t.courseware, ue.real_name as lecturer_name
         from t_train as t left join sys_user_ext as d on find_in_set(d.user_id,t.user_ids)>0
+        left join sys_user_ext as ue on ue.user_id=t.lecturer and ue.is_delete=0 and ue.status=0
         where t.is_delete=0
+        <if test="name!=null and name!=''">
+            and t.content like concat('%', #{name},'%')
+        </if>
+        <if test="startTime!=null">
+            and date_format(t.train_time, '%Y-%m-%d')>=#{startTime}
+        </if>
+        <if test="endTime!=null">
+            and #{endTime}>=date_format(t.train_time, '%Y-%m-%d')
+        </if>
         group by t.id
         order by t.create_date desc
     </select>
 
     <select id="getTrainDetail" resultType="com.security.info.manage.dto.res.TrainResDTO">
         select t.id, t.user_ids, group_concat(distinct d.real_name) as user_names, t.content,
-        t.train_time, t.lecturer, t.pic, t.address, t.courseware
+        t.train_time, t.lecturer, t.pic, t.address, t.courseware, ue.real_name as lecturer_name
         from t_train as t left join sys_user_ext as d on find_in_set(d.user_id,t.user_ids)>0
+        left join sys_user_ext as ue on ue.user_id=t.lecturer and ue.is_delete=0 and ue.status=0
         where t.is_delete=0 and t.id=#{id}
         group by t.id
     </select>

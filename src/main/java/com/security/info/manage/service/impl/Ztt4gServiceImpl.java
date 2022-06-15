@@ -47,6 +47,9 @@ public class Ztt4gServiceImpl implements Ztt4gService {
     @Value("${ztt-4g.password}")
     public String monitorPassword;
 
+    @Value("${ztt-4g.path}")
+    public String monitorPath;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -91,7 +94,7 @@ public class Ztt4gServiceImpl implements Ztt4gService {
     @Override
     public Map<String, Object> getVideoUrl(String puid, String idx, String resType, String stream) {
         Map<String, Object> data = new HashMap<>();
-        data.put("url", "http://" + monitorUrl + ":" + monitorPort + Constants.ZTT_4G_LIVE_STREAM
+        data.put("url", monitorPath + Constants.ZTT_4G_LIVE_STREAM
                 + "?puid=" + puid + "&idx=" + idx + "&resType=" + resType + "&token=" + login() + "&stream=" + stream);
         return data;
     }
@@ -114,7 +117,7 @@ public class Ztt4gServiceImpl implements Ztt4gService {
         List<Ztt4GPlaybackResDTO> list = JSONArray.parseArray(res.getJSONArray("File").toJSONString(), Ztt4GPlaybackResDTO.class);
         if (list != null && !list.isEmpty()) {
             for (Ztt4GPlaybackResDTO resDTO : list) {
-                resDTO.setUrl("http://" + monitorUrl + ":" + monitorPort + Constants.ZTT_4G_PLAYBACK_STREAM
+                resDTO.setUrl(monitorPath + Constants.ZTT_4G_PLAYBACK_STREAM
                         + "?puid=" + resDTO.getPUID() + "&idx=" + resDTO.getResIdx()
                         + "&path=" + resDTO.getPath() + resDTO.getName() + "&token=" + login()
                         + "&stream=" + stream + "&resType=" + resType + "&id=" + resDTO.getID()

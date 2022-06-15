@@ -8,6 +8,7 @@ import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.PhysicalFeedback;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -15,7 +16,9 @@ import java.util.List;
  */
 public interface PhysicalService {
 
-    Page<PhysicalResDTO> listPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, PageReqDTO pageReqDTO);
+    void exportPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, HttpServletResponse response);
+
+    Page<PhysicalResDTO> listPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, Integer isBusiness, PageReqDTO pageReqDTO);
 
     void addPhysical(PhysicalReqDTO physicalReqDTO);
 
@@ -39,7 +42,7 @@ public interface PhysicalService {
 
     void uploadPdf(MultipartFile file, String bizCode, String id) throws Exception;
 
-    Page<PhysicalFeedbackResDTO> listFeedback(String name, PageReqDTO pageReqDTO);
+    Page<PhysicalFeedbackResDTO> listFeedback(String name, String startTime, String endTime, PageReqDTO pageReqDTO);
 
     PhysicalFeedbackResDTO getFeedbackDetailByPhysicalId(String id, String physicalId);
 

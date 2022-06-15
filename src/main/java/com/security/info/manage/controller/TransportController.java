@@ -33,8 +33,10 @@ public class TransportController {
 
     @GetMapping("/list")
     @ApiOperation(value = "获取交通工具列表")
-    public PageResponse<TransportResDTO> listTransport(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(transportService.listTransport(pageReqDTO));
+    public PageResponse<TransportResDTO> listTransport(@RequestParam(required = false) String name,
+                                                       @RequestParam(required = false) Integer status,
+                                                       @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(transportService.listTransport(pageReqDTO, name, status));
     }
 
     @GetMapping("/listAll")

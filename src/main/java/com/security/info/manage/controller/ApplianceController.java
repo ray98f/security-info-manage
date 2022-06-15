@@ -36,8 +36,9 @@ public class ApplianceController {
 
     @GetMapping("/list")
     @ApiOperation(value = "劳保用品列表")
-    public PageResponse<ApplianceResDTO> listAppliance(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(applianceService.listAppliance(pageReqDTO));
+    public PageResponse<ApplianceResDTO> listAppliance(@RequestParam(required = false) String name,
+                                                       @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(applianceService.listAppliance(name, pageReqDTO));
     }
 
     @GetMapping("/detail")
@@ -76,15 +77,18 @@ public class ApplianceController {
 
     @PostMapping("/user/export")
     @ApiOperation(value = "劳保用品配备导出")
-    public DataResponse<T> exportApplianceConfig(HttpServletResponse response) {
+    public void exportApplianceConfig(HttpServletResponse response) {
         applianceService.exportApplianceConfig(response);
-        return DataResponse.success();
     }
 
     @GetMapping("/user/list")
     @ApiOperation(value = "劳保用品配备列表")
-    public PageResponse<ApplianceConfigResDTO> listApplianceConfig(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(applianceService.listApplianceConfig(pageReqDTO));
+    public PageResponse<ApplianceConfigResDTO> listApplianceConfig(@RequestParam(required = false) String name,
+                                                                   @RequestParam(required = false) Integer status,
+                                                                   @RequestParam(required = false) String startTime,
+                                                                   @RequestParam(required = false) String endTime,
+                                                                   @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(applianceService.listApplianceConfig(pageReqDTO, name, status, startTime, endTime));
     }
 
     @GetMapping("/vx/user/list")

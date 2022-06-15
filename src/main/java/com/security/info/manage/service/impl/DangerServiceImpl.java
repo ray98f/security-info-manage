@@ -27,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -217,6 +214,9 @@ public class DangerServiceImpl implements DangerService {
         }
         res.setDangerExamines(dangerMapper.listDangerExamine(id));
         res.setUserStatus(dangerMapper.selectUserStatus(id, TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+        if ("0".equals(res.getBuildDeptId())) {
+            res.setBuildDeptName("公共板块");
+        }
         return res;
     }
 
@@ -230,6 +230,11 @@ public class DangerServiceImpl implements DangerService {
             throw new CommonException(ErrorCode.RESOURCE_USE);
         }
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+        if (dangerReqDTO.getCheckUserId() == null || "".equals(dangerReqDTO.getCheckUserId())) {
+            dangerReqDTO.setCheckUserId(TokenUtil.getCurrentPersonNo());
+            dangerReqDTO.setCheckDeptId(TokenUtil.getCurrentPersonDeptId());
+            dangerReqDTO.setCheckTime(new Date(System.currentTimeMillis()));
+        }
         result = dangerMapper.modifyDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
@@ -249,6 +254,11 @@ public class DangerServiceImpl implements DangerService {
         dangerReqDTO.setId(TokenUtil.getUuId());
         dangerReqDTO.setNo(TokenUtil.getUuId());
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+        if (dangerReqDTO.getCheckUserId() == null || "".equals(dangerReqDTO.getCheckUserId())) {
+            dangerReqDTO.setCheckUserId(TokenUtil.getCurrentPersonNo());
+            dangerReqDTO.setCheckDeptId(TokenUtil.getCurrentPersonDeptId());
+            dangerReqDTO.setCheckTime(new Date(System.currentTimeMillis()));
+        }
         Integer result = dangerMapper.addDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);

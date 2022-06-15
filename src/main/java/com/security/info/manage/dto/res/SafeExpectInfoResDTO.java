@@ -27,6 +27,15 @@ public class SafeExpectInfoResDTO {
     @ApiModelProperty(value = "相对湿度")
     private String relativeHumidity;
 
+    @ApiModelProperty(value = "风险id")
+    private String riskId;
+
+    @ApiModelProperty(value = "风险名称")
+    private String riskName;
+
+    @ApiModelProperty(value = "模板id")
+    private String templateId;
+
     @ApiModelProperty(value = "作业内容")
     private String workContent;
 

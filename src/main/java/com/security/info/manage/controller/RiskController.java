@@ -77,10 +77,9 @@ public class RiskController {
 
     @GetMapping("/export")
     @ApiOperation(value = "风险导出")
-    public DataResponse<T> exportRisk(@RequestParam Integer type,
+    public void exportRisk(@RequestParam Integer type,
                                       HttpServletResponse response) {
         riskService.exportRisk(response, type);
-        return DataResponse.success();
     }
 
 }

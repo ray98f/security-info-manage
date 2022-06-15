@@ -30,18 +30,18 @@ public class MsgServiceImpl implements MsgService {
     @Value("${vx-business.corpid}")
     private String corpid;
 
-    @Value("${vx-business.pccorpsecret}")
-    private String pccorpsecret;
+    @Value("${vx-business.appcorpsecret}")
+    private String appcorpsecret;
 
-    @Value("${vx-business.agentid}")
-    private Integer agentid;
+    @Value("${vx-business.appid}")
+    private Integer appid;
 
     @Autowired
     private RestTemplate restTemplate;
 
     @Override
     public void sendTextMsg(VxSendTextMsgReqDTO vxSendTextMsgReqDTO) {
-        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, pccorpsecret);
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
         }
@@ -50,7 +50,7 @@ public class MsgServiceImpl implements MsgService {
         headers.setContentType(MediaType.valueOf("application/json;UTF-8"));
         headers.add("charset","UTF-8");
         vxSendTextMsgReqDTO.setMsgtype("text");
-        vxSendTextMsgReqDTO.setAgentid(agentid);
+        vxSendTextMsgReqDTO.setAgentid(appid);
         HttpEntity<String> strEntity = new HttpEntity<>(JSONObject.toJSONString(vxSendTextMsgReqDTO), headers);
         JSONObject res = restTemplate.postForObject(url, strEntity, JSONObject.class);
         if (!Constants.SUCCESS.equals(Objects.requireNonNull(res).getString(Constants.ERR_CODE))) {
@@ -60,7 +60,7 @@ public class MsgServiceImpl implements MsgService {
 
     @Override
     public void sendMiniProgramMsg(VxSendMiniProgramMsgReqDTO vxSendMiniProgramMsgReqDTO) {
-        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, pccorpsecret);
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
         }

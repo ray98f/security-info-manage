@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface TrainMapper {
 
-    Page<TrainResDTO> listTrain(Page<TrainResDTO> page, String startTime, String endTime);
+    Page<TrainResDTO> listTrain(Page<TrainResDTO> page, String name, String startTime, String endTime);
 
     TrainResDTO getTrainDetail(String id);
 

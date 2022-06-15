@@ -7,6 +7,9 @@
         from t_appliance as a
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where a.is_delete=0
+        <if test="name!=null and name!=''">
+            and a.name like concat('%', #{name},'%')
+        </if>
         order by a.create_date desc
     </select>
 
@@ -63,7 +66,11 @@
     <insert id="importApplianceConfig">
         <foreach collection="list" index="index" item="appliance" separator=";">
             insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,
-            hazard_factors, num, receiving_time, effective_time, remark, create_by)
+            hazard_factors, num, receiving_time, effective_time, remark,
+            <if test="status!=null">
+                status,
+            </if>
+            create_by)
              select #{appliance.id}, #{appliance.year},
             (select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1),
             <if test="appliance.userName!='工区工长'">
@@ -77,7 +84,11 @@
             #{appliance.userName},
             (select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1),
             #{appliance.workType}, #{appliance.hazardFactors}, #{appliance.num}, #{appliance.receivingTime},
-            #{appliance.effectiveTime}, #{appliance.remark}, #{appliance.createBy}
+            #{appliance.effectiveTime}, #{appliance.remark},
+            <if test="status!=null">
+                #{appliance.status},
+            </if>
+            #{appliance.createBy}
             from dual
             WHERE not exists (SELECT id FROM t_appliance_user_config
             WHERE dept_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
@@ -119,6 +130,18 @@
         left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0
+        <if test="name!=null and name!=''">
+            and a.name like concat('%', #{name},'%')
+        </if>
+        <if test="status!=null">
+            and auc.status=#{status}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and auc.receiving_time>=#{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and #{endTime}>=auc.receiving_time
+        </if>
         order by auc.create_date desc
     </select>
 

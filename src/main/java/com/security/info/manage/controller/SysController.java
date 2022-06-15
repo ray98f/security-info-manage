@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,12 @@ public class SysController {
 
     @Resource
     private SysService sysService;
+
+    @GetMapping("/h5sign")
+    @ApiOperation(value = "h5页面签名获取")
+    public DataResponse<Map<String, Object>> h5sign(@RequestParam String str) {
+        return DataResponse.of(sysService.h5sign(str));
+    }
 
     @PostMapping("/login")
     @ApiOperation(value = "登录")

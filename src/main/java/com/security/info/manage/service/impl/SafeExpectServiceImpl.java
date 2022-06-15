@@ -10,11 +10,9 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.SafeExpectModifyReqDTO;
 import com.security.info.manage.dto.req.SafeExpectReqDTO;
 import com.security.info.manage.dto.req.VxSendTextMsgReqDTO;
-import com.security.info.manage.dto.res.SafeExpectCollectionUnionResDTO;
-import com.security.info.manage.dto.res.SafeExpectInfoResDTO;
-import com.security.info.manage.dto.res.SafeExpectResDTO;
-import com.security.info.manage.dto.res.SafeExpectUserResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.File;
+import com.security.info.manage.entity.SafeExpectUser;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.SafeExpectMapper;
@@ -26,6 +24,7 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,10 +65,16 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     @Autowired
     private MinioConfig minioConfig;
 
+    @Value("${safe-expect.template.num}")
+    private Integer safeExpectTemplateNum;
+
+    @Value("${vx-business.jumppage}")
+    private String jumppage;
+
     @Override
-    public Page<SafeExpectResDTO> listSafeExpect(PageReqDTO pageReqDTO) {
+    public Page<SafeExpectResDTO> listSafeExpect(PageReqDTO pageReqDTO, String startTime, String endTime, String name) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return safeExpectMapper.listSafeExpect(pageReqDTO.of());
+        return safeExpectMapper.listSafeExpect(pageReqDTO.of(), startTime, endTime, name);
     }
 
     @Override
@@ -88,6 +93,7 @@ public class SafeExpectServiceImpl implements SafeExpectService {
             safeExpectResDTO.setSafeExpectInfo(safeExpectMapper.getSafeExpectInfoDetail(id));
             safeExpectResDTO.setSafeExpectCollectionUnion(safeExpectMapper.getSafeExpectCollectionUnionDetail(id));
             safeExpectResDTO.setUserInfo(safeExpectMapper.getSafeExpectUserInfo(id));
+            safeExpectResDTO.setIsSign(safeExpectMapper.selectUserIsSign(id, TokenUtil.getCurrentPersonNo()));
         }
         return safeExpectResDTO;
     }
@@ -122,27 +128,32 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     }
 
     @Override
+    public List<SafeExpectTemplateResDTO> listSafeExpectTemplate(String riskId) {
+        return safeExpectMapper.listSafeExpectTemplate(riskId, TokenUtil.getCurrentPersonNo());
+    }
+
+    @Override
     public void modifySafeExpect(SafeExpectModifyReqDTO safeExpectModifyReqDTO) {
         if (Objects.isNull(safeExpectModifyReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectReqDTO())) {
-            Integer result = safeExpectMapper.selectSafeExpectIsExist(safeExpectModifyReqDTO.getSafeExpectReqDTO());
+        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpect())) {
+            Integer result = safeExpectMapper.selectSafeExpectIsExist(safeExpectModifyReqDTO.getSafeExpect());
             if (result > 0) {
                 throw new CommonException(ErrorCode.DATA_EXIST);
             }
-            safeExpectModifyReqDTO.getSafeExpectReqDTO().setCreateBy(TokenUtil.getCurrentPersonNo());
-            result = safeExpectMapper.modifySafeExpect(safeExpectModifyReqDTO.getSafeExpectReqDTO());
+            safeExpectModifyReqDTO.getSafeExpect().setCreateBy(TokenUtil.getCurrentPersonNo());
+            result = safeExpectMapper.modifySafeExpect(safeExpectModifyReqDTO.getSafeExpect());
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
             } else {
-                if (safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds() != null && safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds().size() > 0) {
-                    result = safeExpectMapper.insertSafeExpectUser(safeExpectModifyReqDTO.getSafeExpectReqDTO().getId(), safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds());
+                if (safeExpectModifyReqDTO.getSafeExpect().getUserIds() != null && safeExpectModifyReqDTO.getSafeExpect().getUserIds().size() > 0) {
+                    result = safeExpectMapper.insertSafeExpectUser(safeExpectModifyReqDTO.getSafeExpect().getId(), safeExpectModifyReqDTO.getSafeExpect().getUserIds());
                     if (result < 0) {
                         throw new CommonException(ErrorCode.INSERT_ERROR);
-                    } else if (safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds() != null && !safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds().isEmpty()) {
+                    } else if (safeExpectModifyReqDTO.getSafeExpect().getUserIds() != null && !safeExpectModifyReqDTO.getSafeExpect().getUserIds().isEmpty()) {
                         VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-                        vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(safeExpectModifyReqDTO.getSafeExpectReqDTO().getUserIds()));
+                        vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(safeExpectModifyReqDTO.getSafeExpect().getUserIds()));
                         vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的安全预想会参会通知，请前往小程序查看。"));
                         msgService.sendTextMsg(vxSendTextMsgReqDTO);
                     }
@@ -159,6 +170,16 @@ public class SafeExpectServiceImpl implements SafeExpectService {
             Integer result = safeExpectMapper.modifySafeExpectCollectionUnion(safeExpectModifyReqDTO.getSafeExpectCollectionUnion());
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
+            }
+        }
+        if (safeExpectModifyReqDTO.getSafeExpectInfo().getIsTemplate() == 1) {
+            Integer result = safeExpectMapper.selectSafeExpectTemplateNum(TokenUtil.getCurrentPersonNo());
+            if (result >= safeExpectTemplateNum) {
+                throw new CommonException(ErrorCode.SAFE_EXPECT_TEMPLATE_NUM_MAX, safeExpectTemplateNum.toString());
+            }
+            result = safeExpectMapper.insertSafeExpectTemplate(safeExpectModifyReqDTO.getSafeExpectInfo(), TokenUtil.getCurrentPersonNo());
+            if (result < 0) {
+                throw new CommonException(ErrorCode.INSERT_ERROR);
             }
         }
     }
@@ -225,15 +246,19 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         SafeExpectInfoResDTO safeExpectInfoResDTO = safeExpectMapper.exportSafeExpectInfo(id);
         SafeExpectCollectionUnionResDTO safeExpectCollectionUnionResDTO = safeExpectMapper.getSafeExpectCollectionUnionDetail(id);
         if (Objects.isNull(safeExpectResDTO) || Objects.isNull(safeExpectInfoResDTO) || Objects.isNull(safeExpectCollectionUnionResDTO)) {
-            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+            return null;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分");
-        safeExpectCollectionUnionResDTO.setCollectionUnionTimeStr(sdf.format(safeExpectCollectionUnionResDTO.getCollectionUnionTime()));
+        safeExpectCollectionUnionResDTO.setCollectionUnionTimeStr(safeExpectCollectionUnionResDTO.getCollectionUnionTime() != null ? sdf.format(safeExpectCollectionUnionResDTO.getCollectionUnionTime()) : null);
         Map<String, Object> dataMap = ObjectUtils.objectToMap(safeExpectResDTO);
         dataMap.putAll(ObjectUtils.objectToMap(safeExpectInfoResDTO));
         dataMap.putAll(ObjectUtils.objectToMap(safeExpectCollectionUnionResDTO));
-        dataMap.put("safeExpectQr", QrCodeUtil.generateAsBase64("https://security.zttgs.com:3443/security/#/doublePrevent/safeMeeting", initQrConfig(), "png"));
-        dataMap.put("constructionQr", QrCodeUtil.generateAsBase64("https://security.zttgs.com:3443/security/#/doublePrevent/constructionWeekPlanDetail?id=" + safeExpectResDTO.getWorkId(), initQrConfig(), "png"));
+        dataMap.put("safeExpectQr", QrCodeUtil.generateAsBase64(jumppage +
+                "?page=pages/anticipatedSafety/detail" +
+                "&id="+ safeExpectResDTO.getId(), initQrConfig(), "png"));
+        dataMap.put("constructionQr", QrCodeUtil.generateAsBase64(jumppage +
+                "?page=pages/constructionTasks/detail" +
+                "&id="+ safeExpectResDTO.getWorkId(), initQrConfig(), "png"));
         return dataMap;
     }
 

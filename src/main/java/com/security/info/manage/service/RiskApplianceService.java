@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.RiskApplianceReqDTO;
 import com.security.info.manage.dto.res.RiskApplianceResDTO;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface RiskApplianceService {
 
-    Page<RiskApplianceResDTO> listRiskAppliance(PageReqDTO pageReqDTO);
+    Page<RiskApplianceResDTO> listRiskAppliance(PageReqDTO pageReqDTO, String name, Integer status);
 
     List<RiskApplianceResDTO> listAllRiskAppliance();
 

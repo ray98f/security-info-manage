@@ -44,9 +44,9 @@ public class TransportServiceImpl implements TransportService {
     private TransportMapper transportMapper;
 
     @Override
-    public Page<TransportResDTO> listTransport(PageReqDTO pageReqDTO) {
+    public Page<TransportResDTO> listTransport(PageReqDTO pageReqDTO, String name, Integer status) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return transportMapper.listTransport(pageReqDTO.of());
+        return transportMapper.listTransport(pageReqDTO.of(), name, status);
     }
 
     @Override

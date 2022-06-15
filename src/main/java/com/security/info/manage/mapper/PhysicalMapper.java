@@ -21,7 +21,9 @@ import java.util.List;
 @Repository
 public interface PhysicalMapper {
 
-    Page<PhysicalResDTO> listPhysical(Page<PostResDTO> page, String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type);
+    List<PhysicalResDTO> listAllPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type);
+
+    Page<PhysicalResDTO> listPhysical(Page<PostResDTO> page, String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, Integer isBusiness);
 
     PhysicalUserCountResDTO countPhysicalUser(String id);
 
@@ -75,7 +77,7 @@ public interface PhysicalMapper {
 
     Integer insertPhysicalNotice(PhysicalNoticeReqDTO physicalNoticeReqDTO);
 
-    Page<PhysicalFeedbackResDTO> listFeedback(Page<PhysicalFeedback> page, String name);
+    Page<PhysicalFeedbackResDTO> listFeedback(Page<PhysicalFeedback> page, String name, String startTime, String endTime);
 
     PhysicalFeedbackResDTO getFeedbackDetailByPhysicalId(String id, String physicalId);
 

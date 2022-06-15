@@ -13,10 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.prefs.BackingStoreException;
 
-/**
- * @author frp
- */
 public class ExcelPortUtil {
 
     /**
@@ -28,9 +26,9 @@ public class ExcelPortUtil {
      */
     public static void excelPort(String sheetName, List<String> listName, List<Map<String, String>> list, List<Map<Integer, String>> listBottom, HttpServletResponse response) {
         try {
-//            if (list.size() == 0) {
-//                throw new BackingStoreException("数据为空");
-//            }
+            if (list.size() == 0) {
+                throw new BackingStoreException("数据为空");
+            }
             // 声明一个工作簿
             XSSFWorkbook wb = new XSSFWorkbook();
             // 创建sheet页
@@ -169,15 +167,12 @@ public class ExcelPortUtil {
                     ind++;
                 }
             }
-            // 输出Excel文件
-            OutputStream output = response.getOutputStream();
-            response.reset();
-            wb.write(output);
-            wb.close();
-            response.setContentType("multipart/form-data");
-            // 设置文件头
+//            response.reset();
+            response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-Disposition",
                     "attchement;filename=" + new String((sheetName + ".xls").getBytes(StandardCharsets.UTF_8), "ISO8859-1"));
+            wb.write(response.getOutputStream());
+            wb.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

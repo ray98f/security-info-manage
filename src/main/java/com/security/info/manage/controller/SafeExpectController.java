@@ -6,6 +6,7 @@ import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.SafeExpectModifyReqDTO;
 import com.security.info.manage.dto.req.SafeExpectReqDTO;
 import com.security.info.manage.dto.res.SafeExpectResDTO;
+import com.security.info.manage.dto.res.SafeExpectTemplateResDTO;
 import com.security.info.manage.dto.res.SafeExpectUserResDTO;
 import com.security.info.manage.entity.File;
 import com.security.info.manage.service.SafeExpectService;
@@ -21,6 +22,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,8 +40,11 @@ public class SafeExpectController {
 
     @GetMapping("/list")
     @ApiOperation(value = "获取安全预想会列表")
-    public PageResponse<SafeExpectResDTO> listSafeExpect(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(safeExpectService.listSafeExpect(pageReqDTO));
+    public PageResponse<SafeExpectResDTO> listSafeExpect(@RequestParam(required = false) String name,
+                                                         @RequestParam(required = false) String startTime,
+                                                         @RequestParam(required = false) String endTime,
+                                                         @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(safeExpectService.listSafeExpect(pageReqDTO, startTime, endTime, name));
     }
 
     @GetMapping("/vx/list")
@@ -59,6 +64,12 @@ public class SafeExpectController {
     public DataResponse<T> addSafeExpect(@RequestBody SafeExpectReqDTO safeExpectReqDTO) {
         safeExpectService.addSafeExpect(safeExpectReqDTO);
         return DataResponse.success();
+    }
+
+    @GetMapping("/template")
+    @ApiOperation(value = "获取用户安全预想会模板")
+    public DataResponse<List<SafeExpectTemplateResDTO>> listSafeExpectTemplate(@RequestParam String riskId) {
+        return DataResponse.of(safeExpectService.listSafeExpectTemplate(riskId));
     }
 
     @PostMapping("/modify")

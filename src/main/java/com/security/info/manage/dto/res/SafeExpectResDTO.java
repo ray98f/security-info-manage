@@ -47,11 +47,14 @@ public class SafeExpectResDTO {
     @ApiModelProperty(value = "作业区域")
     private String workRegion;
 
-    @ApiModelProperty(value = "状态 0 未开始 1 已参会 2 已收工")
+    @ApiModelProperty(value = "状态 0 未开始 1 已开始 2 已收工")
     private Integer status;
 
     @ApiModelProperty(value = "参与人员姓名")
     private String userNames;
+
+    @ApiModelProperty(value = "当前用户是否签到")
+    private Integer isSign;
 
     @ApiModelProperty(value = "参与人员详情")
     private List<SafeExpectUser> userInfo;

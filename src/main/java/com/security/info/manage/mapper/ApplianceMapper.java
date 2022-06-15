@@ -18,7 +18,7 @@ import java.util.List;
 @Repository
 public interface ApplianceMapper {
 
-    Page<ApplianceResDTO> listAppliance(Page<ApplianceResDTO> page);
+    Page<ApplianceResDTO> listAppliance(Page<ApplianceResDTO> page, String name);
 
     ApplianceResDTO getApplianceDetail(String id);
 
@@ -34,7 +34,7 @@ public interface ApplianceMapper {
 
     List<ApplianceConfigResDTO> listApplianceConfig();
 
-    Page<ApplianceConfigResDTO> pageApplianceConfig(Page<ApplianceConfigResDTO> page);
+    Page<ApplianceConfigResDTO> pageApplianceConfig(Page<ApplianceConfigResDTO> page, String name, Integer status, String startTime, String endTime);
 
     Page<ApplianceConfigResDTO> vxListApplianceConfig(Page<ApplianceConfigResDTO> page, String userId);
 

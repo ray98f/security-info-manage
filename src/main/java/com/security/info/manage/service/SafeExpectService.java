@@ -5,9 +5,11 @@ import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.SafeExpectModifyReqDTO;
 import com.security.info.manage.dto.req.SafeExpectReqDTO;
 import com.security.info.manage.dto.res.SafeExpectResDTO;
+import com.security.info.manage.dto.res.SafeExpectTemplateResDTO;
 import com.security.info.manage.dto.res.SafeExpectUserResDTO;
 import com.security.info.manage.entity.File;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,13 +17,15 @@ import java.util.Map;
  */
 public interface SafeExpectService {
 
-    Page<SafeExpectResDTO> listSafeExpect(PageReqDTO pageReqDTO);
+    Page<SafeExpectResDTO> listSafeExpect(PageReqDTO pageReqDTO, String startTime, String endTime, String name);
 
     Page<SafeExpectResDTO> vxListSafeExpect(PageReqDTO pageReqDTO);
 
     SafeExpectResDTO getSafeExpectDetail(String id);
 
     void addSafeExpect(SafeExpectReqDTO safeExpectReqDTO);
+
+    List<SafeExpectTemplateResDTO> listSafeExpectTemplate(String riskId);
 
     void modifySafeExpect(SafeExpectModifyReqDTO safeExpectModifyReqDTO);
 

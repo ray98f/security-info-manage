@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface RiskApplianceMapper {
 
-    Page<RiskApplianceResDTO> listRiskAppliance(Page<PostResDTO> page);
+    Page<RiskApplianceResDTO> listRiskAppliance(Page<PostResDTO> page, String name, Integer status);
 
     List<RiskApplianceResDTO> listAllRiskAppliance();
 

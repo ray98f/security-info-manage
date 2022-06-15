@@ -74,8 +74,11 @@ public class ConstructionController {
 
     @GetMapping("/weekPlan/list")
     @ApiOperation(value = "获取周计划列表")
-    public PageResponse<WeekPlanResDTO> listWeekPlan(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(constructionService.listWeekPlan(pageReqDTO));
+    public PageResponse<WeekPlanResDTO> listWeekPlan(@RequestParam(required = false) @ApiParam(value = "开始时间") String startTime,
+                                                     @RequestParam(required = false) @ApiParam(value = "结束时间") String endTime,
+                                                     @RequestParam(required = false) @ApiParam(value = "作业名称") String name,
+                                                     @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(constructionService.listWeekPlan(pageReqDTO, startTime, endTime, name));
     }
 
     @PostMapping("/weekPlan/modify")

@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface TransportMapper {
 
-    Page<TransportResDTO> listTransport(Page<PostResDTO> page);
+    Page<TransportResDTO> listTransport(Page<PostResDTO> page, String name, Integer status);
 
     List<TransportResDTO> listAllTransport();
 

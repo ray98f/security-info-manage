@@ -53,9 +53,9 @@ public class TrainServiceImpl implements TrainService {
     private FileMapper fileMapper;
 
     @Override
-    public Page<TrainResDTO> listTrain(String startTime, String endTime, PageReqDTO pageReqDTO) {
+    public Page<TrainResDTO> listTrain(String name, String startTime, String endTime, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        Page<TrainResDTO> page = trainMapper.listTrain(pageReqDTO.of(), startTime, endTime);
+        Page<TrainResDTO> page = trainMapper.listTrain(pageReqDTO.of(), name, startTime, endTime);
         List<TrainResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (TrainResDTO resDTO : list) {

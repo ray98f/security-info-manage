@@ -34,6 +34,9 @@ public class RiskInfoResDTO {
     @ApiModelProperty(value = "风险描述-危险源及其可能造成的后果(行车风险类型)")
     private String describeResult;
 
+    @ApiModelProperty(value = "事故类型")
+    private String accidentType;
+
     @ApiModelProperty(value = "风险描述-人的因素(作业风险类型)")
     private String describePersonFactor;
 

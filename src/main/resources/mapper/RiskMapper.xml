@@ -3,7 +3,7 @@
 <mapper namespace="com.security.info.manage.mapper.RiskMapper">
     <select id="listRisk" resultType="com.security.info.manage.dto.res.RiskInfoResDTO">
         select id, type, modules, risk_points, main_risk_points, describe_text, describe_result, describe_person_factor,
-        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur,
+        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur, accident_type,
         describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r, risk_evaluation_l,
         risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures, education_measures,
         individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept, responsibility_center,
@@ -23,7 +23,7 @@
 
     <select id="getRiskDetail" resultType="com.security.info.manage.dto.res.RiskInfoResDTO">
         select id, type, modules, risk_points, main_risk_points, describe_text, describe_result, describe_person_factor,
-        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur,
+        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur, accident_type,
         describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r, risk_evaluation_l,
         risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures, education_measures,
         individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept, responsibility_center,
@@ -50,13 +50,13 @@
     </select>
 
     <insert id="addRisk">
-        insert into t_risk_info(id, type, modules, risk_points, main_risk_points, describe_text, describe_result,
+        insert into t_risk_info(id, type, modules, risk_points, main_risk_points, describe_text, describe_result, accident_type,
         describe_person_factor, describe_object_factor, describe_environment_factor, describe_manage_factor,
         describe_may_occur, describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r,
         risk_evaluation_l, risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures,
         education_measures, individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept,
         responsibility_center, responsibility_post, responsibility_user, create_by)
-        value (#{id}, #{type}, #{modules}, #{riskPoints}, #{mainRiskPoints}, #{describeText}, #{describeResult},
+        value (#{id}, #{type}, #{modules}, #{riskPoints}, #{mainRiskPoints}, #{describeText}, #{describeResult}, #{accidentType},
         #{describePersonFactor}, #{describeObjectFactor}, #{describeEnvironmentFactor}, #{describeManageFactor},
         #{describeMayOccur}, #{describeOccupationalHazards}, #{riskMatrixL}, #{riskMatrixS}, #{riskMatrixR},
         #{riskEvaluationL}, #{riskEvaluationC}, #{riskEvaluationD}, #{level}, #{technicalMeasures}, #{manageMeasures},
@@ -83,6 +83,9 @@
         </if>
         <if test="describeResult!=null">
             describe_result=#{describeResult},
+        </if>
+        <if test="accidentType!=null">
+            accident_type=#{accidentType},
         </if>
         <if test="describePersonFactor!=null">
             describe_person_factor=#{describePersonFactor},
@@ -174,14 +177,14 @@
 
     <insert id="importRisk">
         <foreach collection="list" index="index" item="risk" separator=";">
-            insert into t_risk_info(id, type, modules, risk_points, main_risk_points, describe_text, describe_result,
+            insert into t_risk_info(id, type, modules, risk_points, main_risk_points, describe_text, describe_result, accident_type,
             describe_person_factor, describe_object_factor, describe_environment_factor, describe_manage_factor,
             describe_may_occur, describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r,
             risk_evaluation_l, risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures,
             education_measures, individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept,
             responsibility_center, responsibility_post, responsibility_user, create_by)
             select #{risk.id}, #{risk.type}, #{risk.modules}, #{risk.riskPoints}, #{risk.mainRiskPoints}, #{risk.describeText},
-            #{risk.describeResult}, #{risk.describePersonFactor}, #{risk.describeObjectFactor}, #{risk.describeEnvironmentFactor},
+            #{risk.describeResult}, #{risk.accidentType}, #{risk.describePersonFactor}, #{risk.describeObjectFactor}, #{risk.describeEnvironmentFactor},
             #{risk.describeManageFactor}, #{risk.describeMayOccur}, #{risk.describeOccupationalHazards}, #{risk.riskMatrixL},
             #{risk.riskMatrixS}, #{risk.riskMatrixR}, #{risk.riskEvaluationL}, #{risk.riskEvaluationC}, #{risk.riskEvaluationD},
             #{risk.level}, #{risk.technicalMeasures}, #{risk.manageMeasures}, #{risk.educationMeasures},

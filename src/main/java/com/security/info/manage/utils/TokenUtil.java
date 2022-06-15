@@ -192,6 +192,16 @@ public class TokenUtil {
         return userName;
     }
 
+    public static String getCurrentPersonDeptId() {
+        String deptId;
+        try {
+            deptId = RequestHeaderContext.getInstance().getUser().getMainDept();
+        } catch (Exception e) {
+            deptId = "";
+        }
+        return deptId;
+    }
+
     /**
      * Simple
      * 校验token

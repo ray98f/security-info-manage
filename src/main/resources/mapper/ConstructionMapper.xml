@@ -57,6 +57,15 @@
         select id, name, start_time, end_time
         from t_weak_plan
         where is_delete=0
+        <if test="name!=null and name!=''">
+            and name like concat('%', #{name},'%')
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and date_format(start_time, '%Y-%m-%d')>=#{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and #{endTime}>=date_format(end_time, '%Y-%m-%d')
+        </if>
         order by create_date asc
     </select>
 

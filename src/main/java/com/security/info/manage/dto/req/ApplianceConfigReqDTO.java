@@ -66,4 +66,7 @@ public class ApplianceConfigReqDTO {
 
     @ApiModelProperty(value = "创建人")
     private String createBy;
+
+    @ApiModelProperty(value = "状态 0 未到期 1 已到期 2 已更换")
+    private Integer status;
 }

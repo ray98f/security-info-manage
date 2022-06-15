@@ -52,4 +52,7 @@ public class TrainResDTO {
 
     @ApiModelProperty(value = "培训人")
     private String lecturer;
+
+    @ApiModelProperty(value = "培训人")
+    private String lecturerName;
 }

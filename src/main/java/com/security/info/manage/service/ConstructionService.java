@@ -29,7 +29,7 @@ public interface ConstructionService {
 
     void deleteConstructionType(ConstructionTypeReqDTO constructionTypeReqDTO);
 
-    Page<WeekPlanResDTO> listWeekPlan(PageReqDTO pageReqDTO);
+    Page<WeekPlanResDTO> listWeekPlan(PageReqDTO pageReqDTO, String startTime, String endTime, String name);
 
     void modifyWeekPlan(WeekPlanReqDTO weekPlanReqDTO);
 

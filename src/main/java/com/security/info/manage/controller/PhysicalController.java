@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -33,6 +34,17 @@ public class PhysicalController {
     @Resource
     private PhysicalService physicalService;
 
+    @GetMapping("/export")
+    @ApiOperation(value = "体检流程导出")
+    public void exportPhysical(@RequestParam(required = false) String sStartTime,
+                               @RequestParam(required = false) String sEndTime,
+                               @RequestParam(required = false) String eStartTime,
+                               @RequestParam(required = false) String eEndTime,
+                               @RequestParam(required = false) Integer type,
+                               HttpServletResponse response) {
+        physicalService.exportPhysical(sStartTime, sEndTime, eStartTime, eEndTime, type, response);
+    }
+
     @GetMapping("/list")
     @ApiOperation(value = "获取体检流程列表")
     public PageResponse<PhysicalResDTO> listPhysical(@RequestParam(required = false) String sStartTime,
@@ -40,8 +52,9 @@ public class PhysicalController {
                                                      @RequestParam(required = false) String eStartTime,
                                                      @RequestParam(required = false) String eEndTime,
                                                      @RequestParam(required = false) Integer type,
+                                                     @RequestParam(required = false) Integer isBusiness,
                                                      @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(physicalService.listPhysical(sStartTime, sEndTime, eStartTime, eEndTime, type, pageReqDTO));
+        return PageResponse.of(physicalService.listPhysical(sStartTime, sEndTime, eStartTime, eEndTime, type, isBusiness, pageReqDTO));
     }
 
     @PostMapping("/add")
@@ -121,8 +134,10 @@ public class PhysicalController {
     @GetMapping("/feedback/list")
     @ApiOperation(value = "体检反馈列表")
     public PageResponse<PhysicalFeedbackResDTO> listFeedback(@RequestParam(required = false) String name,
+                                                             @RequestParam(required = false) String startTime,
+                                                             @RequestParam(required = false) String endTime,
                                                              @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(physicalService.listFeedback(name, pageReqDTO));
+        return PageResponse.of(physicalService.listFeedback(name, startTime, endTime, pageReqDTO));
     }
 
     @GetMapping("/feedback/detail/byPhysicalId")

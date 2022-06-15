@@ -1,26 +1,41 @@
 package com.security.info.manage.service.impl;
 
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
+import com.security.info.manage.dto.VxAccessToken;
 import com.security.info.manage.dto.req.RegionReqDTO;
 import com.security.info.manage.dto.req.RegionTypeReqDTO;
 import com.security.info.manage.dto.res.RegionResDTO;
 import com.security.info.manage.dto.res.RegionTypeResDTO;
+import com.security.info.manage.dto.res.VxDeptResDTO;
 import com.security.info.manage.dto.res.VxRegionResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.RegionMapper;
 import com.security.info.manage.service.RegionService;
+import com.security.info.manage.utils.Constants;
 import com.security.info.manage.utils.TokenUtil;
+import com.security.info.manage.utils.VxApiUtils;
 import com.security.info.manage.utils.treeTool.RegionTreeToolUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
+import java.awt.*;
+import java.io.BufferedInputStream;
+import java.net.URI;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author frp
@@ -29,9 +44,14 @@ import java.util.Objects;
 @Slf4j
 public class RegionServiceImpl implements RegionService {
 
+    @Value("${vx-business.jumppage}")
+    private String jumppage;
 
     @Autowired
     private RegionMapper regionMapper;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public Page<RegionTypeResDTO> listRegionType(PageReqDTO pageReqDTO) {
@@ -95,17 +115,22 @@ public class RegionServiceImpl implements RegionService {
             for (RegionResDTO regionResDTO : root) {
                 String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
                 regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
+                regionResDTO.setQrCode(null);
             }
         }
-        List<RegionResDTO> body = regionMapper.listRegionBody();
-        if (body != null && !body.isEmpty()) {
-            for (RegionResDTO regionResDTO : body) {
+        List<RegionResDTO> child = regionMapper.listRegionBody();
+        if (child != null && !child.isEmpty()) {
+            for (RegionResDTO regionResDTO : child) {
                 String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
                 regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
-
+                regionResDTO.setQrCode(QrCodeUtil.generateAsBase64(jumppage +
+                        "?page=pages/database/detail1" +
+                        "&id="+ regionResDTO.getParentId() +
+                        "&ids=" + regionResDTO.getId() +
+                        "&name=" + name, initQrConfig(), "png"));
             }
         }
-        RegionTreeToolUtils res = new RegionTreeToolUtils(root, body);
+        RegionTreeToolUtils res = new RegionTreeToolUtils(root, child);
         return res.getTree();
     }
 
@@ -207,5 +232,16 @@ public class RegionServiceImpl implements RegionService {
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
+    }
+
+    private static QrConfig initQrConfig() {
+        QrConfig config = new QrConfig(300, 300);
+        // 设置边距，既二维码和背景之间的边距
+        config.setMargin(2);
+        // 设置前景色，既二维码颜色（青色）
+        config.setForeColor(Color.BLACK.getRGB());
+        // 设置背景色（灰色）
+        config.setBackColor(Color.WHITE.getRGB());
+        return config;
     }
 }

@@ -42,9 +42,9 @@ public class RiskApplianceServiceImpl implements RiskApplianceService {
     private RiskApplianceMapper riskApplianceMapper;
 
     @Override
-    public Page<RiskApplianceResDTO> listRiskAppliance(PageReqDTO pageReqDTO) {
+    public Page<RiskApplianceResDTO> listRiskAppliance(PageReqDTO pageReqDTO, String name, Integer status) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return riskApplianceMapper.listRiskAppliance(pageReqDTO.of());
+        return riskApplianceMapper.listRiskAppliance(pageReqDTO.of(), name, status);
     }
 
     @Override

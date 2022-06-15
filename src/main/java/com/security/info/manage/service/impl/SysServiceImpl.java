@@ -26,11 +26,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * @author frp
@@ -57,6 +56,9 @@ public class SysServiceImpl implements SysService {
     @Value("${vx-business.pccorpsecret}")
     private String pccorpsecret;
 
+    @Value("${vx-business.jumppage}")
+    private String jumppage;
+
     @Autowired
     private SysMapper sysMapper;
 
@@ -67,6 +69,37 @@ public class SysServiceImpl implements SysService {
     public Integer vxAuditStatus() {
         Integer result = sysMapper.selectVxAuditStatus();
         return result == null ? 0 : result;
+    }
+
+    @Override
+    public Map<String, Object> h5sign(String str) {
+        VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, appcorpsecret);
+        if (accessToken == null) {
+            throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
+        }
+        String url = Constants.VX_GET_TICKET + "&access_token=" + accessToken.getToken();
+        UriComponents uriComponents = UriComponentsBuilder.fromUriString(url)
+                .build()
+                .expand()
+                .encode();
+        URI uri = uriComponents.toUri();
+        JSONObject res = restTemplate.getForEntity(uri, JSONObject.class).getBody();
+        if (!Constants.SUCCESS.equals(Objects.requireNonNull(res).getString(Constants.ERR_CODE))) {
+            throw new CommonException(ErrorCode.VX_ERROR, String.valueOf(res.get(Constants.ERR_MSG)));
+        }
+        if (res.getString("ticket") == null) {
+            throw new CommonException(ErrorCode.VX_ERROR, "ticket返回为空");
+        }
+        String noncestr = TokenUtil.getUuId();
+        long timestamp = System.currentTimeMillis() / 1000;
+        String sign = "jsapi_ticket=" + res.getString("ticket") + "&noncestr=" + noncestr + "&timestamp=" + timestamp + "&url=" + str;
+        String signature = new SHA1().getDigestOfString(sign.getBytes(StandardCharsets.UTF_8));
+        Map<String, Object> data = new HashMap<>();
+        data.put("appId", corpid);
+        data.put("timestamp", timestamp);
+        data.put("noncestr", noncestr);
+        data.put("signature", signature);
+        return data;
     }
 
     @Override

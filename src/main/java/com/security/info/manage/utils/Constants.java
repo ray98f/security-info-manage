@@ -21,6 +21,8 @@ public class Constants {
 
     public static final String VX_GET_ACCESS_TOKEN = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
 
+    public static final String VX_APP_GET_ACCESS_TOKEN = "https://api.weixin.qq.com/cgi-bin/token";
+
     public static final String VX_GET_ORG_IDS = "https://qyapi.weixin.qq.com/cgi-bin/department/simplelist";
 
     public static final String VX_GET_ORG_LIST = "https://qyapi.weixin.qq.com/cgi-bin/department/list";
@@ -34,6 +36,12 @@ public class Constants {
     public static final String VX_GET_USERINFO = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo";
 
     public static final String VX_MESSAGE_SEND = "https://qyapi.weixin.qq.com/cgi-bin/message/send";
+
+    public static final String VX_CREATE_WX_AQR_CODE = "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode";
+
+    public static final String VX_GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket";
+
+    public static final String VX_GET_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?type=agent_config";
 
     public static final String ZTT_4G_LOGIN = "/icvs/login";
 

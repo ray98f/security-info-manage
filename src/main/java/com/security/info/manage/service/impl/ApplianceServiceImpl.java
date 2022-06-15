@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,9 +51,9 @@ public class ApplianceServiceImpl implements ApplianceService {
     private MsgService msgService;
 
     @Override
-    public Page<ApplianceResDTO> listAppliance(PageReqDTO pageReqDTO) {
+    public Page<ApplianceResDTO> listAppliance(String name, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return applianceMapper.listAppliance(pageReqDTO.of());
+        return applianceMapper.listAppliance(pageReqDTO.of(), name);
     }
 
     @Override
@@ -156,6 +157,9 @@ public class ApplianceServiceImpl implements ApplianceService {
                 reqDTO.setRemark(cells.getCell(17) == null ? null : cells.getCell(17).getStringCellValue());
                 reqDTO.setId(TokenUtil.getUuId());
                 reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String now = df.format(new Date());
+                reqDTO.setStatus(reqDTO.getEffectiveTime().compareTo(df.parse(now)) <= 0 ? 1 : 0);
                 temp.add(reqDTO);
             }
             fileInputStream.close();
@@ -200,9 +204,9 @@ public class ApplianceServiceImpl implements ApplianceService {
     }
 
     @Override
-    public Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO) {
+    public Page<ApplianceConfigResDTO> listApplianceConfig(PageReqDTO pageReqDTO, String name, Integer status, String startTime, String endTime) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return applianceMapper.pageApplianceConfig(pageReqDTO.of());
+        return applianceMapper.pageApplianceConfig(pageReqDTO.of(), name, status, startTime, endTime);
     }
 
     @Override

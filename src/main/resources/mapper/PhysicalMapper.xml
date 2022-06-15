@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.security.info.manage.mapper.PhysicalMapper">
-    <select id="listPhysical" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
+
+    <select id="listAllPhysical" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
         select p.id, p.no, p.hospital_no, p.type, p.start_time, p.end_time, p.remark, p.create_date, p.create_by,
         f1.file_url as file_word, f2.file_url as file_pdf, p.estimate_num, p.actual_num from t_physical as p
         left join sys_file as f1 on f1.id=p.file_word and f1.is_delete=0
@@ -23,6 +24,33 @@
             and #{eEndTime}>=p.end_time
         </if>
         <if test="type==null">
+            and p.file_word is not null and p.estimate_num is not null and p.actual_num is not null
+        </if>
+        order by p.create_date desc
+    </select>
+
+    <select id="listPhysical" resultType="com.security.info.manage.dto.res.PhysicalResDTO">
+        select p.id, p.no, p.hospital_no, p.type, p.start_time, p.end_time, p.remark, p.create_date, p.create_by,
+        f1.file_url as file_word, f2.file_url as file_pdf, p.estimate_num, p.actual_num from t_physical as p
+        left join sys_file as f1 on f1.id=p.file_word and f1.is_delete=0
+        left join sys_file as f2 on f2.id=p.file_pdf and f2.is_delete=0
+        where p.is_delete=0
+        <if test="type!=null">
+            and p.type=#{type}
+        </if>
+        <if test="sStartTime!=null and sStartTime!=''">
+            and p.start_time>=#{sStartTime}
+        </if>
+        <if test="sEndTime!=null and sEndTime!=''">
+            and #{sEndTime}>=p.start_time
+        </if>
+        <if test="eStartTime!=null and eStartTime!=''">
+            and p.end_time>=#{eStartTime}
+        </if>
+        <if test="eEndTime!=null and eEndTime!=''">
+            and #{eEndTime}>=p.end_time
+        </if>
+        <if test="isBusiness==1">
             and p.file_word is not null and p.estimate_num is not null and p.actual_num is not null
         </if>
         order by p.create_date desc
@@ -235,7 +263,7 @@
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
         left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
         left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
-        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
+        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=1
         order by pu.physical_time desc
         limit 1
     </select>
@@ -248,7 +276,7 @@
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
         left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
         left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
-        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
+        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=1
         order by pu.physical_time desc
     </select>
 
@@ -260,7 +288,7 @@
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
         left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
         left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
-        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=3
+        where pu.user_id=#{id} and pu.is_delete=0 and pu.status>=1
         order by pu.physical_time desc
     </select>
 
@@ -461,6 +489,12 @@
         where pf.is_delete=0
         <if test="name!=null and name!=''">
             and u.name like CONCAT('%',#{name},'%')
+        </if>
+        <if test="startTime!=null">
+            and pf.create_date>=#{startTime}
+        </if>
+        <if test="endTime!=null">
+            and #{endTime}>=pf.create_date
         </if>
         order by pf.create_date desc
     </select>

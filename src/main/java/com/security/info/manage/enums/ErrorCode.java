@@ -191,7 +191,8 @@ public enum ErrorCode {
     CACHE_ERROR(3222222, "cache.error"),
     USER_NAME_EXIST(32000009, "user.name.exist"),
     ZTT_4G_ERROR(4000000, "ztt.4g.error"),
-    USER_ERROR(4000000, "user.error");
+    USER_ERROR(4000000, "user.error"),
+    SAFE_EXPECT_TEMPLATE_NUM_MAX(4000000, "safe.expect.template.num.max");
 
     private Integer code;
 

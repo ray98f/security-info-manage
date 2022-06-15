@@ -77,7 +77,7 @@ logging:
     path: ./log
 
 excluded:
-  pages: /securityInfo/manage/sys/login, /securityInfo/manage/sys/scan/login,/securityInfo/manage/sys/vx/login,/securityInfo/manage/sys/vx/login/simple,/securityInfo/manage/sys/vx/audit/status,/securityInfo/manage/dept/sync/list,/securityInfo/manage/user/sync/list
+  pages: /securityInfo/manage/sys/login,/securityInfo/manage/sys/h5sign,/securityInfo/manage/sys/scan/login,/securityInfo/manage/sys/vx/login,/securityInfo/manage/sys/vx/login/simple,/securityInfo/manage/sys/vx/audit/status,/securityInfo/manage/dept/sync/list,/securityInfo/manage/user/sync/list
 
 vx-business:
   corpid: ww56aa612b390c11d2
@@ -86,6 +86,9 @@ vx-business:
   pccorpsecret: yIUCfWtEkRCXe3-98wZCfI7K448wGztfNiAWrGxXWoE
   appid: 1000014
   agentid: 1000016
+  applets-id: wxf66d4defa7f76eb8
+  applets-secret: 1fa4df7614044439f05e052aa799fdaf
+  jumppage: https://security.zttgs.com:3443/security/jumpPage.html
 
 minio:
   url: http://127.0.0.1:9000
@@ -106,3 +109,8 @@ ztt-4g:
   address: 183.249.1.202
   user: admin
   password: Zttddjxb123
+  path: https://security.zttgs.com:3443
+
+safe-expect:
+  template:
+    num: 5

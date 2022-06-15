@@ -33,8 +33,10 @@ public class RiskApplianceController {
 
     @GetMapping("/list")
     @ApiOperation(value = "获取风险器具列表")
-    public PageResponse<RiskApplianceResDTO> listRiskAppliance(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(riskApplianceService.listRiskAppliance(pageReqDTO));
+    public PageResponse<RiskApplianceResDTO> listRiskAppliance(@RequestParam(required = false) String name,
+                                                               @RequestParam(required = false) Integer status,
+                                                               @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(riskApplianceService.listRiskAppliance(pageReqDTO, name, status));
     }
 
     @GetMapping("/listAll")

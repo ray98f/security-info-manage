@@ -11,6 +11,7 @@ import com.security.info.manage.entity.RiskLevel;
 import com.security.info.manage.entity.Role;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +22,8 @@ import java.util.Objects;
 public interface SysService {
 
     Integer vxAuditStatus();
+
+    Map<String, Object> h5sign(String str);
 
     Map<String, Object> login(LoginReqDTO loginReqDTO) throws Exception;
 

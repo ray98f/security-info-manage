@@ -32,7 +32,7 @@ public interface ConstructionMapper {
 
     Integer deleteConstructionType(ConstructionTypeReqDTO constructionTypeReqDTO);
 
-    Page<WeekPlanResDTO> listWeekPlan(Page<WeekPlanResDTO> page);
+    Page<WeekPlanResDTO> listWeekPlan(Page<WeekPlanResDTO> page, String startTime, String endTime, String name);
 
     Integer selectWeekPlanIsExist(WeekPlanReqDTO weekPlanReqDTO);
 

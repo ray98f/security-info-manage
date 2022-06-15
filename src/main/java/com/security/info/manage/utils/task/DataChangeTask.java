@@ -57,7 +57,7 @@ public class DataChangeTask {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 7 * * ?")
     @Async
     public void physicalUserData() {
         List<PhysicalUserResDTO> list = physicalMapper.listExpiredPhysicalUser();

@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface TransportService {
 
-    Page<TransportResDTO> listTransport(PageReqDTO pageReqDTO);
+    Page<TransportResDTO> listTransport(PageReqDTO pageReqDTO, String name, Integer status);
 
     List<TransportResDTO> listAllTransport();
 

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface TrainService {
 
-    Page<TrainResDTO> listTrain(String startTime, String endTime, PageReqDTO pageReqDTO);
+    Page<TrainResDTO> listTrain(String name, String startTime, String endTime, PageReqDTO pageReqDTO);
 
     TrainResDTO getTrainDetail(String id);
 

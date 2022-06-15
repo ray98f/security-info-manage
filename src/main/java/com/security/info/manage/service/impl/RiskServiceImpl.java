@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.RiskInfoReqDTO;
-import com.security.info.manage.dto.req.TransportReqDTO;
-import com.security.info.manage.dto.res.ApplianceConfigResDTO;
 import com.security.info.manage.dto.res.RiskInfoResDTO;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
@@ -27,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.*;
 
 import static com.security.info.manage.utils.Constants.XLS;
@@ -139,34 +136,36 @@ public class RiskServiceImpl implements RiskService {
                     reqDTO.setMainRiskPoints(cells.getCell(3) == null ? null : cells.getCell(3).getStringCellValue());
                     cells.getCell(4).setCellType(1);
                     reqDTO.setDescribeResult(cells.getCell(4) == null ? null : cells.getCell(4).getStringCellValue());
+                    cells.getCell(5).setCellType(1);
+                    reqDTO.setAccidentType(cells.getCell(5) == null ? null : cells.getCell(5).getStringCellValue());
+                    cells.getCell(6).setCellType(1);
+                    reqDTO.setRiskEvaluationL(cells.getCell(6) == null ? null : cells.getCell(6).getStringCellValue());
                     cells.getCell(7).setCellType(1);
-                    reqDTO.setRiskEvaluationL(cells.getCell(7) == null ? null : cells.getCell(7).getStringCellValue());
+                    reqDTO.setRiskEvaluationC(cells.getCell(7) == null ? null : cells.getCell(7).getStringCellValue());
                     cells.getCell(8).setCellType(1);
-                    reqDTO.setRiskEvaluationC(cells.getCell(8) == null ? null : cells.getCell(8).getStringCellValue());
+                    reqDTO.setRiskEvaluationD(cells.getCell(8) == null ? null : cells.getCell(8).getStringCellValue());
                     cells.getCell(9).setCellType(1);
-                    reqDTO.setRiskEvaluationD(cells.getCell(9) == null ? null : cells.getCell(9).getStringCellValue());
+                    reqDTO.setLevel(cells.getCell(9) == null ? null : LEVEL.get(cells.getCell(9).getStringCellValue()));
                     cells.getCell(10).setCellType(1);
-                    reqDTO.setLevel(cells.getCell(10) == null ? null : LEVEL.get(cells.getCell(10).getStringCellValue()));
+                    reqDTO.setTechnicalMeasures(cells.getCell(10) == null ? null : cells.getCell(10).getStringCellValue());
                     cells.getCell(11).setCellType(1);
-                    reqDTO.setTechnicalMeasures(cells.getCell(11) == null ? null : cells.getCell(11).getStringCellValue());
+                    reqDTO.setManageMeasures(cells.getCell(11) == null ? null : cells.getCell(11).getStringCellValue());
                     cells.getCell(12).setCellType(1);
-                    reqDTO.setManageMeasures(cells.getCell(12) == null ? null : cells.getCell(12).getStringCellValue());
+                    reqDTO.setEducationMeasures(cells.getCell(12) == null ? null : cells.getCell(12).getStringCellValue());
                     cells.getCell(13).setCellType(1);
-                    reqDTO.setEducationMeasures(cells.getCell(13) == null ? null : cells.getCell(13).getStringCellValue());
+                    reqDTO.setIndividualProtection(cells.getCell(13) == null ? null : cells.getCell(13).getStringCellValue());
                     cells.getCell(14).setCellType(1);
-                    reqDTO.setIndividualProtection(cells.getCell(14) == null ? null : cells.getCell(14).getStringCellValue());
+                    reqDTO.setEmergencyMeasure(cells.getCell(14) == null ? null : cells.getCell(14).getStringCellValue());
                     cells.getCell(15).setCellType(1);
-                    reqDTO.setEmergencyMeasure(cells.getCell(15) == null ? null : cells.getCell(15).getStringCellValue());
+                    reqDTO.setBasis(cells.getCell(15) == null ? null : cells.getCell(15).getStringCellValue());
                     cells.getCell(16).setCellType(1);
-                    reqDTO.setBasis(cells.getCell(16) == null ? null : cells.getCell(16).getStringCellValue());
+                    reqDTO.setResponsibilityDept(cells.getCell(16) == null ? null : cells.getCell(16).getStringCellValue());
+                    cells.getCell(17).setCellType(1);
+                    reqDTO.setResponsibilityCenter(cells.getCell(17) == null ? null : cells.getCell(17).getStringCellValue());
+                    cells.getCell(18).setCellType(1);
+                    reqDTO.setResponsibilityPost(cells.getCell(18) == null ? null : cells.getCell(18).getStringCellValue());
                     cells.getCell(19).setCellType(1);
-                    reqDTO.setResponsibilityDept(cells.getCell(19) == null ? null : cells.getCell(19).getStringCellValue());
-                    cells.getCell(20).setCellType(1);
-                    reqDTO.setResponsibilityCenter(cells.getCell(20) == null ? null : cells.getCell(20).getStringCellValue());
-                    cells.getCell(21).setCellType(1);
-                    reqDTO.setResponsibilityPost(cells.getCell(21) == null ? null : cells.getCell(21).getStringCellValue());
-                    cells.getCell(22).setCellType(1);
-                    reqDTO.setResponsibilityUser(cells.getCell(22) == null ? null : cells.getCell(22).getStringCellValue());
+                    reqDTO.setResponsibilityUser(cells.getCell(19) == null ? null : cells.getCell(19).getStringCellValue());
                     reqDTO.setType(type);
                     reqDTO.setId(TokenUtil.getUuId());
                     reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
@@ -280,7 +279,7 @@ public class RiskServiceImpl implements RiskService {
         } else if (type == 2) {
             listName = Arrays.asList("年度", "工号", "姓名", "部门名称", "涉及相关作业类型", "接触职业病危害因素", "用品编号", "用品名称", "领取数量", "领取时间", "有效期", "更换原因", "备注", "是否已确认", "状态");
         }
-        ExcelPortUtil.excelPort("劳保用品配备信息", listName, list, null, response);
+        ExcelPortUtil.excelPort("风险分级管控数据库", listName, list, null, response);
     }
 
 }
