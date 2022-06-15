@@ -67,7 +67,7 @@
         <foreach collection="list" index="index" item="appliance" separator=";">
             insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,
             hazard_factors, num, receiving_time, effective_time, remark,
-            <if test="status!=null">
+            <if test="appliance.status!=null">
                 status,
             </if>
             create_by)
@@ -85,7 +85,7 @@
             (select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1),
             #{appliance.workType}, #{appliance.hazardFactors}, #{appliance.num}, #{appliance.receivingTime},
             #{appliance.effectiveTime}, #{appliance.remark},
-            <if test="status!=null">
+            <if test="appliance.status!=null">
                 #{appliance.status},
             </if>
             #{appliance.createBy}
@@ -113,7 +113,7 @@
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
-        left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        left join sys_user_ext as u on u.user_id=auc.user_id and u.is_delete=0 and u.status=0
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0
         order by auc.create_date desc
@@ -127,7 +127,7 @@
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
-        left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        left join sys_user_ext as u on u.user_id=auc.user_id and u.is_delete=0 and u.status=0
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0
         <if test="name!=null and name!=''">
