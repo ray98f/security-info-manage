@@ -34,7 +34,7 @@ public interface RegionService {
 
     List<VxRegionResDTO> vxListAllRegion();
 
-    List<RegionResDTO> vxGetRegionBody(String id);
+    RegionResDTO vxGetRegionBody(String id);
 
     void modifyRegion(RegionReqDTO regionReqDTO);
 

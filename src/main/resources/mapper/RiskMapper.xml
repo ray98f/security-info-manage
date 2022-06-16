@@ -7,7 +7,7 @@
         describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r, risk_evaluation_l,
         risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures, education_measures,
         individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept, responsibility_center,
-        responsibility_post, responsibility_user, create_date, create_by
+        responsibility_post, responsibility_user, create_date, create_by, remark, status
         from t_risk_info where is_delete=0
         <if test="level!=null">
             and level=#{level}
@@ -18,6 +18,29 @@
         <if test="module!=null and module!=''">
             and modules like CONCAT('%',#{module},'%')
         </if>
+        <if test="responsibilityDept!=null and responsibilityDept!=''">
+            and responsibility_dept like CONCAT('%',#{responsibilityDept},'%')
+        </if>
+        <if test="responsibilityCenter!=null and responsibilityCenter!=''">
+            and responsibility_center like CONCAT('%',#{responsibilityCenter},'%')
+        </if>
+        <if test="responsibilityUser!=null and responsibilityUser!=''">
+            and responsibility_user like CONCAT('%',#{responsibilityUser},'%')
+        </if>
+        order by create_date desc
+    </select>
+
+    <select id="exportRisk" resultType="com.security.info.manage.dto.res.RiskInfoResDTO">
+        select id, type, modules, risk_points, main_risk_points, describe_text, describe_result, describe_person_factor,
+        describe_object_factor, describe_environment_factor, describe_manage_factor, describe_may_occur, accident_type,
+        describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r, risk_evaluation_l,
+        risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures, education_measures,
+        individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept, responsibility_center,
+        responsibility_post, responsibility_user, create_date, create_by, remark, status
+        from t_risk_info where is_delete=0 and status=0
+        <if test="type!=null">
+            and type=#{type}
+        </if>
         order by create_date desc
     </select>
 
@@ -27,7 +50,7 @@
         describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r, risk_evaluation_l,
         risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures, education_measures,
         individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept, responsibility_center,
-        responsibility_post, responsibility_user, create_date, create_by
+        responsibility_post, responsibility_user, create_date, create_by, remark, status
         from t_risk_info where is_delete=0 and id=#{id}
     </select>
 
@@ -37,11 +60,20 @@
         <if test="describeResult!=null and describeResult!=''">
             and describe_result=#{describeResult}
         </if>
+        <if test="accidentType!=null and accidentType!=''">
+            and accident_type=#{accidentType}
+        </if>
         <if test="describePersonFactor!=null and describePersonFactor!=''">
             and describe_person_factor=#{describePersonFactor}
         </if>
         <if test="describeObjectFactor!=null and describeObjectFactor!=''">
             and describe_object_factor=#{describeObjectFactor}
+        </if>
+        <if test="responsibilityDept!=null and responsibilityDept!=''">
+            and responsibility_dept=#{responsibilityDept}
+        </if>
+        <if test="responsibilityCenter!=null and responsibilityCenter!=''">
+            and responsibility_center=#{responsibilityCenter}
         </if>
         <if test="id!=null and id!=''">
             and id!=#{id}
@@ -55,13 +87,13 @@
         describe_may_occur, describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r,
         risk_evaluation_l, risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures,
         education_measures, individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept,
-        responsibility_center, responsibility_post, responsibility_user, create_by)
+        responsibility_center, responsibility_post, responsibility_user, remark, create_by)
         value (#{id}, #{type}, #{modules}, #{riskPoints}, #{mainRiskPoints}, #{describeText}, #{describeResult}, #{accidentType},
         #{describePersonFactor}, #{describeObjectFactor}, #{describeEnvironmentFactor}, #{describeManageFactor},
         #{describeMayOccur}, #{describeOccupationalHazards}, #{riskMatrixL}, #{riskMatrixS}, #{riskMatrixR},
         #{riskEvaluationL}, #{riskEvaluationC}, #{riskEvaluationD}, #{level}, #{technicalMeasures}, #{manageMeasures},
         #{educationMeasures}, #{individualProtection}, #{emergencyMeasure}, #{healthProtectMeasures}, #{basis}, #{responsibilityDept},
-        #{responsibilityCenter}, #{responsibilityPost}, #{responsibilityUser}, #{createBy})
+        #{responsibilityCenter}, #{responsibilityPost}, #{responsibilityUser}, #{remark}, #{createBy})
     </insert>
 
     <update id="modifyRisk">
@@ -159,8 +191,16 @@
         <if test="responsibilityUser!=null">
             responsibility_user=#{responsibilityUser},
         </if>
-        update_by=#{createBy}, update_date=now()
+        <if test="remark!=null">
+            remark=#{remark},
+        </if>
+        update_by=#{createBy}, update_date=now(), status=1
         where id=#{id} and is_delete=0
+    </update>
+
+    <update id="verifyRisk">
+        update t_risk_info set status=#{status}, update_by=#{createBy}, update_date=now()
+        where id=#{id} and is_delete=0 and status=1
     </update>
 
     <update id="deleteRisk">
@@ -182,25 +222,34 @@
             describe_may_occur, describe_occupational_hazards, risk_matrix_l, risk_matrix_s, risk_matrix_r,
             risk_evaluation_l, risk_evaluation_c, risk_evaluation_d, level, technical_measures, manage_measures,
             education_measures, individual_protection, emergency_measure, health_protect_measures, basis, responsibility_dept,
-            responsibility_center, responsibility_post, responsibility_user, create_by)
+            responsibility_center, responsibility_post, responsibility_user, remark, create_by)
             select #{risk.id}, #{risk.type}, #{risk.modules}, #{risk.riskPoints}, #{risk.mainRiskPoints}, #{risk.describeText},
             #{risk.describeResult}, #{risk.accidentType}, #{risk.describePersonFactor}, #{risk.describeObjectFactor}, #{risk.describeEnvironmentFactor},
             #{risk.describeManageFactor}, #{risk.describeMayOccur}, #{risk.describeOccupationalHazards}, #{risk.riskMatrixL},
             #{risk.riskMatrixS}, #{risk.riskMatrixR}, #{risk.riskEvaluationL}, #{risk.riskEvaluationC}, #{risk.riskEvaluationD},
             #{risk.level}, #{risk.technicalMeasures}, #{risk.manageMeasures}, #{risk.educationMeasures},
             #{risk.individualProtection}, #{risk.emergencyMeasure}, #{risk.healthProtectMeasures}, #{risk.basis},
-            #{risk.responsibilityDept}, #{risk.responsibilityCenter}, #{risk.responsibilityPost}, #{risk.responsibilityUser}, #{risk.createBy}
+            #{risk.responsibilityDept}, #{risk.responsibilityCenter}, #{risk.responsibilityPost}, #{risk.responsibilityUser}, #{risk.remark}, #{risk.createBy}
             from dual
             WHERE not exists (SELECT id FROM t_risk_info WHERE type=#{risk.type} and modules=#{risk.modules} and
             risk_points=#{risk.riskPoints} and main_risk_points=#{risk.mainRiskPoints} and is_delete=0
             <if test="risk.describeResult!=null and risk.describeResult!=''">
                 and describe_result=#{risk.describeResult}
             </if>
+            <if test="risk.accidentType!=null and risk.accidentType!=''">
+                and accident_type=#{risk.accidentType}
+            </if>
             <if test="risk.describePersonFactor!=null and risk.describePersonFactor!=''">
                 and describe_person_factor=#{risk.describePersonFactor}
             </if>
             <if test="risk.describeObjectFactor!=null and risk.describeObjectFactor!=''">
                 and describe_object_factor=#{risk.describeObjectFactor}
+            </if>
+            <if test="risk.responsibilityDept!=null and risk.responsibilityDept!=''">
+                and responsibility_dept=#{risk.responsibilityDept}
+            </if>
+            <if test="risk.responsibilityCenter!=null and risk.responsibilityCenter!=''">
+                and responsibility_center=#{risk.responsibilityCenter}
             </if>
             )
         </foreach>

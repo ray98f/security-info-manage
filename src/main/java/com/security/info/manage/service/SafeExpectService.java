@@ -21,6 +21,8 @@ public interface SafeExpectService {
 
     Page<SafeExpectResDTO> vxListSafeExpect(PageReqDTO pageReqDTO);
 
+    SafeExpectResDTO getSafeExpectVxDetail(String id);
+
     SafeExpectResDTO getSafeExpectDetail(String id);
 
     void addSafeExpect(SafeExpectReqDTO safeExpectReqDTO);

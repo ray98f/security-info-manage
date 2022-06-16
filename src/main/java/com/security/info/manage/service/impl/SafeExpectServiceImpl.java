@@ -84,6 +84,21 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     }
 
     @Override
+    public SafeExpectResDTO getSafeExpectVxDetail(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        SafeExpectResDTO safeExpectResDTO = safeExpectMapper.getSafeExpectDetail(id);
+        if (!Objects.isNull(safeExpectResDTO)) {
+            safeExpectResDTO.setSafeExpectInfo(safeExpectMapper.exportSafeExpectInfo(id));
+            safeExpectResDTO.setSafeExpectCollectionUnion(safeExpectMapper.getSafeExpectCollectionUnionDetail(id));
+            safeExpectResDTO.setUserInfo(safeExpectMapper.getSafeExpectUserInfo(id));
+            safeExpectResDTO.setIsSign(safeExpectMapper.selectUserIsSign(id, TokenUtil.getCurrentPersonNo()));
+        }
+        return safeExpectResDTO;
+    }
+
+    @Override
     public SafeExpectResDTO getSafeExpectDetail(String id) {
         if (Objects.isNull(id)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
@@ -166,7 +181,7 @@ public class SafeExpectServiceImpl implements SafeExpectService {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
             }
         }
-        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectCollectionUnion())) {
+        if (!Objects.isNull(safeExpectModifyReqDTO.getSafeExpectCollectionUnion()) && safeExpectModifyReqDTO.getSafeExpectCollectionUnion().getCollectionUnionTime() != null) {
             Integer result = safeExpectMapper.modifySafeExpectCollectionUnion(safeExpectModifyReqDTO.getSafeExpectCollectionUnion());
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);

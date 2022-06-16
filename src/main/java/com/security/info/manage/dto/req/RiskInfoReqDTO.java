@@ -109,6 +109,12 @@ public class RiskInfoReqDTO {
     @ApiModelProperty(value = "责任人")
     private String responsibilityUser;
 
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
+    @ApiModelProperty(value = "状态 0 正常 1 待审核 2 审核不通过")
+    private Integer status;
+
     @ApiModelProperty(value = "创建人")
     private String createBy;
 }

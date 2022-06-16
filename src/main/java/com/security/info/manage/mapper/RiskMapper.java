@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface RiskMapper {
 
-    Page<RiskInfoResDTO> listRisk(Page<RiskInfoResDTO> page, Integer level, Integer type, String module);
+    Page<RiskInfoResDTO> listRisk(Page<RiskInfoResDTO> page, Integer level, Integer type, String module, String responsibilityDept, String responsibilityCenter, String responsibilityUser);
 
     List<RiskInfoResDTO> exportRisk(Integer type);
 
@@ -25,6 +25,8 @@ public interface RiskMapper {
     Integer selectRiskIsExist(RiskInfoReqDTO riskInfoReqDTO);
 
     Integer modifyRisk(RiskInfoReqDTO riskInfoReqDTO);
+
+    Integer verifyRisk(String id, Integer status, String createBy);
 
     Integer addRisk(RiskInfoReqDTO riskInfoReqDTO);
 

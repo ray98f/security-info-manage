@@ -48,9 +48,9 @@ public class RiskServiceImpl implements RiskService {
     }};
 
     @Override
-    public Page<RiskInfoResDTO> listRisk(Integer level, Integer type, String module, PageReqDTO pageReqDTO) {
+    public Page<RiskInfoResDTO> listRisk(Integer level, Integer type, String module, String responsibilityDept, String responsibilityCenter, String responsibilityUser, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return riskMapper.listRisk(pageReqDTO.of(), level, type, module);
+        return riskMapper.listRisk(pageReqDTO.of(), level, type, module, responsibilityDept, responsibilityCenter, responsibilityUser);
     }
 
     @Override
@@ -99,6 +99,14 @@ public class RiskServiceImpl implements RiskService {
         Integer result = riskMapper.deleteRisk(ids, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
+        }
+    }
+
+    @Override
+    public void verifyRisk(RiskInfoReqDTO riskInfoReqDTO) {
+        Integer result = riskMapper.verifyRisk(riskInfoReqDTO.getId(), riskInfoReqDTO.getStatus(), TokenUtil.getCurrentPersonNo());
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
     }
 
@@ -166,6 +174,8 @@ public class RiskServiceImpl implements RiskService {
                     reqDTO.setResponsibilityPost(cells.getCell(18) == null ? null : cells.getCell(18).getStringCellValue());
                     cells.getCell(19).setCellType(1);
                     reqDTO.setResponsibilityUser(cells.getCell(19) == null ? null : cells.getCell(19).getStringCellValue());
+                    cells.getCell(20).setCellType(1);
+                    reqDTO.setRemark(cells.getCell(20) == null ? null : cells.getCell(20).getStringCellValue());
                     reqDTO.setType(type);
                     reqDTO.setId(TokenUtil.getUuId());
                     reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
@@ -226,6 +236,8 @@ public class RiskServiceImpl implements RiskService {
                     reqDTO.setResponsibilityPost(cells.getCell(23) == null ? null : cells.getCell(23).getStringCellValue());
                     cells.getCell(24).setCellType(1);
                     reqDTO.setResponsibilityUser(cells.getCell(24) == null ? null : cells.getCell(24).getStringCellValue());
+                    cells.getCell(25).setCellType(1);
+                    reqDTO.setRemark(cells.getCell(25) == null ? null : cells.getCell(25).getStringCellValue());
                     reqDTO.setType(type);
                     reqDTO.setId(TokenUtil.getUuId());
                     reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
@@ -251,13 +263,13 @@ public class RiskServiceImpl implements RiskService {
                 for (RiskInfoResDTO resDTO : resDTOList) {
                     Map<String, String> map = new HashMap<>();
                     map.put("风险项类型", "1".equals(resDTO.getType()) ? "运营类" : "生产类");
-                    map.put("所属专业模块", resDTO.getModules());
-                    map.put("主要风险点", resDTO.getRiskPoints());
-                    map.put("主风险点分项", resDTO.getMainRiskPoints());
-                    map.put("风险描述-危险源及其可能造成的后果(运营类)", resDTO.getDescribeResult());
-                    map.put("风险定量评价-L(运营类)", resDTO.getRiskEvaluationL());
-                    map.put("风险定量评价-C(运营类)", resDTO.getRiskEvaluationC());
-                    map.put("风险定量评价-D(运营类)", resDTO.getRiskEvaluationD());
+                    map.put("专业模块", resDTO.getModules());
+                    map.put("主要风险点（作业活动、场所、设施设备）", resDTO.getRiskPoints());
+                    map.put("风险描述（危险源及其可能造成的后果）", resDTO.getDescribeResult());
+                    map.put("事故类型", resDTO.getAccidentType());
+                    map.put("风险定量评价-L", resDTO.getRiskEvaluationL());
+                    map.put("风险定量评价-C", resDTO.getRiskEvaluationC());
+                    map.put("风险定量评价-D", resDTO.getRiskEvaluationD());
                     map.put("风险等级", resDTO.getLevel() == 1 ? "重大风险" : resDTO.getLevel() == 2 ? "较大风险" : resDTO.getLevel() == 3 ? "一般风险" : "较小风险");
                     map.put("风险管控措施-技术措施", resDTO.getTechnicalMeasures());
                     map.put("风险管控措施-管理措施", resDTO.getManageMeasures());
@@ -269,15 +281,52 @@ public class RiskServiceImpl implements RiskService {
                     map.put("责任中心", resDTO.getResponsibilityCenter());
                     map.put("责任岗位", resDTO.getResponsibilityPost());
                     map.put("责任人", resDTO.getResponsibilityUser());
+                    map.put("备注", resDTO.getRemark());
                     list.add(map);
                 }
             }
-            listName = Arrays.asList("风险项类型", "所属专业模块", "主要风险点", "主风险点分项", "风险描述-危险源及其可能造成的后果(运营类)",
-                    "风险定量评价-L(运营类)", "风险定量评价-C(运营类)", "风险定量评价-D(运营类)", "风险等级", "风险管控措施-技术措施",
+            listName = Arrays.asList("风险项类型", "专业模块", "主要风险点（作业活动、场所、设施设备）", "风险描述（危险源及其可能造成的后果）",
+                    "事故类型", "风险定量评价-L", "风险定量评价-C", "风险定量评价-D", "风险等级", "风险管控措施-技术措施",
                     "风险管控措施-管理措施", "风险管控措施-教育措施", "风险管控措施-个体防护", "风险管控措施-应急措施",
-                    "措施指定依据(关联法律、法规、规章、制度文档)", "责任部门", "责任中心", "责任岗位", "责任人");
+                    "措施指定依据(关联法律、法规、规章、制度文档)", "责任部门", "责任中心", "责任岗位", "责任人", "备注");
         } else if (type == 2) {
-            listName = Arrays.asList("年度", "工号", "姓名", "部门名称", "涉及相关作业类型", "接触职业病危害因素", "用品编号", "用品名称", "领取数量", "领取时间", "有效期", "更换原因", "备注", "是否已确认", "状态");
+            if (resDTOList != null && !resDTOList.isEmpty()) {
+                for (RiskInfoResDTO resDTO : resDTOList) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("风险项类型", "1".equals(resDTO.getType()) ? "运营类" : "生产类");
+                    map.put("专业模块", resDTO.getModules());
+                    map.put("主要风险点", resDTO.getRiskPoints());
+                    map.put("主要风险点分项", resDTO.getMainRiskPoints());
+                    map.put("风险描述-人的因素", resDTO.getDescribePersonFactor());
+                    map.put("风险描述-物的因素", resDTO.getDescribeObjectFactor());
+                    map.put("风险描述-环境因素", resDTO.getDescribeEnvironmentFactor());
+                    map.put("风险描述-管理因素", resDTO.getDescribeManageFactor());
+                    map.put("风险描述-本次作业可能发生", resDTO.getDescribeMayOccur());
+                    map.put("风险描述-职业病危害因素", resDTO.getDescribeOccupationalHazards());
+                    map.put("风险矩阵法-L", resDTO.getRiskMatrixL());
+                    map.put("风险矩阵法-S", resDTO.getRiskMatrixS());
+                    map.put("风险矩阵法-R", resDTO.getRiskMatrixR());
+                    map.put("风险等级", resDTO.getLevel() == 1 ? "重大风险" : resDTO.getLevel() == 2 ? "较大风险" : resDTO.getLevel() == 3 ? "一般风险" : "较小风险");
+                    map.put("风险管控措施-技术措施", resDTO.getTechnicalMeasures());
+                    map.put("风险管控措施-管理措施", resDTO.getManageMeasures());
+                    map.put("风险管控措施-教育措施", resDTO.getEducationMeasures());
+                    map.put("风险管控措施-个体防护", resDTO.getIndividualProtection());
+                    map.put("风险管控措施-职业健康防护措施", resDTO.getHealthProtectMeasures());
+                    map.put("风险管控措施-应急措施", resDTO.getEmergencyMeasure());
+                    map.put("措施指定依据(关联法律、法规、规章、制度文档)", resDTO.getBasis());
+                    map.put("责任部门", resDTO.getResponsibilityDept());
+                    map.put("责任中心", resDTO.getResponsibilityCenter());
+                    map.put("责任岗位", resDTO.getResponsibilityPost());
+                    map.put("责任人", resDTO.getResponsibilityUser());
+                    map.put("备注", resDTO.getRemark());
+                    list.add(map);
+                }
+            }
+            listName = Arrays.asList("风险项类型", "专业模块", "主要风险点", "主风险点分项", "风险描述-人的因素", "风险描述-物的因素",
+                    "风险描述-环境因素", "风险描述-管理因素", "风险描述-本次作业可能发生", "风险描述-职业病危害因素",
+                    "风险矩阵法-L", "风险矩阵法-S", "风险矩阵法-R", "风险等级", "风险管控措施-技术措施",
+                    "风险管控措施-管理措施", "风险管控措施-教育措施", "风险管控措施-个体防护", "风险管控措施-职业健康防护措施", "风险管控措施-应急措施",
+                    "措施指定依据(关联法律、法规、规章、制度文档)", "责任部门", "责任中心", "责任岗位", "责任人", "备注");
         }
         ExcelPortUtil.excelPort("风险分级管控数据库", listName, list, null, response);
     }

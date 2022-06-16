@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface RiskService {
 
-    Page<RiskInfoResDTO> listRisk(Integer level, Integer type, String module, PageReqDTO pageReqDTO);
+    Page<RiskInfoResDTO> listRisk(Integer level, Integer type, String module, String responsibilityDept, String responsibilityCenter, String responsibilityUser, PageReqDTO pageReqDTO);
 
     RiskInfoResDTO getRiskDetail(String id);
 
@@ -24,6 +24,8 @@ public interface RiskService {
     void addRisk(RiskInfoReqDTO riskInfoReqDTO);
 
     void deleteRisk(List<String> ids);
+
+    void verifyRisk(RiskInfoReqDTO riskInfoReqDTO);
 
     void importRisk(MultipartFile file, Integer type);
 

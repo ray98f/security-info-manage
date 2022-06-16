@@ -93,7 +93,7 @@ public class RegionController {
 
     @GetMapping("/vx/getBody")
     @ApiOperation(value = "微信端-获取一级区域子集列表")
-    public DataResponse<List<RegionResDTO>> vxGetRegionBody(@RequestParam String id) {
+    public DataResponse<RegionResDTO> vxGetRegionBody(@RequestParam String id) {
         return DataResponse.of(regionService.vxGetRegionBody(id));
     }
 

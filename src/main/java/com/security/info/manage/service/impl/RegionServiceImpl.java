@@ -183,11 +183,15 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
-    public List<RegionResDTO> vxGetRegionBody(String id) {
+    public RegionResDTO vxGetRegionBody(String id) {
         if (Objects.isNull(id)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        return regionMapper.selectRegionBodyByType(id);
+        RegionResDTO regionResDTO = regionMapper.getRegionDetail(id);
+        if (!Objects.isNull(regionResDTO)) {
+            regionResDTO.setChildren(regionMapper.selectRegionBodyByType(id));
+        }
+        return regionResDTO;
     }
 
     @Override

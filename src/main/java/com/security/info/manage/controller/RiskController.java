@@ -37,8 +37,11 @@ public class RiskController {
     public PageResponse<RiskInfoResDTO> listRisk(@RequestParam(required = false) Integer level,
                                                  @RequestParam(required = false) Integer type,
                                                  @RequestParam(required = false) String module,
+                                                 @RequestParam(required = false) String responsibilityDept,
+                                                 @RequestParam(required = false) String responsibilityCenter,
+                                                 @RequestParam(required = false) String responsibilityUser,
                                                  @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(riskService.listRisk(level, type, module, pageReqDTO));
+        return PageResponse.of(riskService.listRisk(level, type, module, responsibilityDept, responsibilityCenter, responsibilityUser, pageReqDTO));
     }
 
     @GetMapping("/detail")
@@ -68,6 +71,13 @@ public class RiskController {
         return DataResponse.success();
     }
 
+    @PostMapping("/verify")
+    @ApiOperation(value = "审核风险")
+    public DataResponse<T> verifyRisk(@RequestBody RiskInfoReqDTO riskInfoReqDTO) {
+        riskService.verifyRisk(riskInfoReqDTO);
+        return DataResponse.success();
+    }
+
     @PostMapping("/import")
     @ApiOperation(value = "风险导入")
     public DataResponse<T> importRisk(@RequestParam MultipartFile file, Integer type) {
@@ -78,7 +88,7 @@ public class RiskController {
     @GetMapping("/export")
     @ApiOperation(value = "风险导出")
     public void exportRisk(@RequestParam Integer type,
-                                      HttpServletResponse response) {
+                           HttpServletResponse response) {
         riskService.exportRisk(response, type);
     }
 

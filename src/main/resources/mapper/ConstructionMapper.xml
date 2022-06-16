@@ -115,7 +115,7 @@
         left join t_weak_plan as wp on c.plan_id=wp.id and wp.is_delete=0
         left join sys_dept as d on c.org_id=d.id and d.is_delete=0
         left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
-        where c.is_delete=0
+        where c.is_delete=0 and c.name is not null and wp.name is not null
         <if test="planId!=null and planId!=''">
             and c.plan_id=#{planId}
         </if>

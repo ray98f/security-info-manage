@@ -53,6 +53,12 @@ public class SafeExpectController {
         return PageResponse.of(safeExpectService.vxListSafeExpect(pageReqDTO));
     }
 
+    @GetMapping("/vx/detail")
+    @ApiOperation(value = "微信端-获取安全预想会详情")
+    public DataResponse<SafeExpectResDTO> getSafeExpectVxDetail(@RequestParam String id) {
+        return DataResponse.of(safeExpectService.getSafeExpectVxDetail(id));
+    }
+
     @GetMapping("/detail")
     @ApiOperation(value = "获取安全预想会详情")
     public DataResponse<SafeExpectResDTO> getSafeExpectDetail(@RequestParam String id) {

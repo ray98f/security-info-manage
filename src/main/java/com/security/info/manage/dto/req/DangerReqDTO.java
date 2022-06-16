@@ -32,9 +32,9 @@ public class DangerReqDTO {
     private String beforePic;
 
     @ApiModelProperty(value = "整改期限")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(
-            pattern = "yyyy-MM-dd",
+            pattern = "yyyy-MM-dd HH:mm:ss",
             timezone = "GMT+8"
     )
     private Date rectifyTerm;
