@@ -39,9 +39,13 @@ public class RiskController {
                                                  @RequestParam(required = false) String module,
                                                  @RequestParam(required = false) String responsibilityDept,
                                                  @RequestParam(required = false) String responsibilityCenter,
+                                                 @RequestParam(required = false) String responsibilityPost,
                                                  @RequestParam(required = false) String responsibilityUser,
+                                                 @RequestParam(required = false) String searchKey,
+                                                 @RequestParam(required = false) String describeMayOccur,
                                                  @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(riskService.listRisk(level, type, module, responsibilityDept, responsibilityCenter, responsibilityUser, pageReqDTO));
+        return PageResponse.of(riskService.listRisk(level, type, module, responsibilityDept, responsibilityCenter,
+                responsibilityPost, responsibilityUser, searchKey, describeMayOccur, pageReqDTO));
     }
 
     @GetMapping("/detail")

@@ -307,7 +307,7 @@ public class SafeExpectServiceImpl implements SafeExpectService {
                 .contentType(file.getContentType())
                 .build();
         client.putObject(args);
-        String url = minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
+        String url = minioConfig.getImgPath() + "/" + bizCode + "/" + fileName;
         return fileService.insertFile(url, bizCode, oldName);
     }
 

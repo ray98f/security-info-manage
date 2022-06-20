@@ -48,9 +48,12 @@ public class RiskServiceImpl implements RiskService {
     }};
 
     @Override
-    public Page<RiskInfoResDTO> listRisk(Integer level, Integer type, String module, String responsibilityDept, String responsibilityCenter, String responsibilityUser, PageReqDTO pageReqDTO) {
+    public Page<RiskInfoResDTO> listRisk(Integer level, Integer type, String module,
+                                         String responsibilityDept, String responsibilityCenter, String responsibilityPost,
+                                         String responsibilityUser, String searchKey, String describeMayOccur, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return riskMapper.listRisk(pageReqDTO.of(), level, type, module, responsibilityDept, responsibilityCenter, responsibilityUser);
+        return riskMapper.listRisk(pageReqDTO.of(), level, type, module, responsibilityDept, responsibilityCenter,
+                responsibilityPost, responsibilityUser, searchKey, describeMayOccur);
     }
 
     @Override

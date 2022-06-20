@@ -24,8 +24,23 @@
         <if test="responsibilityCenter!=null and responsibilityCenter!=''">
             and responsibility_center like CONCAT('%',#{responsibilityCenter},'%')
         </if>
+        <if test="responsibilityPost!=null and responsibilityPost!=''">
+            and responsibility_post like CONCAT('%',#{responsibilityPost},'%')
+        </if>
         <if test="responsibilityUser!=null and responsibilityUser!=''">
             and responsibility_user like CONCAT('%',#{responsibilityUser},'%')
+        </if>
+        <if test="searchKey!=null and searchKey!=''">
+            and (risk_points like CONCAT('%',#{searchKey},'%') or describe_result like CONCAT('%',#{searchKey},'%')
+            or describe_person_factor like CONCAT('%',#{searchKey},'%') or describe_object_factor like CONCAT('%',#{searchKey},'%')
+            or describe_environment_factor like CONCAT('%',#{searchKey},'%') or describe_manage_factor like CONCAT('%',#{searchKey},'%')
+            or describe_occupational_hazards like CONCAT('%',#{searchKey},'%') or technical_measures like CONCAT('%',#{searchKey},'%')
+            or manage_measures like CONCAT('%',#{searchKey},'%') or education_measures like CONCAT('%',#{searchKey},'%')
+            or individual_protection like CONCAT('%',#{searchKey},'%') or emergency_measure like CONCAT('%',#{searchKey},'%')
+            or health_protect_measures like CONCAT('%',#{searchKey},'%') or basis like CONCAT('%',#{searchKey},'%'))
+        </if>
+        <if test="describeMayOccur!=null and describeMayOccur!=''">
+            and describe_may_occur like CONCAT('%',#{describeMayOccur},'%')
         </if>
         order by create_date desc
     </select>

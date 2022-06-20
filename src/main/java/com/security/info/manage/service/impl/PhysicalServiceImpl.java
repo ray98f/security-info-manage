@@ -396,12 +396,14 @@ public class PhysicalServiceImpl implements PhysicalService {
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         } else {
-            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-            List<String> userIds = physicalMapper.selectUserIdByPhysicalUserId(physicalMapper.selectPhysicalUserWhenImportResult(physicalResultImportReqDTO));
-            if (!userIds.isEmpty()) {
-                vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
-                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您的体检结果已录入，请前往小程序确认。"));
-                msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            if (physicalMapper.getPhysicalDetail(id).getType() != 3) {
+                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                List<String> userIds = physicalMapper.selectUserIdByPhysicalUserId(physicalMapper.selectPhysicalUserWhenImportResult(physicalResultImportReqDTO));
+                if (!userIds.isEmpty()) {
+                    vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
+                    vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您的体检结果已录入，请前往小程序确认。"));
+                    msgService.sendTextMsg(vxSendTextMsgReqDTO);
+                }
             }
         }
     }
@@ -539,7 +541,7 @@ public class PhysicalServiceImpl implements PhysicalService {
                 .contentType(file.getContentType())
                 .build();
         client.putObject(args);
-        String url = minioConfig.getUrl() + "/" + bizCode + "/" + fileName;
+        String url = minioConfig.getImgPath() + "/" + bizCode + "/" + fileName;
         return fileService.insertFile(url, bizCode, oldName);
     }
 }

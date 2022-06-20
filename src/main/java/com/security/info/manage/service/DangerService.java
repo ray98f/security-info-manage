@@ -3,9 +3,7 @@ package com.security.info.manage.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.DangerReqDTO;
-import com.security.info.manage.dto.res.DangerResDTO;
-import com.security.info.manage.dto.res.DeptTreeResDTO;
-import com.security.info.manage.dto.res.VxDeptResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.EntryPlate;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,5 +49,17 @@ public interface DangerService {
 
     void examineDanger(String dangerId, String deptId, String opinion, Integer status);
 
-    void issueDanger(String dangerId, String deptId, String rectifyTerm, String opinion);
+    void issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion);
+
+    List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);
+
+    List<DangerDeptStatisticsResDTO> dangerDeptStatistics(String date);
+
+    List<DangerRegionStatisticsResDTO> dangerRegionStatistics(String regionId, String date);
+
+    List<String> listUnitStatistics(String regionId);
+
+    List<String> listWorkAreaStatistics(String regionId);
+
+    DangerChartStatisticsResDTO chartStatistics(String regionId, String unit, String workArea);
 }

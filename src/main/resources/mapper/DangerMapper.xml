@@ -411,5 +411,184 @@
         update t_danger_examine set
         examine_time=now(), opinion=#{opinion}, status=1, update_by=#{createBy}
         where danger_id=#{dangerId} and status=0;
+        insert into t_danger_rectify(id, danger_id, rectify_user_id, create_by)
+        value (replace(uuid(),"-",""), #{dangerId}, #{userId}, #{createBy});
     </update>
+
+    <select id="dangerTypeStatistics" resultType="com.security.info.manage.dto.res.DangerTypeStatisticsResDTO">
+        select a.* from (
+        select "标准化建设" as type,
+        (select count(*) from t_danger where is_build_prob=1 and is_use=1 and is_delete=0 and status!=5) as total,
+        (select count(*) from t_danger where is_build_prob=1 and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=date_format((last_day(subdate(#{date}, interval 1 month))), '%Y-%m')
+        and status not in (5,6)) as last_legacy,
+        (select count(*) from t_danger where is_build_prob=1 and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=#{date}) as now_add,
+        (select count(*) from t_danger where is_build_prob=1 and is_use=1 and is_delete=0 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as now_solve,
+        (select count(*) from t_danger where is_build_prob=1 and is_use=1 and is_delete=0 and status not in (5,6)
+        and date_format(create_date, '%Y-%m')=#{date}) as now_legacy,
+        (select count(*) from t_danger where is_build_prob=1 and is_use=1 and is_delete=0 and is_push=1
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_add_broadcast,
+        (select count(*) from t_danger where is_build_prob=1 and is_use=1 and is_delete=0 and is_push=1 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_solve_broadcast
+        union all
+        select "安全生产标准化" as type,
+        (select count(*) from t_danger where is_prod_prob=1 and is_use=1 and is_delete=0 and status!=5) as total,
+        (select count(*) from t_danger where is_prod_prob=1 and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=date_format((last_day(subdate(#{date}, interval 1 month))), '%Y-%m')
+        and status not in (5,6)) as last_legacy,
+        (select count(*) from t_danger where is_prod_prob=1 and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=#{date}) as now_add,
+        (select count(*) from t_danger where is_prod_prob=1 and is_use=1 and is_delete=0 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as now_solve,
+        (select count(*) from t_danger where is_prod_prob=1 and is_use=1 and is_delete=0 and status not in (5,6)
+        and date_format(create_date, '%Y-%m')=#{date}) as now_legacy,
+        (select count(*) from t_danger where is_prod_prob=1 and is_use=1 and is_delete=0 and is_push=1
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_add_broadcast,
+        (select count(*) from t_danger where is_prod_prob=1 and is_use=1 and is_delete=0 and is_push=1 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_solve_broadcast
+        union all
+        select "安全隐患" as type,
+        (select count(*) from t_danger where is_danger_prob=1 and is_use=1 and is_delete=0 and status!=5) as total,
+        (select count(*) from t_danger where is_danger_prob=1 and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=date_format((last_day(subdate(#{date}, interval 1 month))), '%Y-%m')
+        and status not in (5,6)) as last_legacy,
+        (select count(*) from t_danger where is_danger_prob=1 and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=#{date}) as now_add,
+        (select count(*) from t_danger where is_danger_prob=1 and is_use=1 and is_delete=0 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as now_solve,
+        (select count(*) from t_danger where is_danger_prob=1 and is_use=1 and is_delete=0 and status not in (5,6)
+        and date_format(create_date, '%Y-%m')=#{date}) as now_legacy,
+        (select count(*) from t_danger where is_danger_prob=1 and is_use=1 and is_delete=0 and is_push=1
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_add_broadcast,
+        (select count(*) from t_danger where is_danger_prob=1 and is_use=1 and is_delete=0 and is_push=1 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_solve_broadcast
+        ) as a
+    </select>
+
+    <select id="selectAllDeptName" resultType="com.security.info.manage.dto.res.DangerDeptStatisticsResDTO">
+        select distinct id as dept_id, org_name as dept_name from sys_dept where parent_id=1 and is_delete=0
+        order by sort
+    </select>
+
+    <select id="dangerDeptStatistics" resultType="com.security.info.manage.dto.res.DangerDeptStatisticsResDTO$DeptStatistics">
+        select a.* from (
+        select
+        (select count(*) from t_danger where is_use=1 and is_delete=0 and check_dept_id=#{deptId}
+        and date_format(create_date, '%Y-%m')=#{date}) as now_add,
+        (select count(*) from t_danger where is_use=1 and is_delete=0 and responsibility_dept_id=#{deptId}
+        and date_format(create_date, '%Y-%m')=#{date}) as total,
+        (select count(*) from t_danger where is_use=1 and is_delete=0 and responsibility_dept_id=#{deptId}
+        and date_format(create_date, '%Y-%m')=#{date} and status=5) as now_solve,
+        (select count(*) from t_danger where is_use=1 and is_delete=0 and responsibility_dept_id=#{deptId}
+        and date_format(create_date, '%Y-%m')=#{date} and status not in (5,6)) as legacy
+        ) as a
+    </select>
+
+    <select id="selectRootRegion" resultType="com.security.info.manage.dto.res.DangerRegionStatisticsResDTO">
+        select id as region_id, name as region_name from t_region
+        where is_delete=0 and status=0
+        <if test="regionId==null">
+            and parent_id=0
+        </if>
+        <if test="regionId!=null">
+            and parent_id=#{regionId}
+        </if>
+    </select>
+
+    <select id="selectBodyRegion" resultType="java.lang.String">
+        select id from t_region where is_delete=0 and status=0 and parent_id=#{regionId}
+    </select>
+
+    <select id="dangerRegionStatistics" resultType="com.security.info.manage.dto.res.DangerRegionStatisticsResDTO">
+        select
+        (select count(*) from t_danger where region_id in (
+        <foreach collection="regions" index="index" item="region" separator=",">
+            #{region}
+        </foreach>
+        ) and is_use=1 and is_delete=0 and status!=5) as total,
+        (select count(*) from t_danger where region_id in (
+        <foreach collection="regions" index="index" item="region" separator=",">
+            #{region}
+        </foreach>
+        ) and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=date_format((last_day(subdate(#{date}, interval 1 month))), '%Y-%m')
+        and status not in (5,6)) as last_legacy,
+        (select count(*) from t_danger where region_id in (
+        <foreach collection="regions" index="index" item="region" separator=",">
+            #{region}
+        </foreach>
+        ) and is_use=1 and is_delete=0
+        and date_format(create_date, '%Y-%m')=#{date}) as now_add,
+        (select count(*) from t_danger where region_id in (
+        <foreach collection="regions" index="index" item="region" separator=",">
+            #{region}
+        </foreach>
+        ) and is_use=1 and is_delete=0 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as now_solve,
+        (select count(*) from t_danger where region_id in (
+        <foreach collection="regions" index="index" item="region" separator=",">
+            #{region}
+        </foreach>
+        ) and is_use=1 and is_delete=0 and status not in (5,6)
+        and date_format(create_date, '%Y-%m')=#{date}) as now_legacy,
+        (select count(*) from t_danger where region_id in (
+        <foreach collection="regions" index="index" item="region" separator=",">
+            #{region}
+        </foreach>
+        ) and is_use=1 and is_delete=0 and is_push=1
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_add_broadcast,
+        (select count(*) from t_danger where region_id in (
+        <foreach collection="regions" index="index" item="region" separator=",">
+            #{region}
+        </foreach>
+        ) and is_use=1 and is_delete=0 and is_push=1 and status=5
+        and date_format(create_date, '%Y-%m')=#{date}) as cycle_solve_broadcast
+    </select>
+
+    <select id="listUnitStatistics" resultType="java.lang.String">
+        select response_unit from t_region where status=0 and is_delete=0
+        and parent_ids like CONCAT('%','0,',#{regionId},'%') and response_unit!='' and response_unit is not null
+    </select>
+
+    <select id="listWorkAreaStatistics" resultType="java.lang.String">
+        select response_work_area from t_region where status=0 and is_delete=0
+        and parent_ids like CONCAT('%','0,',#{regionId},'%') and response_work_area!='' and response_work_area is not null
+    </select>
+
+    <select id="newAddStatistics" resultType="com.security.info.manage.dto.res.DangerChartStatisticsResDTO$ChartStatistics">
+        SELECT
+        month(d.create_date) AS month,
+        COUNT(d.id) as num
+        FROM
+        t_danger as d left join t_region as r on r.id=d.region_id and r.status=0 and r.is_delete=0
+        WHERE d.is_use=1 and d.is_delete=0 and region_id=#{regionId} and year(d.create_date)=year(now())
+        <if test="unit!=null and unit!=''">
+            and r.response_unit=#{unit}
+        </if>
+        <if test="workArea!=null and workArea!=''">
+            and r.response_work_area=#{workArea}
+        </if>
+        GROUP BY month
+        ORDER BY month
+    </select>
+
+    <select id="legacyStatistics" resultType="com.security.info.manage.dto.res.DangerChartStatisticsResDTO$ChartStatistics">
+        SELECT
+        month(d.create_date) AS month,
+        COUNT(d.id) as num
+        FROM
+        t_danger as d left join t_region as r on r.id=d.region_id and r.status=0 and r.is_delete=0
+        WHERE d.is_use=1 and d.is_delete=0 and region_id=#{regionId} and year(d.create_date)=year(now())
+        and d.status not in (5,6)
+        <if test="unit!=null and unit!=''">
+            and r.response_unit=#{unit}
+        </if>
+        <if test="workArea!=null and workArea!=''">
+            and r.response_work_area=#{workArea}
+        </if>
+        GROUP BY month
+        ORDER BY month
+    </select>
 </mapper>

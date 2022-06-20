@@ -6,14 +6,12 @@ import com.google.common.base.Joiner;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.DangerReqDTO;
 import com.security.info.manage.dto.req.VxSendTextMsgReqDTO;
-import com.security.info.manage.dto.res.DangerExamineResDTO;
-import com.security.info.manage.dto.res.DangerResDTO;
-import com.security.info.manage.dto.res.DeptTreeResDTO;
-import com.security.info.manage.dto.res.UserResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.EntryPlate;
 import com.security.info.manage.entity.User;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
+import com.security.info.manage.mapper.DeptMapper;
 import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.DangerMapper;
 import com.security.info.manage.mapper.SysMapper;
@@ -48,6 +46,9 @@ public class DangerServiceImpl implements DangerService {
 
     @Autowired
     private FileMapper fileMapper;
+
+    @Autowired
+    private DeptMapper deptMapper;
 
     @Autowired
     private MsgService msgService;
@@ -345,11 +346,106 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    public void issueDanger(String dangerId, String deptId, String rectifyTerm, String opinion) {
-        Integer result = dangerMapper.issueDanger(dangerId, deptId, rectifyTerm, opinion, TokenUtil.getCurrentPersonNo());
+    public void issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion) {
+        DeptTreeResDTO res = deptMapper.selectParent(deptId);
+        if (!Objects.isNull(res) && !"1".equals(res.getId())) {
+            while (!"1".equals(res.getParentId())) {
+                res = deptMapper.selectParent(res.getId());
+                if (Objects.isNull(res)) {
+                    break;
+                }
+            }
+            deptId = res.getId();
+        }
+        Integer result = dangerMapper.issueDanger(dangerId, deptId, userId, rectifyTerm, opinion, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
+    }
+
+    @Override
+    public List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date) {
+        return dangerMapper.dangerTypeStatistics(date);
+    }
+
+    @Override
+    public List<DangerDeptStatisticsResDTO> dangerDeptStatistics(String date) {
+        List<DangerDeptStatisticsResDTO> dept = dangerMapper.selectAllDeptName();
+        if (!Objects.isNull(dept) && !dept.isEmpty()) {
+            for (DangerDeptStatisticsResDTO res : dept) {
+                DangerDeptStatisticsResDTO.DeptStatistics deptStatistics = dangerMapper.dangerDeptStatistics(res.getDeptId(), date);
+                if (Objects.isNull(deptStatistics)) {
+                    deptStatistics = new DangerDeptStatisticsResDTO.DeptStatistics();
+                    deptStatistics.setTotal(0);
+                    deptStatistics.setLegacy(0);
+                    deptStatistics.setNowAdd(0);
+                    deptStatistics.setNowSolve(0);
+                }
+                res.setDeptStatistics(deptStatistics);
+            }
+        }
+        return dept;
+    }
+
+    @Override
+    public List<DangerRegionStatisticsResDTO> dangerRegionStatistics(String regionId, String date) {
+        List<DangerRegionStatisticsResDTO> list = dangerMapper.selectRootRegion(regionId);
+        if (!Objects.isNull(list) && !list.isEmpty()) {
+            for (DangerRegionStatisticsResDTO res : list) {
+                List<String> regions = dangerMapper.selectBodyRegion(res.getRegionId());
+                regions.add(res.getRegionId());
+                DangerRegionStatisticsResDTO.RegionStatistics regionStatistics = dangerMapper.dangerRegionStatistics(regions, date);
+                if (Objects.isNull(regionStatistics)) {
+                    regionStatistics = new DangerRegionStatisticsResDTO.RegionStatistics();
+                    regionStatistics.setTotal(0);
+                    regionStatistics.setLastLegacy(0);
+                    regionStatistics.setNowAdd(0);
+                    regionStatistics.setNowSolve(0);
+                    regionStatistics.setNowLegacy(0);
+                    regionStatistics.setCycleAddBroadcast(0);
+                    regionStatistics.setCycleSolveBroadcast(0);
+                }
+                res.setRegionStatistics(regionStatistics);
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<String> listUnitStatistics(String regionId) {
+        return dangerMapper.listUnitStatistics(regionId);
+    }
+
+    @Override
+    public List<String> listWorkAreaStatistics(String regionId) {
+        return dangerMapper.listWorkAreaStatistics(regionId);
+    }
+
+    @Override
+    public DangerChartStatisticsResDTO chartStatistics(String regionId, String unit, String workArea) {
+        DangerChartStatisticsResDTO resDTO = new DangerChartStatisticsResDTO();
+        List<DangerChartStatisticsResDTO.ChartStatistics> newAdd = dangerMapper.newAddStatistics(regionId, unit, workArea);
+        List<DangerChartStatisticsResDTO.ChartStatistics> legacy = dangerMapper.legacyStatistics(regionId, unit, workArea);
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH) + 1;
+        for (int i = 1; i <= month; i++) {
+            String finalI = String.valueOf(i);
+            if (newAdd.stream().noneMatch(m -> m.getMonth().equals(finalI))) {
+                DangerChartStatisticsResDTO.ChartStatistics res = new DangerChartStatisticsResDTO.ChartStatistics();
+                res.setMonth(finalI);
+                res.setNum(0);
+                newAdd.add(Integer.parseInt(finalI) - 1, res);
+            }
+            if (legacy.stream().noneMatch(m -> m.getMonth().equals(finalI))) {
+                DangerChartStatisticsResDTO.ChartStatistics res = new DangerChartStatisticsResDTO.ChartStatistics();
+                res.setMonth(finalI);
+                res.setNum(0);
+                legacy.add(Integer.parseInt(finalI) - 1, res);
+            }
+        }
+        resDTO.setNewAddStatistics(newAdd);
+        resDTO.setLegacyStatistics(legacy);
+        return resDTO;
     }
 
 }

@@ -57,5 +57,6 @@
         <if test="dangerId!=null">
             and d.org_name like CONCAT('%','部')
         </if>
+        group by u.id
     </select>
 </mapper>

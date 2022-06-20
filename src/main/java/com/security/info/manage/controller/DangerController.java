@@ -4,8 +4,7 @@ import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
 import com.security.info.manage.dto.req.DangerReqDTO;
-import com.security.info.manage.dto.res.DangerResDTO;
-import com.security.info.manage.dto.res.DeptTreeResDTO;
+import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.EntryPlate;
 import com.security.info.manage.service.DangerService;
 import io.swagger.annotations.Api;
@@ -157,10 +156,50 @@ public class DangerController {
     @ApiOperation(value = "下发隐患到责任部门")
     public DataResponse<T> issueDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
                                        @RequestParam @ApiParam(value = "部门id") String deptId,
+                                       @RequestParam @ApiParam(value = "人员id") String userId,
                                        @RequestParam(required = false) @ApiParam(value = "整改期限") String rectifyTerm,
                                        @RequestParam(required = false) @ApiParam(value = "整改意见") String opinion) {
-        dangerService.issueDanger(dangerId, deptId, rectifyTerm, opinion);
+        dangerService.issueDanger(dangerId, deptId, userId, rectifyTerm, opinion);
         return DataResponse.success();
+    }
+
+    @GetMapping("/statistics/type")
+    @ApiOperation(value = "问题类别统计")
+    public DataResponse<List<DangerTypeStatisticsResDTO>> dangerTypeStatistics(@RequestParam String date) {
+        return DataResponse.of(dangerService.dangerTypeStatistics(date));
+    }
+
+    @GetMapping("/statistics/dept")
+    @ApiOperation(value = "问题责任单位统计")
+    public DataResponse<List<DangerDeptStatisticsResDTO>> dangerDeptStatistics(@RequestParam String date) {
+        return DataResponse.of(dangerService.dangerDeptStatistics(date));
+    }
+
+    @GetMapping("/statistics/region")
+    @ApiOperation(value = "问题区域统计")
+    public DataResponse<List<DangerRegionStatisticsResDTO>> dangerRegionStatistics(@RequestParam(required = false) String regionId,
+                                                                                   @RequestParam String date) {
+        return DataResponse.of(dangerService.dangerRegionStatistics(regionId, date));
+    }
+
+    @GetMapping("/statistics/listUnit")
+    @ApiOperation(value = "获取责任单位列表")
+    public DataResponse<List<String>> listUnitStatistics(@RequestParam String regionId) {
+        return DataResponse.of(dangerService.listUnitStatistics(regionId));
+    }
+
+    @GetMapping("/statistics/listWorkArea")
+    @ApiOperation(value = "获取责任工区列表")
+    public DataResponse<List<String>> listWorkAreaStatistics(@RequestParam String regionId) {
+        return DataResponse.of(dangerService.listWorkAreaStatistics(regionId));
+    }
+
+    @GetMapping("/statistics/chart")
+    @ApiOperation(value = "新增问题统计")
+    public DataResponse<DangerChartStatisticsResDTO> chartStatistics(@RequestParam String regionId,
+                                                                     @RequestParam(required = false) String unit,
+                                                                     @RequestParam(required = false) String workArea) {
+        return DataResponse.of(dangerService.chartStatistics(regionId, unit, workArea));
     }
 
 }
