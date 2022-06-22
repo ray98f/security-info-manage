@@ -115,8 +115,9 @@ public class SafeExpectController {
 
     @GetMapping("/vx/user/sign")
     @ApiOperation(value = "微信端-安全预想会人员签到")
-    public DataResponse<T> vxSignSafeExpectUser(@RequestParam String id) {
-        safeExpectService.vxSignSafeExpectUser(id);
+    public DataResponse<T> vxSignSafeExpectUser(@RequestParam String id,
+                                                @RequestParam Integer isSign) {
+        safeExpectService.vxSignSafeExpectUser(id, isSign);
         return DataResponse.success();
     }
 

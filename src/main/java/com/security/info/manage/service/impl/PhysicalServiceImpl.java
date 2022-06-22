@@ -332,6 +332,13 @@ public class PhysicalServiceImpl implements PhysicalService {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
             }
         }
+        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+        List<String> userIds = list.stream().map(PhysicalUserResDTO::getUserId).collect(Collectors.toList());
+        if (!userIds.isEmpty()) {
+            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条体检发起复检，请前往小程序查看处理。"));
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+        }
     }
 
     @Override

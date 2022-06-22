@@ -39,7 +39,7 @@ public interface SafeExpectService {
 
     void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
 
-    void vxSignSafeExpectUser(String id);
+    void vxSignSafeExpectUser(String id, Integer isSign);
 
     Map<String, Object> exportSafeExpectData(String id);
 

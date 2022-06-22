@@ -14,15 +14,20 @@
     </select>
 
     <select id="listPlate" resultType="com.security.info.manage.entity.EntryPlate">
-        select id, type, dept_id, plate_name, proportion
-        from sys_entry_plate
-        <if test="type!=null or (deptId!=null and deptId!='')">
+        select ep.id, ep.type, ep.dept_id, d.org_name as dept_name, ep.plate_name, ep.proportion
+        from sys_entry_plate as ep left join
+        (select id, org_name from sys_dept where is_delete=0 union all select 0 as id, "公共板块" as org_name) as d
+        on ep.dept_id=d.id
+        <if test="type!=null or (deptId!=null and deptId!='') or (deptName!=null and deptName!='')">
             <trim prefix="where" suffixOverrides="and">
                 <if test="type!=null">
-                    type=#{type} and
+                    ep.type=#{type} and
                 </if>
                 <if test="deptId!=null and deptId!=''">
-                    dept_id=#{deptId} and
+                    ep.dept_id=#{deptId} and
+                </if>
+                <if test="deptName!=null and deptName!=''">
+                    d.org_name like concat('%', #{deptName},'%') and
                 </if>
             </trim>
         </if>
@@ -298,7 +303,8 @@
     </update>
 
     <insert id="addDanger">
-        INSERT INTO t_danger (id, no, region_id, address, content, before_pic, rectify_term, check_dept_id, check_user_id,
+        INSERT INTO t_danger (id, no, region_id, address, content, before_pic, rectify_term,
+        check_dept_id, check_user_id,
         check_time,
         <if test="isBuildProb!=null">
             is_build_prob,
@@ -307,8 +313,7 @@
         <if test="isProdProb!=null">
             is_prod_prob,
         </if>
-        prod_entry_id,
-        prod_entry_score,
+        prod_entry_id, prod_entry_score,
         <if test="isDangerProb!=null">
             is_danger_prob,
         </if>
@@ -337,7 +342,7 @@
             #{isBuildProb},
         </if>
         #{buildEntryId}, #{buildScore}, #{buildConversionScore},
-        <if test="isDangerProb!=null">
+        <if test="isProdProb!=null">
             #{isProdProb},
         </if>
         #{prodEntryId}, #{prodEntryScore},

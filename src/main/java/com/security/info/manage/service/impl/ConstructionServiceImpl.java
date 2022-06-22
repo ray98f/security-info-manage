@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -295,8 +296,13 @@ public class ConstructionServiceImpl implements ConstructionService {
                 cells.getCell(9).setCellType(1);
                 String user = cells.getCell(9) == null ? null : cells.getCell(9).getStringCellValue();
                 if (user != null && !user.isEmpty()) {
-                    reqDTO.setUserName(user.split(":")[0]);
-                    reqDTO.setPhone(user.split(":")[1]);
+                    String[] data = user.replaceAll("：", ":").split(":");
+                    if (data.length == 2) {
+                        reqDTO.setUserName(user.split(":")[0]);
+                        reqDTO.setPhone(user.split(":")[1]);
+                    } else {
+                        continue;
+                    }
                 }
                 cells.getCell(10).setCellType(1);
                 reqDTO.setRemark(cells.getCell(10) == null ? null : cells.getCell(10).getStringCellValue());
@@ -308,7 +314,9 @@ public class ConstructionServiceImpl implements ConstructionService {
             fileInputStream.close();
             constructionMapper.importConstruction(temp, planId);
         } catch (Exception e) {
+            log.error("", e);
             throw new CommonException(ErrorCode.IMPORT_ERROR);
         }
+
     }
 }

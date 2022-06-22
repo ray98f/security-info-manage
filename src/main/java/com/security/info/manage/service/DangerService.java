@@ -17,7 +17,7 @@ public interface DangerService {
 
     List<DeptTreeResDTO> listDept(Integer type);
 
-    List<EntryPlate> listPlate(Integer type, String deptId);
+    List<EntryPlate> listPlate(Integer type, String deptId, String deptName);
 
     void addPlate(EntryPlate entryPlate);
 

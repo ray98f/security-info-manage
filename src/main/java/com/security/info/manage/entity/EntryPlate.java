@@ -20,6 +20,9 @@ public class EntryPlate {
     @ApiModelProperty(value = "部门id")
     private String deptId;
 
+    @ApiModelProperty(value = "部门id")
+    private String deptName;
+
     @ApiModelProperty(value = "板块名称")
     private String plateName;
 

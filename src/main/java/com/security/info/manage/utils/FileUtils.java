@@ -1,6 +1,5 @@
 package com.security.info.manage.utils;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -8,32 +7,18 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
-import org.apache.poi.poifs.filesystem.DirectoryEntry;
-import org.apache.poi.poifs.filesystem.DocumentEntry;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.util.XMLHelper;
-import org.apache.poi.xwpf.converter.core.BasicURIResolver;
-import org.apache.poi.xwpf.converter.core.FileImageExtractor;
-import org.apache.poi.xwpf.converter.core.FileURIResolver;
 import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
 import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.util.HtmlUtils;
 import org.w3c.dom.Document;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -397,18 +382,17 @@ public class FileUtils {
 
     /**
      * url转变为 MultipartFile对象
-     * @param url
+     * @param fileUrl
      * @param fileName
      * @return
      * @throws Exception
      */
-    public static MultipartFile createFileItem(String url, String fileName) throws Exception{
+    public static MultipartFile createFileItem(String fileUrl, String fileName) throws Exception{
         FileItem item = null;
         try {
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            HttpURLConnection conn = (HttpURLConnection) new URL(fileUrl).openConnection();
             conn.setReadTimeout(30000);
             conn.setConnectTimeout(30000);
-            //设置应用程序要从网络连接读取数据
             conn.setDoInput(true);
             conn.setRequestMethod("GET");
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
@@ -425,7 +409,7 @@ public class FileUtils {
                 os.close();
                 is.close();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("文件下载失败", e);
         }
         return new CommonsMultipartFile(Objects.requireNonNull(item));

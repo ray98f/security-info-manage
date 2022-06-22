@@ -59,8 +59,8 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    public List<EntryPlate> listPlate(Integer type, String deptId) {
-        return dangerMapper.listPlate(type, deptId);
+    public List<EntryPlate> listPlate(Integer type, String deptId, String deptName) {
+        return dangerMapper.listPlate(type, deptId, deptName);
     }
 
     @Override

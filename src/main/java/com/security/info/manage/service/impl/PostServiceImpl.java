@@ -14,6 +14,7 @@ import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.PostMapper;
 import com.security.info.manage.service.PostService;
 import com.security.info.manage.utils.TokenUtil;
+import javafx.geometry.Pos;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostResDTO> listPost(String name, Integer status, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return postMapper.listPost(pageReqDTO.of(), name, status);
+        Page<PostResDTO> page = postMapper.listPost(pageReqDTO.of(), name, status);
+        List<PostResDTO> list = page.getRecords();
+        if (list != null && !list.isEmpty()) {
+            for (PostResDTO res : list) {
+                res.setUsers(postMapper.selectPostUsers(res.getId()));
+            }
+        }
+        page.setRecords(list);
+        return page;
     }
 
     @Override

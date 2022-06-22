@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.PostReqDTO;
 import com.security.info.manage.dto.req.PostUserReqDTO;
-import com.security.info.manage.dto.res.PostChangeListResDTO;
-import com.security.info.manage.dto.res.PostResDTO;
-import com.security.info.manage.dto.res.PostWarnResDTO;
-import com.security.info.manage.dto.res.VxUserResDTO;
+import com.security.info.manage.dto.res.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +18,8 @@ import java.util.List;
 public interface PostMapper {
 
     Page<PostResDTO> listPost(Page<PostResDTO> page, String name, Integer status);
+
+    List<UserResDTO> selectPostUsers(String id);
 
     List<PostResDTO> listAllPost();
 

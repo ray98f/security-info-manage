@@ -248,8 +248,8 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     }
 
     @Override
-    public void vxSignSafeExpectUser(String id) {
-        Integer result = safeExpectMapper.vxSignSafeExpectUser(id, TokenUtil.getCurrentPersonNo());
+    public void vxSignSafeExpectUser(String id, Integer isSign) {
+        Integer result = safeExpectMapper.vxSignSafeExpectUser(id, isSign, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

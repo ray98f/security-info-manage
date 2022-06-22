@@ -213,7 +213,7 @@
 
     <update id="vxSignSafeExpectUser">
         update t_safe_expect_user set
-        is_sign=-1, sign_time=now()
+        is_sign=#{isSign}, sign_time=now()
         where safe_expect_id=#{id} and user_id=#{userId}
     </update>
 

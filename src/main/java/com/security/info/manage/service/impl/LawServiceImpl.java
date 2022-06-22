@@ -232,14 +232,14 @@ public class LawServiceImpl implements LawService {
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
-        minioUtils.removeObject(LAW, lawReqDTO.getFileUrl().replaceFirst(minioConfig.getUrl() + LAW_PATH, ""));
+        minioUtils.removeObject(LAW, lawReqDTO.getFileUrl().replaceFirst(minioConfig.getImgPath() + LAW_PATH, ""));
         repository.deleteById(lawReqDTO.getFileId());
     }
 
     @Override
     public String previewLaw(String url, String fileName) {
         try {
-            MultipartFile file = FileUtils.createFileItem(url, fileName);
+            MultipartFile file = FileUtils.createFileItem(url.replace(minioConfig.getImgPath(), minioConfig.getUrl()), fileName);
             return TikaUtils.extractHtml(file);
 //            if (url.contains(DOCX)) {
 //                String docxHtml = DocUtils.docx2Html(url, "");
@@ -251,6 +251,7 @@ public class LawServiceImpl implements LawService {
 //                return DocUtils.formatHtml(docHtml);
 //            }
         } catch (Exception e) {
+            log.error("", e);
             throw new CommonException(ErrorCode.PREVIEW_ERROR);
         }
 //        throw new CommonException(ErrorCode.PREVIEW_ERROR);

@@ -15,6 +15,13 @@
         order by p.create_date desc
     </select>
 
+    <select id="selectPostUsers" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select up.user_id as id, u.name
+        from sys_user_post as up left join sys_user as u on u.id=up.user_id and u.is_delete=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        where up.post_id=#{id}
+    </select>
+
     <select id="listAllPost" resultType="com.security.info.manage.dto.res.PostResDTO">
         select p.id, p.org_id, d.org_name, p.post_name, p.status, p.create_date
         from sys_post as p left join sys_dept as d on d.id=p.org_id and d.is_delete=0

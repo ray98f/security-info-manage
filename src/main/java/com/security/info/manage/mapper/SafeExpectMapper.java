@@ -56,7 +56,7 @@ public interface SafeExpectMapper {
 
     Integer signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
 
-    Integer vxSignSafeExpectUser(String id, String userId);
+    Integer vxSignSafeExpectUser(String id, Integer isSign, String userId);
 
     void modifySafeExpectStatus();
 

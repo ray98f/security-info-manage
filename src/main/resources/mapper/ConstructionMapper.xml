@@ -103,7 +103,10 @@
     <update id="deleteWeekPlan">
         update t_weak_plan set
         is_delete=1, update_by=#{userId}, update_date=now()
-        where id=#{id} and is_delete=0
+        where id=#{id} and is_delete=0;
+        update t_construction set
+        is_delete=1, update_by=#{userId}, update_date=now()
+        where plan_id=#{id} and is_delete=0;
     </update>
 
     <select id="listConstruction" resultType="com.security.info.manage.dto.res.ConstructionResDTO">
@@ -156,7 +159,7 @@
         left join t_weak_plan as wp on c.plan_id=wp.id and wp.is_delete=0
         left join sys_dept as d on c.org_id=d.id and d.is_delete=0
         left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
-        where c.is_delete=0 and c.user_id=#{userId}
+        where c.is_delete=0 and c.user_id=#{userId} and wp.id is not null
         order by c.date asc, c.sort asc, c.create_date desc
     </select>
 

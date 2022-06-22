@@ -1,11 +1,9 @@
 package com.security.info.manage.utils;
 
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
@@ -50,7 +48,7 @@ public class ExcelPortUtil {
             headFont.setFontName("宋体");
             headFont.setFontHeightInPoints((short) 18);// 字体大小
 
-            CellStyle headStyle = wb.createCellStyle();
+            XSSFCellStyle headStyle = wb.createCellStyle();
             headStyle.setFont(headFont);
             headStyle.setAlignment(HorizontalAlignment.CENTER);// 左右居中
             headStyle.setVerticalAlignment(VerticalAlignment.CENTER);// 上下居中
@@ -58,7 +56,7 @@ public class ExcelPortUtil {
             cell1.setCellStyle(headStyle);
 
             // 全局加线样式
-            CellStyle cellStyle = wb.createCellStyle();
+            XSSFCellStyle cellStyle = wb.createCellStyle();
             cellStyle.setBorderBottom(BorderStyle.THIN); //下边框
             cellStyle.setBorderLeft(BorderStyle.THIN);//左边框
             cellStyle.setBorderTop(BorderStyle.THIN);//上边框
@@ -96,7 +94,7 @@ public class ExcelPortUtil {
             }
 
             // 底部样式
-            CellStyle bottomStyle = wb.createCellStyle();
+            XSSFCellStyle bottomStyle = wb.createCellStyle();
             bottomStyle.setBorderBottom(BorderStyle.THIN); //下边框
             bottomStyle.setBorderLeft(BorderStyle.THIN);//左边框
             bottomStyle.setBorderTop(BorderStyle.THIN);//上边框

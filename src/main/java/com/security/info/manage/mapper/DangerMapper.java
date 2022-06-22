@@ -18,7 +18,7 @@ public interface DangerMapper {
 
     List<DeptTreeResDTO> listDept(Integer type);
 
-    List<EntryPlate> listPlate(Integer type, String deptId);
+    List<EntryPlate> listPlate(Integer type, String deptId, String deptName);
 
     Integer selectPlateIsExist(EntryPlate entryPlate);
 
