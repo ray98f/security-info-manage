@@ -16,7 +16,7 @@
     <select id="listPlate" resultType="com.security.info.manage.entity.EntryPlate">
         select ep.id, ep.type, ep.dept_id, d.org_name as dept_name, ep.plate_name, ep.proportion
         from sys_entry_plate as ep left join
-        (select id, org_name from sys_dept where is_delete=0 union all select 0 as id, "公共板块" as org_name) as d
+        (select id, org_name from sys_dept where is_delete=0 union all select "0" as id, "公共板块" as org_name) as d
         on ep.dept_id=d.id
         <if test="type!=null or (deptId!=null and deptId!='') or (deptName!=null and deptName!='')">
             <trim prefix="where" suffixOverrides="and">
@@ -31,6 +31,7 @@
                 </if>
             </trim>
         </if>
+        order by d.id asc
     </select>
 
     <select id="selectPlateIsExist" resultType="java.lang.Integer">

@@ -134,7 +134,7 @@ public class SafeExpectServiceImpl implements SafeExpectService {
                     throw new CommonException(ErrorCode.INSERT_ERROR);
                 } else if (safeExpectReqDTO.getUserIds() != null && !safeExpectReqDTO.getUserIds().isEmpty()) {
                     VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-                    vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(safeExpectReqDTO.getUserIds()));
+                    vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(safeExpectReqDTO.getUserIds()) + "|" + safeExpectReqDTO.getUserId());
                     vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的安全预想会参会通知，请前往小程序查看。"));
                     msgService.sendTextMsg(vxSendTextMsgReqDTO);
                 }
