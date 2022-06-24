@@ -56,6 +56,8 @@ public interface DangerMapper {
 
     Integer deleteDanger(DangerReqDTO dangerReqDTO);
 
+    List<UserResDTO> examineUserList(List<String> ids, Integer userType);
+
     DangerExamineResDTO selectUserType(String dangerId);
 
     String selectCheckUserId(String dangerId);
@@ -63,6 +65,8 @@ public interface DangerMapper {
     Integer examineDanger(String id, String opinion, Integer status, String userId, String dangerId, Integer userType, String examineUserId);
 
     Integer issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion, String createBy);
+
+    List<DangerExportResDTO> exportDanger();
 
     List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);
 

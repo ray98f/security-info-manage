@@ -396,8 +396,8 @@ public class SysServiceImpl implements SysService {
     }
 
     @Override
-    public Page<OperationLogResDTO> listOperLog(String startTime, String endTime, Integer type, PageReqDTO pageReqDTO) {
+    public Page<OperationLogResDTO> listOperLog(String startTime, String endTime, Integer type, String operationType, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return sysMapper.listOperLog(pageReqDTO.of(), startTime, endTime, type);
+        return sysMapper.listOperLog(pageReqDTO.of(), startTime, endTime, type, operationType);
     }
 }

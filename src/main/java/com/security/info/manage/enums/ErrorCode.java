@@ -58,6 +58,8 @@ public enum ErrorCode {
 
     DATA_EXIST(32000009, "data.exist"),
 
+    DATA_NOT_EXIST(32000009, "data.not.exist"),
+
     INSERT_ERROR(31000001, "insert.error"),
 
     SELECT_ERROR(31000002, "select.error"),

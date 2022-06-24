@@ -27,5 +27,9 @@ public interface DeptMapper {
 
     DeptTreeResDTO selectParent(String deptId);
 
-    List<UserResDTO> selectDepartmentUser(String deptId, String dangerId);
+    List<UserResDTO> selectDepartmentUser(String deptId, String dangerId, Integer type);
+
+    String upRecursion(String deptId);
+
+    List<String> downRecursion(String deptId);
 }

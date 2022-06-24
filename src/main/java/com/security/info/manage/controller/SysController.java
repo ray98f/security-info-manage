@@ -197,7 +197,8 @@ public class SysController {
     public PageResponse<OperationLogResDTO> listOperLog(@RequestParam(required = false) String startTime,
                                                         @RequestParam(required = false) String endTime,
                                                         @RequestParam(required = false) Integer type,
+                                                        @RequestParam(required = false) String operationType,
                                                         @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(sysService.listOperLog(startTime, endTime, type, pageReqDTO));
+        return PageResponse.of(sysService.listOperLog(startTime, endTime, type, operationType, pageReqDTO));
     }
 }

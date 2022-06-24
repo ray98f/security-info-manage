@@ -50,13 +50,60 @@
         left join sys_user as u on u.id=up.user_id and u.is_delete=0 and u.status=1
         left join sys_user_role as ur on u.id=ur.user_id
         left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
-        where d.parent_id=#{deptId} and d.is_delete=0 and u.id is not null
-        <if test="dangerId==null">
-            and d.org_name like CONCAT('%','科')
+        where
+        <if test="type==1">
+            d.parent_id=#{deptId} and d.is_delete=0 and u.id is not null
+            <if test="dangerId==null">
+                and d.org_name like CONCAT('%','科')
+            </if>
+            <if test="dangerId!=null">
+                and d.org_name like CONCAT('%','部')
+            </if>
         </if>
-        <if test="dangerId!=null">
-            and d.org_name like CONCAT('%','部')
+        <if test="type==2">
+            d.id=#{deptId} and d.is_delete=0 and u.id is not null
         </if>
         group by u.id
+    </select>
+
+    <select id="upRecursion" resultType="java.lang.String">
+        SELECT
+        T2.id
+        FROM
+        (
+        SELECT
+        @r AS _id,
+        (SELECT @r := parent_id FROM sys_dept WHERE id = _id ) AS 2v2,
+        @l := @l + 1 AS lvl
+        FROM
+        ( SELECT @r := #{deptId}, @l := 0 ) vars,
+        sys_dept h
+        ) T1
+        LEFT JOIN sys_dept T2 ON T1._id = T2.id
+        WHERE
+        T2.parent_id="1" and T2.id is not null
+
+    </select>
+
+    <select id="downRecursion" resultType="java.lang.String">
+        SELECT
+        DATA.id
+        FROM
+        (
+        SELECT
+        @ids AS _ids,
+        ( SELECT @ids := GROUP_CONCAT( id ) FROM sys_dept WHERE FIND_IN_SET(parent_id, @ids ) ) AS cids,
+        @l := @l + 1 AS LEVEL
+        FROM
+        sys_dept,
+        ( SELECT @ids := #{deptId}, @l := 0 ) b
+        WHERE
+        @ids IS NOT NULL
+        ) ID,
+        sys_dept DATA
+        WHERE
+        FIND_IN_SET( DATA.id, ID._ids )
+        ORDER BY
+        LEVEL
     </select>
 </mapper>

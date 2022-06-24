@@ -18,6 +18,9 @@ public class OperationLogResDTO {
     @ApiModelProperty(value = "id")
     private String id;
 
+    @ApiModelProperty(value = "类型 1 pc 2 小程序")
+    private Integer type;
+
     @ApiModelProperty(value = "操作员名称")
     private String userName;
 

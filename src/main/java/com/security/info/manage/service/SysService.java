@@ -67,6 +67,6 @@ public interface SysService {
 
     void deleteUserRole(UserRoleReqDTO userRoleReqDTO);
 
-    Page<OperationLogResDTO> listOperLog(String startTime, String endTime, Integer type, PageReqDTO pageReqDTO);
+    Page<OperationLogResDTO> listOperLog(String startTime, String endTime, Integer type, String operationType, PageReqDTO pageReqDTO);
 
 }

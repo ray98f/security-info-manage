@@ -35,6 +35,9 @@ public class PostResDTO {
     @ApiModelProperty(value = "状态")
     private Integer status;
 
+    @ApiModelProperty(value = "审批权限 0(默认，无审批权限) 1(一级审批权限，科长 副科长类的岗位) 2(副部长) 3(部长)")
+    private Integer auditLevel;
+
     @ApiModelProperty(value = "创建时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(

@@ -81,5 +81,5 @@ public interface SysMapper {
 
     Integer selectIfAdmin(String userId);
 
-    Page<OperationLogResDTO> listOperLog(Page<OperationLogResDTO> page, String startTime, String endTime, Integer type);
+    Page<OperationLogResDTO> listOperLog(Page<OperationLogResDTO> page, String startTime, String endTime, Integer type, String operationType);
 }

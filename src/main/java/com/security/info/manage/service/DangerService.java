@@ -8,6 +8,7 @@ import com.security.info.manage.entity.EntryPlate;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -47,9 +48,13 @@ public interface DangerService {
 
     void deleteDanger(DangerReqDTO dangerReqDTO);
 
-    void examineDanger(String dangerId, String deptId, String opinion, Integer status);
+    List<UserResDTO> examineUserList(String deptId, Integer userType);
+
+    void examineDanger(String dangerId, String userId, String opinion, Integer status);
 
     void issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion);
+
+    void exportDanger(HttpServletResponse response);
 
     List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);
 

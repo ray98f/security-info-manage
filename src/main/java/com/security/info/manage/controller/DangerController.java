@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -143,13 +144,20 @@ public class DangerController {
         return DataResponse.success();
     }
 
+    @GetMapping("/examine/user")
+    @ApiOperation(value = "审核人员列表")
+    public DataResponse<List<UserResDTO>> examineUserList(@RequestParam String deptId,
+                                                          @RequestParam(required = false) Integer userType) {
+        return DataResponse.of(dangerService.examineUserList(deptId, userType));
+    }
+
     @GetMapping("/examine")
     @ApiOperation(value = "审核隐患")
     public DataResponse<T> examineDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
-                                         @RequestParam @ApiParam(value = "部门id") String deptId,
+                                         @RequestParam(required = false) @ApiParam(value = "人员id") String userId,
                                          @RequestParam(required = false) @ApiParam(value = "整改意见") String opinion,
                                          @RequestParam @ApiParam(value = "审核状态 0 未审核 1 审核通过 2 审核不通过") Integer status) {
-        dangerService.examineDanger(dangerId, deptId, opinion, status);
+        dangerService.examineDanger(dangerId, userId, opinion, status);
         return DataResponse.success();
     }
 
@@ -162,6 +170,12 @@ public class DangerController {
                                        @RequestParam(required = false) @ApiParam(value = "整改意见") String opinion) {
         dangerService.issueDanger(dangerId, deptId, userId, rectifyTerm, opinion);
         return DataResponse.success();
+    }
+
+    @GetMapping("/export")
+    @ApiOperation(value = "导出隐患")
+    public void exportDanger(HttpServletResponse response) {
+        dangerService.exportDanger(response);
     }
 
     @GetMapping("/statistics/type")

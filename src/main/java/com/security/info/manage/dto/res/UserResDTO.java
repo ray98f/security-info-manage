@@ -74,6 +74,9 @@ public class UserResDTO {
     @ApiModelProperty(value = "年龄")
     private Integer age;
 
+    @ApiModelProperty(value = "岗位名称")
+    private String postName;
+
     public UserResDTO() {}
 
     public UserResDTO(String id, String name, String realName) {

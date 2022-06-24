@@ -18,6 +18,7 @@ import com.security.info.manage.mapper.SysMapper;
 import com.security.info.manage.service.DangerService;
 import com.security.info.manage.service.DeptService;
 import com.security.info.manage.service.MsgService;
+import com.security.info.manage.utils.ExcelPortUtil;
 import com.security.info.manage.utils.ObjectUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -226,9 +229,11 @@ public class DangerServiceImpl implements DangerService {
         if (Objects.isNull(dangerReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        Integer result = dangerMapper.selectIsDangerExamine(dangerReqDTO.getId());
-        if (result != 0 && result != 4) {
-            throw new CommonException(ErrorCode.RESOURCE_USE);
+        if (dangerReqDTO.getId() != null) {
+            Integer result = dangerMapper.selectIsDangerExamine(dangerReqDTO.getId());
+            if (result != 0 && result != 4) {
+                throw new CommonException(ErrorCode.RESOURCE_USE);
+            }
         }
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
         if (dangerReqDTO.getCheckUserId() == null || "".equals(dangerReqDTO.getCheckUserId())) {
@@ -236,7 +241,7 @@ public class DangerServiceImpl implements DangerService {
             dangerReqDTO.setCheckDeptId(TokenUtil.getCurrentPersonDeptId());
             dangerReqDTO.setCheckTime(new Date(System.currentTimeMillis()));
         }
-        result = dangerMapper.modifyDanger(dangerReqDTO);
+        Integer result = dangerMapper.modifyDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         } else if (dangerReqDTO.getIsUse() == 1 && dangerReqDTO.getExamineUserId() != null) {
@@ -288,43 +293,78 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    public void examineDanger(String dangerId, String deptId, String opinion, Integer status) {
-        List<UserResDTO> users = deptService.getDeptUser(deptId, dangerId);
-        if (users == null || users.isEmpty()) {
-            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+    public List<UserResDTO> examineUserList(String deptId, Integer userType) {
+        String res = deptMapper.upRecursion(deptId);
+        if (res != null) {
+            List<String> ids = deptMapper.downRecursion(res);
+            if (ids != null && !ids.isEmpty()) {
+                List<UserResDTO> list = dangerMapper.examineUserList(ids, userType);
+                if (!Objects.isNull(list) && !list.isEmpty()) {
+                    return list;
+                }
+            }
         }
+        throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+    }
+
+    @Override
+    public void examineDanger(String dangerId, String userId, String opinion, Integer status) {
+//        List<UserResDTO> users = deptService.getDeptUser(deptId, dangerId);
+//        if (users == null || users.isEmpty()) {
+//            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+//        }
+//        DangerExamineResDTO res = dangerMapper.selectUserType(dangerId);
+//        if (res.getUserType() == 1) {
+//            for (UserResDTO userResDTO : users) {
+//                if ("副部长".equals(userResDTO.getUserName())) {
+//                    Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
+//                    if (result < 0) {
+//                        throw new CommonException(ErrorCode.UPDATE_ERROR);
+//                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
+//                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+//                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
+//                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+//                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
+//                    }
+//                    break;
+//                }
+//            }
+//        } else if (res.getUserType() == 2) {
+//            for (UserResDTO userResDTO : users) {
+//                if ("部长".equals(userResDTO.getUserName())) {
+//                    Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
+//                    if (result < 0) {
+//                        throw new CommonException(ErrorCode.UPDATE_ERROR);
+//                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
+//                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+//                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
+//                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+//                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
+//                    }
+//                    break;
+//                }
+//            }
+//        } else if (res.getUserType() == 3) {
+//            DangerResDTO dangerResDTO = getDangerDetail(dangerId);
+//            if (Objects.isNull(dangerResDTO)) {
+//                throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+//            }
+//            String checkUserId = dangerMapper.selectCheckUserId(dangerId);
+//            if (Objects.isNull(checkUserId)) {
+//                throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+//            }
+//            Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, checkUserId);
+//            if (result < 0) {
+//                throw new CommonException(ErrorCode.UPDATE_ERROR);
+//            } else if (!"".equals(checkUserId)) {
+//                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+//                vxSendTextMsgReqDTO.setTouser(checkUserId);
+//                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+//                msgService.sendTextMsg(vxSendTextMsgReqDTO);
+//            }
+//        }
         DangerExamineResDTO res = dangerMapper.selectUserType(dangerId);
-        if (res.getUserType() == 1) {
-            for (UserResDTO userResDTO : users) {
-                if ("副部长".equals(userResDTO.getUserName())) {
-                    Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
-                    if (result < 0) {
-                        throw new CommonException(ErrorCode.UPDATE_ERROR);
-                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
-                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
-                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
-                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
-                    }
-                    break;
-                }
-            }
-        } else if (res.getUserType() == 2) {
-            for (UserResDTO userResDTO : users) {
-                if ("部长".equals(userResDTO.getUserName())) {
-                    Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
-                    if (result < 0) {
-                        throw new CommonException(ErrorCode.UPDATE_ERROR);
-                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
-                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
-                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
-                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
-                    }
-                    break;
-                }
-            }
-        } else if (res.getUserType() == 3) {
+        if (res.getUserType() == 3) {
             DangerResDTO dangerResDTO = getDangerDetail(dangerId);
             if (Objects.isNull(dangerResDTO)) {
                 throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
@@ -339,6 +379,16 @@ public class DangerServiceImpl implements DangerService {
             } else if (!"".equals(checkUserId)) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(checkUserId);
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+                msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            }
+        } else {
+            Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userId);
+            if (result < 0) {
+                throw new CommonException(ErrorCode.UPDATE_ERROR);
+            } else if (userId != null && !"".equals(userId)) {
+                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+                vxSendTextMsgReqDTO.setTouser(userId);
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
@@ -360,6 +410,67 @@ public class DangerServiceImpl implements DangerService {
         Integer result = dangerMapper.issueDanger(dangerId, deptId, userId, rectifyTerm, opinion, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void exportDanger(HttpServletResponse response) {
+        List<String> listName = Arrays.asList("编号", "时间", "地点", "检查部门", "检查人", "问题", "标准化工区建设-版块",
+                "标准化工区建设-标准化词条", "标准化工区建设-扣除分值", "标准化工区建设-换算分值", "安全生产标准化-版块",
+                "安全生产标准化-类别", "安全生产标准化-词条", "安全生产标准化-考核分值", "安全隐患排查与治理-隐患类别",
+                "安全隐患排查与治理-隐患等级", "图片", "整改时限", "是否销项", "整改/防护措施", "整改后图片", "责任部门",
+                "责任工区" , "整改责任人", "备注");
+        List<DangerExportResDTO> exportDanger = dangerMapper.exportDanger();
+        List<Map<String, String>> list = new ArrayList<>();
+        if (exportDanger != null && !exportDanger.isEmpty()) {
+            for (DangerExportResDTO resDTO : exportDanger) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Map<String, String> map = new HashMap<>();
+                map.put("编号", resDTO.getNo());
+                map.put("时间", sdf.format(resDTO.getCheckTime()));
+                map.put("地点", resDTO.getRegionName() + "-" + resDTO.getAddress());
+                map.put("检查部门", resDTO.getCheckDeptName());
+                map.put("检查人", resDTO.getCheckUserName());
+                map.put("问题", resDTO.getContent());
+                map.put("标准化工区建设-版块", resDTO.getBuildPlateName());
+                map.put("标准化工区建设-标准化词条", resDTO.getBuildEntry());
+                map.put("标准化工区建设-扣除分值", String.valueOf(resDTO.getBuildScore()));
+                map.put("标准化工区建设-换算分值", String.valueOf(resDTO.getBuildConversionScore()));
+                map.put("安全生产标准化-版块", resDTO.getProdPlateName());
+                map.put("安全生产标准化-类别", resDTO.getProdCategory());
+                map.put("安全生产标准化-词条", resDTO.getProdEntry());
+                map.put("安全生产标准化-考核分值", String.valueOf(resDTO.getProdEntryScore()));
+                map.put("安全隐患排查与治理-隐患类别", resDTO.getDangerCategory() == 1 ? "安全装置" :
+                        resDTO.getDangerCategory() == 2 ? "设备设施" :
+                                resDTO.getDangerCategory() == 3 ? "管理" :
+                                        resDTO.getDangerCategory() == 4 ? "作业环境" :
+                                                resDTO.getDangerCategory() == 5 ? "作业行为" : "其他");
+                map.put("安全隐患排查与治理-隐患等级", resDTO.getLevel() == 1 ? "一般" : "重大");
+                map.put("图片", resDTO.getBeforePic());
+                map.put("整改时限", sdf.format(resDTO.getRectifyTerm()));
+                map.put("是否销项", resDTO.getIsEliminate() == 0 ? "否" : "是");
+                map.put("整改/防护措施", resDTO.getRectifyMeasure());
+                map.put("整改后图片", resDTO.getAfterPic());
+                DeptTreeResDTO res = deptMapper.selectParent(resDTO.getResponsibilityDeptId());
+                if (!Objects.isNull(res) && !"1".equals(res.getId())) {
+                    while (!"1".equals(res.getParentId())) {
+                        res = deptMapper.selectParent(res.getId());
+                        if (Objects.isNull(res)) {
+                            break;
+                        }
+                    }
+                }
+                map.put("责任部门", res.getOrgName());
+                map.put("责任工区", resDTO.getResponsibilityDeptName());
+                map.put("整改责任人", resDTO.getRectifyUserName());
+                map.put("备注", "");
+                list.add(map);
+            }
+        }
+        if (list.isEmpty()) {
+            throw new CommonException(ErrorCode.DATA_NOT_EXIST);
+        } else {
+            ExcelPortUtil.excelPort("问题检查汇总表", listName, list, null, response);
         }
     }
 

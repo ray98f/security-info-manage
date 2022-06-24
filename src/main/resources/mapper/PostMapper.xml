@@ -3,7 +3,7 @@
 <mapper namespace="com.security.info.manage.mapper.PostMapper">
 
     <select id="listPost" resultType="com.security.info.manage.dto.res.PostResDTO">
-        select p.id, p.org_id, d.org_name, p.post_name, p.status, p.create_date
+        select p.id, p.org_id, d.org_name, p.post_name, p.status, p.create_date, p.audit_level
         from sys_post as p left join sys_dept as d on d.id=p.org_id and d.is_delete=0
         where p.is_delete=0
         <if test="status!=null">
@@ -23,7 +23,7 @@
     </select>
 
     <select id="listAllPost" resultType="com.security.info.manage.dto.res.PostResDTO">
-        select p.id, p.org_id, d.org_name, p.post_name, p.status, p.create_date
+        select p.id, p.org_id, d.org_name, p.post_name, p.status, p.create_date, p.audit_level
         from sys_post as p left join sys_dept as d on d.id=p.org_id and d.is_delete=0
         where p.is_delete=0 and p.status=0
         order by p.create_date desc
@@ -40,14 +40,31 @@
         <if test="status!=null">
             status=#{status},
         </if>
+        <if test="auditLevel!=null">
+            audit_level=#{auditLevel},
+        </if>
         update_by=#{userId}, update_date=now()
         where
         id=#{id} and is_delete=0
     </update>
 
     <insert id="addPost">
-        INSERT INTO sys_post (id, org_id, post_name, status, create_by)
-        value (#{id}, #{orgId}, #{postName}, #{status}, #{userId})
+        INSERT INTO sys_post (id, org_id, post_name,
+        <if test="status!=null">
+            status,
+        </if>
+        <if test="auditLevel!=null">
+            audit_level,
+        </if>
+        create_by)
+        value (#{id}, #{orgId}, #{postName},
+        <if test="status!=null">
+            #{status},
+        </if>
+        <if test="auditLevel!=null">
+            #{auditLevel},
+        </if>
+        #{userId})
     </insert>
 
     <update id="deletePost">

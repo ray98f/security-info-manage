@@ -382,6 +382,22 @@
         where danger_id=#{id} and is_delete=0;
     </update>
 
+    <select id="examineUserList" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.real_name, d.org_name as dept_name, p.post_name as user_name
+        from sys_dept as d
+        left join sys_post as p on p.org_id=d.id and p.status=0 and p.is_delete=0
+        left join sys_user_post as up on up.post_id=p.id
+        left join sys_user as u on u.id=up.user_id and u.is_delete=0 and u.status=1
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        where p.audit_level=#{userType} and d.id in (
+        <foreach collection="ids" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+        group by u.id
+    </select>
+
     <select id="selectUserType" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
         select id, max(user_type) as user_type from t_danger_examine where danger_id=#{dangerId} and is_delete=0 and status=0
     </select>
@@ -420,6 +436,31 @@
         insert into t_danger_rectify(id, danger_id, rectify_user_id, create_by)
         value (replace(uuid(),"-",""), #{dangerId}, #{userId}, #{createBy});
     </update>
+
+    <select id="exportDanger" resultType="com.security.info.manage.dto.res.DangerExportResDTO">
+        select d.id, d.no, d.check_time, r.name as region_name, d.address, d.content, d.rectify_term, d.build_score,
+        d1.org_name as check_dept_name, ue.real_name as check_user_name, d.build_conversion_score, d.prod_category,
+        d.prod_entry_score, d.level, d.danger_category, dr.rectify_measure, d2.org_name as responsibility_dept_name,
+        ue1.real_name as rectify_user_name, e1.content as build_entry, ep1.plate_name as build_plate_name,
+        e2.content as prod_entry, ep2.plate_name as prod_plate_name, group_concat(distinct f1.file_url) as before_pic,
+        group_concat(distinct f2.file_url) as after_pic, dr.is_eliminate, d.responsibility_dept_id
+        from t_danger as d
+        left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
+        left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
+        left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
+        left join sys_dept as d2 on d2.id=d.responsibility_dept_id and d2.is_delete=0
+        left join sys_user_ext as ue1 on dr.rectify_user_id=ue1.user_id and ue1.status=0 and ue1.is_delete=0
+        left join sys_entry as e1 on e1.id=d.build_entry_id
+        left join sys_entry_plate as ep1 on e1.plate_id=ep1.id
+        left join sys_entry as e2 on e2.id=d.prod_entry_id
+        left join sys_entry_plate as ep2 on e2.plate_id=ep2.id
+        left join sys_file as f1 on find_in_set(f1.id,d.before_pic)>0
+        left join sys_file as f2 on find_in_set(f2.id,dr.after_pic)>0
+        where d.is_use=1 and d.status=5
+        group by d.id, dr.id
+        order by d.check_time desc
+    </select>
 
     <select id="dangerTypeStatistics" resultType="com.security.info.manage.dto.res.DangerTypeStatisticsResDTO">
         select a.* from (

@@ -144,7 +144,8 @@
 
     <select id="pageUser" resultType="com.security.info.manage.dto.res.UserResDTO">
         select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
-        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles from sys_user as u
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles, GROUP_CONCAT(p.post_name) as post_name
+        from sys_user as u
         left join sys_user_role as ur on u.id=ur.user_id
         left join sys_user_post as up on up.user_id=u.id
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0

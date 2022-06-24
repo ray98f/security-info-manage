@@ -109,9 +109,9 @@ public class DeptServiceImpl implements DeptService {
                     break;
                 }
             }
-            return deptMapper.selectDepartmentUser(res.getId(), dangerId);
+            return deptMapper.selectDepartmentUser(res.getId(), dangerId, 1);
         } else if ("1".equals(res.getId())) {
-            return deptMapper.selectDepartmentUser(deptId, dangerId);
+            return deptMapper.selectDepartmentUser(deptId, dangerId, 2);
         } else {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }

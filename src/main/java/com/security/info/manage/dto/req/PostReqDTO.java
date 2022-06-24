@@ -27,6 +27,9 @@ public class PostReqDTO {
     @ApiModelProperty(value = "状态 0 正常 1 停用")
     private Integer status;
 
+    @ApiModelProperty(value = "审批权限 0(默认，无审批权限) 1(一级审批权限，科长 副科长类的岗位) 2(副部长) 3(部长)")
+    private Integer auditLevel;
+
     @ApiModelProperty(value = "用户id")
     private String userId;
 }
