@@ -88,7 +88,11 @@ public class Ztt4gServiceImpl implements Ztt4gService {
         if (Objects.requireNonNull(res).getJSONArray("Res") == null) {
             return new ArrayList<>();
         }
-        return JSONArray.parseArray(res.getJSONArray("Res").toJSONString(), Ztt4GVideoResDTO.class);
+        List<Ztt4GVideoResDTO> list = JSONArray.parseArray(res.getJSONArray("Res").toJSONString(), Ztt4GVideoResDTO.class);
+        if (list != null && !list.isEmpty()) {
+            list = list.stream().filter(item -> "IV".equals(item.getType()) || "ST".equals(item.getType())).collect(Collectors.toList());
+        }
+        return list;
     }
 
     @Override

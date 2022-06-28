@@ -77,7 +77,7 @@ logging:
     path: ./log
 
 excluded:
-  pages: /securityInfo/manage/sys/login,/securityInfo/manage/sys/h5sign,/securityInfo/manage/sys/vx/login,/securityInfo/manage/sys/vx/login/simple,/securityInfo/manage/sys/vx/audit/status,/securityInfo/manage/dept/sync/list,/securityInfo/manage/user/sync/list
+  pages: /securityInfo/manage/sys/login,/securityInfo/manage/sys/menu,/securityInfo/manage/sys/h5sign,/securityInfo/manage/sys/vx/login,/securityInfo/manage/sys/vx/login/simple,/securityInfo/manage/sys/vx/audit/status,/securityInfo/manage/dept/sync/list,/securityInfo/manage/user/sync/list
 
 vx-business:
   corpid: ww56aa612b390c11d2

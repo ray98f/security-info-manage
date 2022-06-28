@@ -6,15 +6,15 @@ server:
     context-path: /securityInfo/manage
 spring:
   profiles:
-    active: dev
+    active: pord
   messages:
     basename: i18n/messages
   application:
     name: security-info-manage
   servlet:
     multipart:
-      max-request-size: 10MB
-      max-file-size: 10MB
+      max-request-size: 25MB
+      max-file-size: 25MB
       enabled: true
 swagger:
     enable: true

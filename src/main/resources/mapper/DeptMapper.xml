@@ -92,7 +92,7 @@
         (
         SELECT
         @ids AS _ids,
-        ( SELECT @ids := GROUP_CONCAT( id ) FROM sys_dept WHERE FIND_IN_SET(parent_id, @ids ) ) AS cids,
+        (SELECT @ids := GROUP_CONCAT( id ) FROM sys_dept WHERE FIND_IN_SET(parent_id, @ids)) AS cids,
         @l := @l + 1 AS LEVEL
         FROM
         sys_dept,

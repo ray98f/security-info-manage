@@ -36,35 +36,22 @@ public class MySqlParserFilter implements ISqlParserFilter {
 
     @Override
     public boolean doFilter(MetaObject metaObject) {
-        MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
-        if (SqlCommandType.SELECT == mappedStatement.getSqlCommandType()) {
-            BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
-            String sql = boundSql.getSql();
-            try {
-                Select select = (Select) CCJSqlParserUtil.parse(sql);
-                SelectBody selectBody = select.getSelectBody();
-                PlainSelect plainSelect = (PlainSelect) selectBody;
-                if (!(plainSelect.getFromItem() instanceof Table)) {
-                    return false;
-                }
-            } catch (JSQLParserException e) {
-                e.printStackTrace();
-                log.error("error when parse sql ! ");
-            }
-        }
-        return false;
-    }
-
-    private static String sqliteEscape(String keyWord) {
-        keyWord = keyWord.replace("/", "//");
-        keyWord = keyWord.replace("'", "''");
-        keyWord = keyWord.replace("[", "/[");
-        keyWord = keyWord.replace("]", "/]");
-        keyWord = keyWord.replace("%", "/%");
-        keyWord = keyWord.replace("&", "/&");
-        keyWord = keyWord.replace("_", "/_");
-        keyWord = keyWord.replace("(", "/(");
-        keyWord = keyWord.replace(")", "/)");
-        return keyWord;
+//        MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
+//        if (SqlCommandType.SELECT == mappedStatement.getSqlCommandType()) {
+//            BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
+//            String sql = boundSql.getSql();
+//            try {
+//                Select select = (Select) CCJSqlParserUtil.parse(sql);
+//                SelectBody selectBody = select.getSelectBody();
+//                PlainSelect plainSelect = (PlainSelect) selectBody;
+//                if (!(plainSelect.getFromItem() instanceof Table)) {
+//                    return false;
+//                }
+//            } catch (JSQLParserException e) {
+//                e.printStackTrace();
+//                log.error("error when parse sql ! ");
+//            }
+//        }
+        return true;
     }
 }

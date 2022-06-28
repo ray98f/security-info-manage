@@ -1,9 +1,11 @@
 package com.security.info.manage.mapper;
 
+import com.baomidou.mybatisplus.annotation.SqlParser;
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.security.info.manage.dto.res.UserResDTO;
 import com.security.info.manage.dto.res.VxDeptResDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,7 +31,9 @@ public interface DeptMapper {
 
     List<UserResDTO> selectDepartmentUser(String deptId, String dangerId, Integer type);
 
-    String upRecursion(String deptId);
+    @SqlParser(filter = true)
+    String upRecursion(@Param("deptId") String deptId);
 
-    List<String> downRecursion(String deptId);
+    @SqlParser(filter = true)
+    List<String> downRecursion(@Param("deptId") String deptId);
 }
