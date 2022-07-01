@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -36,6 +37,7 @@ public class PhysicalController {
 
     @GetMapping("/export")
     @ApiOperation(value = "体检流程导出")
+    @LogMaker(value = "网页端-职业健康体检流程导出")
     public void exportPhysical(@RequestParam(required = false) String sStartTime,
                                @RequestParam(required = false) String sEndTime,
                                @RequestParam(required = false) String eStartTime,
@@ -59,6 +61,7 @@ public class PhysicalController {
 
     @PostMapping("/add")
     @ApiOperation(value = "新增体检流程")
+    @LogMaker(value = "网页端-职业健康体检流程新增")
     public DataResponse<T> addPhysical(@RequestBody PhysicalReqDTO physicalReqDTO) {
         physicalService.addPhysical(physicalReqDTO);
         return DataResponse.success();
@@ -66,6 +69,7 @@ public class PhysicalController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "修改体检流程")
+    @LogMaker(value = "网页端-职业健康体检流程修改")
     public DataResponse<T> modifyPhysical(@RequestBody PhysicalReqDTO physicalReqDTO) {
         physicalService.modifyPhysical(physicalReqDTO);
         return DataResponse.success();
@@ -73,6 +77,7 @@ public class PhysicalController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "删除体检流程")
+    @LogMaker(value = "网页端-职业健康体检流程删除")
     public DataResponse<T> deletePhysical(@RequestBody PhysicalReqDTO physicalReqDTO) {
         physicalService.deletePhysical(physicalReqDTO);
         return DataResponse.success();
@@ -92,6 +97,7 @@ public class PhysicalController {
 
     @GetMapping("/vx/user/confirm")
     @ApiOperation(value = "微信端-体检结果确认")
+    @LogMaker(value = "微信小程序-职业健康体检结果确认")
     public DataResponse<T> vxConfirmPhysicalUser(@RequestParam String id) {
         physicalService.vxConfirmPhysicalUser(id);
         return DataResponse.success();
@@ -112,6 +118,7 @@ public class PhysicalController {
 
     @GetMapping("/user/review")
     @ApiOperation(value = "发起复检")
+    @LogMaker(value = "网页端-职业健康发起复检")
     public DataResponse<T> userReview(@RequestParam String id) {
         physicalService.userReview(id);
         return DataResponse.success();
@@ -119,6 +126,7 @@ public class PhysicalController {
 
     @PostMapping("/file/word")
     @ApiOperation(value = "检查结果word文件上传")
+    @LogMaker(value = "网页端-职业健康体检检查结果word文件上传")
     public DataResponse<T> uploadWord(@RequestParam MultipartFile file, String bizCode, String id) throws Exception {
         physicalService.uploadWord(file, bizCode, id);
         return DataResponse.success();
@@ -126,6 +134,7 @@ public class PhysicalController {
 
     @PostMapping("/file/pdf")
     @ApiOperation(value = "检查结果pdf文件上传")
+    @LogMaker(value = "网页端-职业健康体检检查结果pdf文件上传")
     public DataResponse<T> uploadPdf(@RequestParam MultipartFile file, String bizCode, String id) throws Exception {
         physicalService.uploadPdf(file, bizCode, id);
         return DataResponse.success();
@@ -149,6 +158,7 @@ public class PhysicalController {
 
     @PostMapping("/feedback/add")
     @ApiOperation(value = "新增体检反馈")
+    @LogMaker(value = "网页端-职业健康体检反馈新增")
     public DataResponse<T> addFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
         physicalService.addFeedback(physicalFeedback);
         return DataResponse.success();
@@ -156,6 +166,7 @@ public class PhysicalController {
 
     @PostMapping("/feedback/modify")
     @ApiOperation(value = "审批体检反馈")
+    @LogMaker(value = "网页端-职业健康体检反馈审批")
     public DataResponse<T> modifyFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
         physicalService.modifyFeedback(physicalFeedback);
         return DataResponse.success();
@@ -188,6 +199,7 @@ public class PhysicalController {
 
     @PostMapping("/warn/handle")
     @ApiOperation(value = "处理体检预警")
+    @LogMaker(value = "网页端-职业健康处理体检预警")
     public DataResponse<T> handlePhysicalWarn(@RequestBody PhysicalWarnResDTO physicalWarnResDTO) {
         physicalService.handlePhysicalWarn(physicalWarnResDTO.getId());
         return DataResponse.success();

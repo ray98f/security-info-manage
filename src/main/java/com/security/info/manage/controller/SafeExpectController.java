@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -67,6 +68,7 @@ public class SafeExpectController {
 
     @PostMapping("/add")
     @ApiOperation(value = "安全预想会新增")
+    @LogMaker(value = "网页端-双重预防机制安全预想会新增")
     public DataResponse<T> addSafeExpect(@RequestBody SafeExpectReqDTO safeExpectReqDTO) {
         safeExpectService.addSafeExpect(safeExpectReqDTO);
         return DataResponse.success();
@@ -80,6 +82,7 @@ public class SafeExpectController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "安全预想会编辑")
+    @LogMaker(value = "网页端-双重预防机制安全预想会编辑")
     public DataResponse<T> modifySafeExpect(@RequestBody SafeExpectModifyReqDTO safeExpectModifyReqDTO) {
         safeExpectService.modifySafeExpect(safeExpectModifyReqDTO);
         return DataResponse.success();
@@ -87,6 +90,7 @@ public class SafeExpectController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "安全预想会删除")
+    @LogMaker(value = "网页端-双重预防机制安全预想会删除")
     public DataResponse<T> deleteSafeExpect(@RequestBody SafeExpectReqDTO safeExpectReqDTO) {
         safeExpectService.deleteSafeExpect(safeExpectReqDTO);
         return DataResponse.success();
@@ -94,6 +98,7 @@ public class SafeExpectController {
 
     @PostMapping("/cancel")
     @ApiOperation(value = "安全预想会取消")
+    @LogMaker(value = "网页端-双重预防机制安全预想会取消")
     public DataResponse<T> cancelSafeExpect(@RequestBody SafeExpectReqDTO safeExpectReqDTO) {
         safeExpectService.cancelSafeExpect(safeExpectReqDTO);
         return DataResponse.success();
@@ -108,6 +113,7 @@ public class SafeExpectController {
 
     @PostMapping("/user/sign")
     @ApiOperation(value = "安全预想会人员签到")
+    @LogMaker(value = "网页端-双重预防机制安全预想会人员签到")
     public DataResponse<T> signSafeExpectUser(@RequestBody SafeExpectUserResDTO safeExpectUserResDTO) {
         safeExpectService.signSafeExpectUser(safeExpectUserResDTO);
         return DataResponse.success();
@@ -115,6 +121,7 @@ public class SafeExpectController {
 
     @GetMapping("/vx/user/sign")
     @ApiOperation(value = "微信端-安全预想会人员签到")
+    @LogMaker(value = "微信小程序-双重预防机制安全预想会人员签到")
     public DataResponse<T> vxSignSafeExpectUser(@RequestParam String id,
                                                 @RequestParam Integer isSign) {
         safeExpectService.vxSignSafeExpectUser(id, isSign);
@@ -129,6 +136,7 @@ public class SafeExpectController {
 
     @GetMapping("/export")
     @ApiOperation(value = "导出安全预想会word")
+    @LogMaker(value = "网页端-双重预防机制导出安全预想会word")
     public DataResponse<File> exportSafeExpect(@RequestParam String id) throws Exception {
         return DataResponse.of(safeExpectService.exportSafeExpect(id));
     }

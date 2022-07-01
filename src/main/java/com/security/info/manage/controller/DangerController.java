@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -125,6 +126,7 @@ public class DangerController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "隐患修改")
+    @LogMaker(value = "网页端-问题检查问题排查管理修改")
     public DataResponse<T> modifyDanger(@RequestBody DangerReqDTO dangerReqDTO) {
         dangerService.modifyDanger(dangerReqDTO);
         return DataResponse.success();
@@ -132,6 +134,7 @@ public class DangerController {
 
     @PostMapping("/add")
     @ApiOperation(value = "隐患新增")
+    @LogMaker(value = "网页端-问题检查问题排查管理新增")
     public DataResponse<T> addDanger(@RequestBody DangerReqDTO dangerReqDTO) {
         dangerService.addDanger(dangerReqDTO);
         return DataResponse.success();
@@ -139,6 +142,7 @@ public class DangerController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "隐患删除")
+    @LogMaker(value = "网页端-问题检查问题排查管理删除")
     public DataResponse<T> deleteDanger(@RequestBody DangerReqDTO dangerReqDTO) {
         dangerService.deleteDanger(dangerReqDTO);
         return DataResponse.success();
@@ -147,12 +151,13 @@ public class DangerController {
     @GetMapping("/examine/user")
     @ApiOperation(value = "审核人员列表")
     public DataResponse<List<UserResDTO>> examineUserList(@RequestParam String deptId,
-                                                          @RequestParam(required = false) Integer userType) {
+                                                          @RequestParam Integer userType) {
         return DataResponse.of(dangerService.examineUserList(deptId, userType));
     }
 
     @GetMapping("/examine")
     @ApiOperation(value = "审核隐患")
+    @LogMaker(value = "网页端-问题检查问题排查管理审核")
     public DataResponse<T> examineDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
                                          @RequestParam(required = false) @ApiParam(value = "人员id") String userId,
                                          @RequestParam(required = false) @ApiParam(value = "整改意见") String opinion,
@@ -163,6 +168,7 @@ public class DangerController {
 
     @GetMapping("/issue")
     @ApiOperation(value = "下发隐患到责任部门")
+    @LogMaker(value = "网页端-问题检查问题排查管理问题下发")
     public DataResponse<T> issueDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
                                        @RequestParam @ApiParam(value = "部门id") String deptId,
                                        @RequestParam @ApiParam(value = "人员id") String userId,
@@ -174,6 +180,7 @@ public class DangerController {
 
     @GetMapping("/export")
     @ApiOperation(value = "导出隐患")
+    @LogMaker(value = "网页端-问题检查问题排查管理导出")
     public void exportDanger(HttpServletResponse response) {
         dangerService.exportDanger(response);
     }

@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -47,6 +48,7 @@ public class TransportController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "交通工具修改")
+    @LogMaker(value = "网页端-双重预防机制交通工具修改")
     public DataResponse<T> modifyTransport(@RequestBody TransportReqDTO transportReqDTO) {
         transportService.modifyTransport(transportReqDTO);
         return DataResponse.success();
@@ -54,6 +56,7 @@ public class TransportController {
 
     @PostMapping("/add")
     @ApiOperation(value = "交通工具新增")
+    @LogMaker(value = "网页端-双重预防机制交通工具新增")
     public DataResponse<T> addTransport(@RequestBody TransportReqDTO transportReqDTO) {
         transportService.addTransport(transportReqDTO);
         return DataResponse.success();
@@ -61,6 +64,7 @@ public class TransportController {
 
     @PostMapping("/import")
     @ApiOperation(value = "交通工具导入")
+    @LogMaker(value = "网页端-双重预防机制交通工具导入")
     public DataResponse<T> importTransport(@RequestParam MultipartFile file) {
         transportService.importTransport(file);
         return DataResponse.success();
@@ -68,6 +72,7 @@ public class TransportController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "交通工具删除")
+    @LogMaker(value = "网页端-双重预防机制交通工具删除")
     public DataResponse<T> deleteTransport(@RequestBody TransportReqDTO transportReqDTO) {
         transportService.deleteTransport(transportReqDTO);
         return DataResponse.success();

@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -48,6 +49,7 @@ public class RegionController {
 
     @PostMapping("/type/modify")
     @ApiOperation(value = "区域类型修改")
+    @LogMaker(value = "网页端-双重预防机制区域类型修改")
     public DataResponse<T> modifyRegionType(@RequestBody RegionTypeReqDTO regionTypeReqDTO) {
         regionService.modifyRegionType(regionTypeReqDTO);
         return DataResponse.success();
@@ -55,6 +57,7 @@ public class RegionController {
 
     @PostMapping("/type/add")
     @ApiOperation(value = "区域类型新增")
+    @LogMaker(value = "网页端-双重预防机制区域类型新增")
     public DataResponse<T> addRegionType(@RequestBody RegionTypeReqDTO regionTypeReqDTO) {
         regionService.addRegionType(regionTypeReqDTO);
         return DataResponse.success();
@@ -62,6 +65,7 @@ public class RegionController {
 
     @PostMapping("/type/delete")
     @ApiOperation(value = "区域类型删除")
+    @LogMaker(value = "网页端-双重预防机制区域类型删除")
     public DataResponse<T> deleteRegionType(@RequestBody RegionTypeReqDTO regionTypeReqDTO) {
         regionService.deleteRegionType(regionTypeReqDTO);
         return DataResponse.success();
@@ -99,6 +103,7 @@ public class RegionController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "区域修改")
+    @LogMaker(value = "网页端-双重预防机制区域修改")
     public DataResponse<T> modifyRegion(@RequestBody RegionReqDTO regionReqDTO) {
         regionService.modifyRegion(regionReqDTO);
         return DataResponse.success();
@@ -106,6 +111,7 @@ public class RegionController {
 
     @PostMapping("/add")
     @ApiOperation(value = "区域新增")
+    @LogMaker(value = "网页端-双重预防机制区域新增")
     public DataResponse<T> addRegion(@RequestBody RegionReqDTO regionReqDTO) {
         regionService.addRegion(regionReqDTO);
         return DataResponse.success();
@@ -113,6 +119,7 @@ public class RegionController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "区域删除")
+    @LogMaker(value = "网页端-双重预防机制区域删除")
     public DataResponse<T> deleteRegion(@RequestBody RegionReqDTO regionReqDTO) {
         regionService.deleteRegion(regionReqDTO);
         return DataResponse.success();

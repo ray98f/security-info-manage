@@ -19,6 +19,8 @@ public interface TrainMapper {
 
     Page<TrainResDTO> listTrain(Page<TrainResDTO> page, String name, String startTime, String endTime);
 
+    Page<TrainResDTO> listMineTrain(Page<TrainResDTO> page, String name, String startTime, String endTime, String userId);
+
     TrainResDTO getTrainDetail(String id);
 
     Page<TrainDetailResDTO> listTrainUserDetail(Page<TrainDetailResDTO> page, String id);

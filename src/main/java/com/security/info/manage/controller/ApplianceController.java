@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -49,6 +50,7 @@ public class ApplianceController {
 
     @PostMapping("/add")
     @ApiOperation(value = "新增劳保用品")
+    @LogMaker(value = "网页端-双重预防机制劳保用品新增")
     public DataResponse<T> insertAppliance(@RequestBody ApplianceReqDTO applianceReqDTO) {
         applianceService.insertAppliance(applianceReqDTO);
         return DataResponse.success();
@@ -56,6 +58,7 @@ public class ApplianceController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "修改劳保用品")
+    @LogMaker(value = "网页端-双重预防机制劳保用品修改")
     public DataResponse<T> modifyAppliance(@RequestBody ApplianceReqDTO applianceReqDTO) {
         applianceService.modifyAppliance(applianceReqDTO);
         return DataResponse.success();
@@ -63,6 +66,7 @@ public class ApplianceController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "删除劳保用品")
+    @LogMaker(value = "网页端-双重预防机制劳保用品删除")
     public DataResponse<T> deleteAppliance(@RequestBody ApplianceReqDTO applianceReqDTO) {
         applianceService.deleteAppliance(applianceReqDTO);
         return DataResponse.success();
@@ -70,6 +74,7 @@ public class ApplianceController {
 
     @PostMapping("/user/import")
     @ApiOperation(value = "劳保用品配备导入")
+    @LogMaker(value = "网页端-双重预防机制劳保用品配备导入")
     public DataResponse<T> importApplianceConfig(@RequestParam MultipartFile file) {
         applianceService.importApplianceConfig(file);
         return DataResponse.success();
@@ -77,6 +82,7 @@ public class ApplianceController {
 
     @PostMapping("/user/export")
     @ApiOperation(value = "劳保用品配备导出")
+    @LogMaker(value = "网页端-双重预防机制劳保用品配备导出")
     public void exportApplianceConfig(HttpServletResponse response) {
         applianceService.exportApplianceConfig(response);
     }
@@ -99,6 +105,7 @@ public class ApplianceController {
 
     @GetMapping("/vx/user/confirm")
     @ApiOperation(value = "微信端-劳保用品配备确认")
+    @LogMaker(value = "微信小程序-双重预防机制劳保用品配备确认")
     public DataResponse<T> vxConfirmApplianceConfig(@RequestParam String id) {
         applianceService.vxConfirmApplianceConfig(id);
         return DataResponse.success();
@@ -112,6 +119,7 @@ public class ApplianceController {
 
     @PostMapping("/user/delete")
     @ApiOperation(value = "删除劳保用品配备")
+    @LogMaker(value = "网页端-双重预防机制劳保用品配备删除")
     public DataResponse<T> deleteApplianceConfig(@RequestBody ApplianceConfigResDTO applianceConfigResDTO) {
         applianceService.deleteApplianceConfig(applianceConfigResDTO.getId());
         return DataResponse.success();
@@ -119,6 +127,7 @@ public class ApplianceController {
 
     @PostMapping("/user/change")
     @ApiOperation(value = "更换劳保用品")
+    @LogMaker(value = "网页端-双重预防机制更换劳保用品")
     public DataResponse<T> changeAppliance(@RequestBody ApplianceConfigReqDTO applianceConfigReqDTO) {
         applianceService.changeAppliance(applianceConfigReqDTO);
         return DataResponse.success();
@@ -132,6 +141,7 @@ public class ApplianceController {
 
     @PostMapping("/warn/handle")
     @ApiOperation(value = "处理劳保到期预警")
+    @LogMaker(value = "网页端-双重预防机制处理劳保到期预警")
     public DataResponse<T> handleApplianceWarn(@RequestBody ApplianceWarnResDTO applianceWarnResDTO) {
         applianceService.handleApplianceWarn(applianceWarnResDTO.getId());
         return DataResponse.success();

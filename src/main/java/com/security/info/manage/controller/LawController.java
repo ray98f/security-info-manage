@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -56,6 +57,7 @@ public class LawController {
 
     @PostMapping("/catalog/modify")
     @ApiOperation(value = "法律法规目录修改")
+    @LogMaker(value = "网页端-法律法规目录修改")
     public DataResponse<T> modifyLawCatalog(@RequestBody LawCatalogReqDTO lawCatalogReqDTO) {
         lawService.modifyLawCatalog(lawCatalogReqDTO);
         return DataResponse.success();
@@ -63,6 +65,7 @@ public class LawController {
 
     @PostMapping("/catalog/add")
     @ApiOperation(value = "法律法规目录新增")
+    @LogMaker(value = "网页端-法律法规目录新增")
     public DataResponse<T> addLawCatalog(@RequestBody LawCatalogReqDTO lawCatalogReqDTO) {
         lawService.addLawCatalog(lawCatalogReqDTO);
         return DataResponse.success();
@@ -70,13 +73,22 @@ public class LawController {
 
     @PostMapping("/catalog/delete")
     @ApiOperation(value = "法律法规目录删除")
+    @LogMaker(value = "网页端-法律法规目录删除")
     public DataResponse<T> deleteLawCatalog(@RequestBody LawCatalogReqDTO lawCatalogReqDTO) {
         lawService.deleteLawCatalog(lawCatalogReqDTO);
         return DataResponse.success();
     }
 
+    @GetMapping("/catalog/roleGet")
+    @ApiOperation(value = "法律法规目录权限分配")
+    @LogMaker(value = "网页端-法律法规目录权限分配")
+    public DataResponse<List<String>> getLawCatalogRole(@RequestParam String userId) {
+        return DataResponse.of(lawService.getLawCatalogRole(userId));
+    }
+
     @PostMapping("/catalog/role")
     @ApiOperation(value = "法律法规目录权限分配")
+    @LogMaker(value = "网页端-法律法规目录权限分配")
     public DataResponse<T> addLawCatalogRole(@RequestBody LawCatalogUserRoleReqDTO lawCatalogUserRoleReqDTO) {
         lawService.addLawCatalogRole(lawCatalogUserRoleReqDTO);
         return DataResponse.success();
@@ -92,6 +104,7 @@ public class LawController {
 
     @PostMapping("/add")
     @ApiOperation(value = "法律法规文件上传")
+    @LogMaker(value = "网页端-法律法规文件上传")
     public DataResponse<T> addLaw(@RequestBody LawReqDTO lawReqDTO) {
         lawService.addLaw(lawReqDTO);
         return DataResponse.success();
@@ -99,6 +112,7 @@ public class LawController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "法律法规文件删除")
+    @LogMaker(value = "网页端-法律法规文件删除")
     public DataResponse<T> deleteLaw(@RequestBody LawReqDTO lawReqDTO) {
         lawService.deleteLaw(lawReqDTO);
         return DataResponse.success();

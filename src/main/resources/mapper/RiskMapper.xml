@@ -42,6 +42,9 @@
         <if test="describeMayOccur!=null and describeMayOccur!=''">
             and describe_may_occur like CONCAT('%',#{describeMayOccur},'%')
         </if>
+        <if test="status!=null">
+            and status=#{status}
+        </if>
         order by create_date desc
     </select>
 

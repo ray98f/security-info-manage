@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -53,6 +54,7 @@ public class TroubleshootController {
 
     @PostMapping("/type/add")
     @ApiOperation(value = "新增隐患排查手册类型")
+    @LogMaker(value = "网页端-双重预防机制隐患排查手册类型新增")
     public DataResponse<T> insertTroubleshoot(@RequestBody TroubleshootTypeReqDTO troubleshootTypeReqDTO) {
         troubleshootService.insertTroubleshootType(troubleshootTypeReqDTO);
         return DataResponse.success();
@@ -60,6 +62,7 @@ public class TroubleshootController {
 
     @PostMapping("/type/modify")
     @ApiOperation(value = "修改隐患排查手册类型")
+    @LogMaker(value = "网页端-双重预防机制隐患排查手册类型修改")
     public DataResponse<T> modifyTroubleshoot(@RequestBody TroubleshootTypeReqDTO troubleshootTypeReqDTO) {
         troubleshootService.modifyTroubleshootType(troubleshootTypeReqDTO);
         return DataResponse.success();
@@ -67,6 +70,7 @@ public class TroubleshootController {
 
     @PostMapping("/type/delete")
     @ApiOperation(value = "删除隐患排查手册类型")
+    @LogMaker(value = "网页端-双重预防机制隐患排查手册类型删除")
     public DataResponse<T> deleteTroubleshoot(@RequestBody TroubleshootTypeReqDTO troubleshootTypeReqDTO) {
         troubleshootService.deleteTroubleshootType(troubleshootTypeReqDTO);
         return DataResponse.success();
@@ -88,6 +92,7 @@ public class TroubleshootController {
 
     @PostMapping("/add")
     @ApiOperation(value = "新增隐患排查手册")
+    @LogMaker(value = "网页端-双重预防机制隐患排查手册新增")
     public DataResponse<T> insertTroubleshoot(@RequestBody TroubleshootReqDTO troubleshootReqDTO) {
         troubleshootService.insertTroubleshoot(troubleshootReqDTO);
         return DataResponse.success();
@@ -95,6 +100,7 @@ public class TroubleshootController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "修改隐患排查手册")
+    @LogMaker(value = "网页端-双重预防机制隐患排查手册修改")
     public DataResponse<T> modifyTroubleshoot(@RequestBody TroubleshootReqDTO troubleshootReqDTO) {
         troubleshootService.modifyTroubleshoot(troubleshootReqDTO);
         return DataResponse.success();
@@ -102,6 +108,7 @@ public class TroubleshootController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "删除隐患排查手册")
+    @LogMaker(value = "网页端-双重预防机制隐患排查手册删除")
     public DataResponse<T> deleteTroubleshoot(@RequestBody TroubleshootReqDTO troubleshootReqDTO) {
         troubleshootService.deleteTroubleshoot(troubleshootReqDTO);
         return DataResponse.success();

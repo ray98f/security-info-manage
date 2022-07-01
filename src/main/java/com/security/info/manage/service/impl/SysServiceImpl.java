@@ -225,7 +225,8 @@ public class SysServiceImpl implements SysService {
         List<MenuResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (MenuResDTO res : list) {
-                res.setParentNames(res.getParentNames().replace("root", "").replaceAll(",", "/") + "/" + res.getMenuName());
+                String str = res.getParentNames().replace("root", "").replaceAll(",", "/") + "/" + res.getMenuName();
+                res.setParentNames(str.startsWith("/") ? str : "/" + str);
             }
         }
         page.setRecords(list);
@@ -396,8 +397,16 @@ public class SysServiceImpl implements SysService {
     }
 
     @Override
-    public Page<OperationLogResDTO> listOperLog(String startTime, String endTime, Integer type, String operationType, PageReqDTO pageReqDTO) {
+    public Page<OperationLogResDTO> listOperLog(String startTime, String endTime, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return sysMapper.listOperLog(pageReqDTO.of(), startTime, endTime, type, operationType);
+        return sysMapper.listOperLog(pageReqDTO.of(), startTime, endTime);
+    }
+
+    @Override
+    public void menu() {
+        List<MenuResDTO> list = sysMapper.selectMenu();
+        if (list != null && !list.isEmpty()) {
+            sysMapper.addButton(list);
+        }
     }
 }

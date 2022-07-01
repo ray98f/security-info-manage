@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -47,6 +48,15 @@ public class TrainController {
         return PageResponse.of(trainService.listTrain(name, startTime, endTime, pageReqDTO));
     }
 
+    @GetMapping("/vx/list")
+    @ApiOperation(value = "获取我的健康培训列表")
+    public PageResponse<TrainResDTO> listMineTrain(@RequestParam(required = false) String name,
+                                                   @RequestParam(required = false) String startTime,
+                                                   @RequestParam(required = false) String endTime,
+                                                   @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(trainService.listMineTrain(name, startTime, endTime, pageReqDTO));
+    }
+
     @GetMapping("/detail")
     @ApiOperation(value = "获取健康培训详情")
     public DataResponse<TrainResDTO> getTrainDetail(@RequestParam String id) {
@@ -62,6 +72,7 @@ public class TrainController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "健康培训修改")
+    @LogMaker(value = "网页端-职业健康健康培训修改")
     public DataResponse<T> modifyTrain(@RequestBody TrainReqDTO trainReqDTO) {
         trainService.modifyTrain(trainReqDTO);
         return DataResponse.success();
@@ -69,6 +80,7 @@ public class TrainController {
 
     @PostMapping("/add")
     @ApiOperation(value = "健康培训新增")
+    @LogMaker(value = "网页端-职业健康健康培训新增")
     public DataResponse<T> addTrain(@RequestBody TrainReqDTO trainReqDTO) {
         trainService.addTrain(trainReqDTO);
         return DataResponse.success();
@@ -76,6 +88,7 @@ public class TrainController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "健康培训删除")
+    @LogMaker(value = "网页端-职业健康健康培训删除")
     public DataResponse<T> deleteTrain(@RequestBody TrainReqDTO trainReqDTO) {
         trainService.deleteTrain(trainReqDTO);
         return DataResponse.success();
@@ -83,6 +96,7 @@ public class TrainController {
 
     @PostMapping("/import")
     @ApiOperation(value = "健康培训结果导入")
+    @LogMaker(value = "网页端-职业健康健康培训结果导入")
     public DataResponse<T> importTrainDetail(@RequestParam MultipartFile file, String trainId) {
         trainService.importTrainDetail(file, trainId);
         return DataResponse.success();

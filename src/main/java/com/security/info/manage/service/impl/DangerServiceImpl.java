@@ -23,6 +23,7 @@ import com.security.info.manage.utils.ObjectUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;;
 
 import javax.annotation.Resource;
@@ -55,6 +56,9 @@ public class DangerServiceImpl implements DangerService {
 
     @Autowired
     private MsgService msgService;
+
+    @Value("${vx-business.jumppage}")
+    private String jumppage;
 
     @Override
     public List<DeptTreeResDTO> listDept(Integer type) {
@@ -247,7 +251,8 @@ public class DangerServiceImpl implements DangerService {
         } else if (dangerReqDTO.getIsUse() == 1 && dangerReqDTO.getExamineUserId() != null) {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
-            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
+                    "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -271,7 +276,8 @@ public class DangerServiceImpl implements DangerService {
         } else if (dangerReqDTO.getIsUse() == 1 && dangerReqDTO.getExamineUserId() != null) {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
-            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
+                    "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -379,7 +385,8 @@ public class DangerServiceImpl implements DangerService {
             } else if (!"".equals(checkUserId)) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(checkUserId);
-                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
+                        "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + res.getDangerId() + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         } else {
@@ -389,7 +396,8 @@ public class DangerServiceImpl implements DangerService {
             } else if (userId != null && !"".equals(userId)) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(userId);
-                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
+                        "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + res.getDangerId() + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         }

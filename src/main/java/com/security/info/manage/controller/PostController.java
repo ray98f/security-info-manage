@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -47,6 +48,7 @@ public class PostController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "岗位修改")
+    @LogMaker(value = "网页端-系统设置岗位修改")
     public DataResponse<T> modifyPost(@RequestBody PostReqDTO postReqDTO) {
         postService.modifyPost(postReqDTO);
         return DataResponse.success();
@@ -54,6 +56,7 @@ public class PostController {
 
     @PostMapping("/add")
     @ApiOperation(value = "岗位新增")
+    @LogMaker(value = "网页端-系统设置岗位新增")
     public DataResponse<T> addPost(@RequestBody PostReqDTO postReqDTO) {
         postService.addPost(postReqDTO);
         return DataResponse.success();
@@ -61,6 +64,7 @@ public class PostController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "岗位删除")
+    @LogMaker(value = "网页端-系统设置岗位删除")
     public DataResponse<T> deletePost(@RequestBody PostReqDTO postReqDTO) {
         postService.deletePost(postReqDTO);
         return DataResponse.success();
@@ -68,6 +72,7 @@ public class PostController {
 
     @PostMapping("/binding")
     @ApiOperation(value = "岗位人员绑定")
+    @LogMaker(value = "网页端-系统设置岗位人员绑定")
     public DataResponse<T> bindingPost(@RequestBody PostUserReqDTO postUserReqDTO) {
         postService.bindingPost(postUserReqDTO);
         return DataResponse.success();
@@ -81,6 +86,7 @@ public class PostController {
 
     @PostMapping("/warn/handle")
     @ApiOperation(value = "处理岗位异动预警")
+    @LogMaker(value = "网页端-系统设置岗位异动预警处理")
     public DataResponse<T> handlePostWarn(@RequestBody PostWarnResDTO postWarnResDTO) {
         postService.handlePostWarn(postWarnResDTO.getId());
         return DataResponse.success();

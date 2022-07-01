@@ -42,6 +42,8 @@ public interface LawMapper {
 
     Integer deleteLawCatalog(LawCatalogReqDTO lawCatalogReqDTO);
 
+    List<String> getLawCatalogRole(String userId);
+
     Integer addLawCatalogRole(LawCatalogUserRoleReqDTO lawCatalogUserRoleReqDTO);
 
     List<LawResDTO> vxListLaw(String catalogId, String searchKey);

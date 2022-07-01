@@ -17,6 +17,8 @@ public interface TrainService {
 
     Page<TrainResDTO> listTrain(String name, String startTime, String endTime, PageReqDTO pageReqDTO);
 
+    Page<TrainResDTO> listMineTrain(String name, String startTime, String endTime, PageReqDTO pageReqDTO);
+
     TrainResDTO getTrainDetail(String id);
 
     Page<TrainDetailResDTO> listTrainUserDetail(String id, PageReqDTO pageReqDTO);

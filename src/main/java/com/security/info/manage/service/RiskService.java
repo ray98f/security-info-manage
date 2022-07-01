@@ -17,7 +17,7 @@ public interface RiskService {
 
     Page<RiskInfoResDTO> listRisk(Integer level, Integer type, String module,
                                   String responsibilityDept, String responsibilityCenter, String responsibilityPost,
-                                  String responsibilityUser, String searchKey, String describeMayOccur, PageReqDTO pageReqDTO);
+                                  String responsibilityUser, String searchKey, String describeMayOccur, Integer status, PageReqDTO pageReqDTO);
 
     RiskInfoResDTO getRiskDetail(String id);
 

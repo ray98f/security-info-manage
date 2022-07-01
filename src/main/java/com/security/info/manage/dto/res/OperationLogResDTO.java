@@ -18,9 +18,6 @@ public class OperationLogResDTO {
     @ApiModelProperty(value = "id")
     private String id;
 
-    @ApiModelProperty(value = "类型 1 pc 2 小程序")
-    private Integer type;
-
     @ApiModelProperty(value = "操作员名称")
     private String userName;
 
@@ -36,7 +33,7 @@ public class OperationLogResDTO {
     private String operationType;
 
     @ApiModelProperty(value = "用时")
-    private Double useTime;
+    private Long useTime;
 
     @ApiModelProperty(value = "参数")
     private String params;

@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -43,9 +44,10 @@ public class RiskController {
                                                  @RequestParam(required = false) String responsibilityUser,
                                                  @RequestParam(required = false) String searchKey,
                                                  @RequestParam(required = false) String describeMayOccur,
+                                                 @RequestParam(required = false) Integer status,
                                                  @Valid PageReqDTO pageReqDTO) {
         return PageResponse.of(riskService.listRisk(level, type, module, responsibilityDept, responsibilityCenter,
-                responsibilityPost, responsibilityUser, searchKey, describeMayOccur, pageReqDTO));
+                responsibilityPost, responsibilityUser, searchKey, describeMayOccur, status, pageReqDTO));
     }
 
     @GetMapping("/detail")
@@ -56,6 +58,7 @@ public class RiskController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "风险修改")
+    @LogMaker(value = "网页端-双重预防机制风险修改")
     public DataResponse<T> modifyRisk(@RequestBody RiskInfoReqDTO riskInfoReqDTO) {
         riskService.modifyRisk(riskInfoReqDTO);
         return DataResponse.success();
@@ -63,6 +66,7 @@ public class RiskController {
 
     @PostMapping("/add")
     @ApiOperation(value = "风险新增")
+    @LogMaker(value = "网页端-双重预防机制风险新增")
     public DataResponse<T> addRisk(@RequestBody RiskInfoReqDTO riskInfoReqDTO) {
         riskService.addRisk(riskInfoReqDTO);
         return DataResponse.success();
@@ -70,6 +74,7 @@ public class RiskController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "风险删除")
+    @LogMaker(value = "网页端-双重预防机制风险删除")
     public DataResponse<T> deleteRisk(@RequestBody List<String> ids) {
         riskService.deleteRisk(ids);
         return DataResponse.success();
@@ -77,6 +82,7 @@ public class RiskController {
 
     @PostMapping("/verify")
     @ApiOperation(value = "审核风险")
+    @LogMaker(value = "网页端-双重预防机制审核风险")
     public DataResponse<T> verifyRisk(@RequestBody RiskInfoReqDTO riskInfoReqDTO) {
         riskService.verifyRisk(riskInfoReqDTO);
         return DataResponse.success();
@@ -84,6 +90,7 @@ public class RiskController {
 
     @PostMapping("/import")
     @ApiOperation(value = "风险导入")
+    @LogMaker(value = "网页端-双重预防机制风险导入")
     public DataResponse<T> importRisk(@RequestParam MultipartFile file, Integer type) {
         riskService.importRisk(file, type);
         return DataResponse.success();
@@ -91,6 +98,7 @@ public class RiskController {
 
     @GetMapping("/export")
     @ApiOperation(value = "风险导出")
+    @LogMaker(value = "网页端-双重预防机制风险导出")
     public void exportRisk(@RequestParam Integer type,
                            HttpServletResponse response) {
         riskService.exportRisk(response, type);

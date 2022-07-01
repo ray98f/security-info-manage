@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.res.DeptTreeResDTO;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.res.UserResDTO;
@@ -32,6 +33,7 @@ public class DeptController {
 
     @GetMapping("/sync")
     @ApiOperation(value = "同步企业微信组织机构")
+    @LogMaker(value = "网页端-系统设置同步企业微信组织机构")
     public DataResponse<T> syncDept(@RequestParam(required = false) String orgId) {
         deptService.syncDept(orgId);
         return DataResponse.success();

@@ -341,8 +341,8 @@ public class FileUtils {
         File file = null;
         try {
             String originalFilename = multipartFile.getOriginalFilename();
-            String[] filename = Objects.requireNonNull(originalFilename).split("\\.");
-            file = File.createTempFile(filename[0], filename[filename.length - 1]);
+            String prefix = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf(".") + 1);
+            file = File.createTempFile(originalFilename.replace("." + prefix, ""), prefix);
             multipartFile.transferTo(file);
             file.deleteOnExit();
         } catch (IOException e) {

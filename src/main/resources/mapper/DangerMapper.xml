@@ -118,7 +118,7 @@
     </select>
 
     <select id="listDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -150,11 +150,12 @@
         <if test="userId!=null and userId!=''">
             and de.examine_user_id=#{userId}
         </if>
+        group by d.id
         order by d.create_date desc
     </select>
 
     <select id="vxListDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -181,6 +182,7 @@
         <if test="type==2 and userId!=null and userId!=''">
             and de.examine_user_id=#{userId} or dr.rectify_user_id=#{userId} or dr.examine_user_id=#{userId}
         </if>
+        group by d.id
         order by d.create_date desc
     </select>
 

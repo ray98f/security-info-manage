@@ -72,7 +72,7 @@
     <select id="listMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">
         select m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
         m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color,
-        case when group_concat(distinct m1.menu_name) is null then 'root' else group_concat(distinct m1.menu_name) end as parent_names
+        case when group_concat(m1.menu_name) is null then 'root' else group_concat(m1.menu_name) end as parent_names
         from sys_menu as m
         left join sys_menu as m1 on find_in_set(m1.id,m.parent_ids)>0
         where m.is_delete=0
@@ -83,7 +83,7 @@
             and m.menu_name like concat('%', #{name},'%')
         </if>
         group by m.id
-        order by m.menu_sort asc
+        order by m.menu_sort asc, m1.menu_type asc
     </select>
 
     <select id="getMenuRoot" resultType="com.security.info.manage.dto.res.MenuResDTO">
@@ -188,7 +188,7 @@
         <if test="roleName!=null and roleName!=''">
             and role_name like CONCAT('%',#{roleName},'%')
         </if>
-        ORDER BY create_date DESC
+        ORDER BY sort DESC
     </select>
 
     <select id="selectRoleUse" resultType="java.lang.Integer">
@@ -329,7 +329,7 @@
     </select>
 
     <select id="listOperLog" resultType="com.security.info.manage.dto.res.OperationLogResDTO">
-        select id, type, user_name, operation_time, operation_type, use_time, params, host_ip, create_date
+        select id, user_name, operation_time, operation_type, use_time, params, host_ip, create_date
         from sys_operation_log
         where is_delete=0
         <if test="startTime!=null and startTime!=''">
@@ -338,13 +338,74 @@
         <if test="endTime!=null and endTime!=''">
             and #{endTime}>=operation_time
         </if>
-        <if test="type!=null">
-            and type=#{type}
-        </if>
-
-        <if test="operationType!=null">
-            and operation_type=#{operationType}
-        </if>
         order by operation_time desc
     </select>
+
+    <insert id="addOperationLog">
+        insert into sys_operation_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName!=null and userName!=''">
+                user_name,
+            </if>
+            <if test="operationTime!=null">
+                operation_time,
+            </if>
+            <if test="operationType!=null and operationType!=''">
+                operation_type,
+            </if>
+            <if test="useTime!=null">
+                use_time,
+            </if>
+            <if test="params!=null and params!=''">
+                params,
+            </if>
+            <if test="hostIp!=null and hostIp!=''">
+                host_ip,
+            </if>
+        </trim>
+        value
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName!=null and userName!=''">
+                #{userName},
+            </if>
+            <if test="operationTime!=null">
+                #{operationTime},
+            </if>
+            <if test="operationType!=null and operationType!=''">
+                #{operationType},
+            </if>
+            <if test="useTime!=null">
+                #{useTime},
+            </if>
+            <if test="params!=null and params!=''">
+                #{params},
+            </if>
+            <if test="hostIp!=null and hostIp!=''">
+                #{hostIp},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectMenu" resultType="com.security.info.manage.dto.res.MenuResDTO">
+        select m.id, m.parent_id, m.parent_ids, m.menu_code, m.menu_name, m.menu_type, m.menu_sort, m.menu_path, m.status,
+        m.menu_icon, m.menu_url, m.is_show, m.background_color, m.background_pic, m.title_color
+        from sys_menu as m
+        where m.is_delete=0 and m.menu_type=3
+        group by m.id
+        order by m.menu_sort asc
+    </select>
+
+    <insert id="addButton">
+        insert into sys_menu (id, parent_id, parent_ids, menu_code, menu_name, menu_type, menu_sort, menu_path,
+        status, menu_icon, menu_url, is_show, create_by, background_color, background_pic, title_color)
+        values
+        <foreach collection="list" item="menu" index="index" separator=",">
+            (replace(uuid(),"-",""), #{menu.id}, concat(#{menu.parentIds}, ",", #{menu.id}), "add", "新增", 4, 1, "", 0,
+            "", "", 1, "zhouwenrou", "", "", ""),
+            (replace(uuid(),"-",""), #{menu.id}, concat(#{menu.parentIds}, ",", #{menu.id}), "edit", "修改", 4, 1, "", 0,
+            "", "", 1, "zhouwenrou", "", "", ""),
+            (replace(uuid(),"-",""), #{menu.id}, concat(#{menu.parentIds}, ",", #{menu.id}), "delete", "删除", 4, 1, "", 0,
+            "", "", 1, "zhouwenrou", "", "", "")
+        </foreach>
+    </insert>
 </mapper>

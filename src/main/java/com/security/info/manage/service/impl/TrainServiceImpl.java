@@ -72,6 +72,25 @@ public class TrainServiceImpl implements TrainService {
     }
 
     @Override
+    public Page<TrainResDTO> listMineTrain(String name, String startTime, String endTime, PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        Page<TrainResDTO> page = trainMapper.listMineTrain(pageReqDTO.of(), name, startTime, endTime, TokenUtil.getCurrentPersonNo());
+        List<TrainResDTO> list = page.getRecords();
+        if (list != null && !list.isEmpty()) {
+            for (TrainResDTO resDTO : list) {
+                if (resDTO.getPic() != null && !"".equals(resDTO.getPic())) {
+                    resDTO.setPicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getPic().split(","))));
+                }
+                if (resDTO.getCourseware() != null && !"".equals(resDTO.getCourseware())) {
+                    resDTO.setCoursewareFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getCourseware().split(","))));
+                }
+            }
+        }
+        page.setRecords(list);
+        return page;
+    }
+
+    @Override
     public TrainResDTO getTrainDetail(String id) {
         TrainResDTO res = trainMapper.getTrainDetail(id);
         if (Objects.isNull(res)) {

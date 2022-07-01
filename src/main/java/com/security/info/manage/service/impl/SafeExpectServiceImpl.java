@@ -260,14 +260,17 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         SafeExpectResDTO safeExpectResDTO = safeExpectMapper.getSafeExpectDetail(id);
         SafeExpectInfoResDTO safeExpectInfoResDTO = safeExpectMapper.exportSafeExpectInfo(id);
         SafeExpectCollectionUnionResDTO safeExpectCollectionUnionResDTO = safeExpectMapper.getSafeExpectCollectionUnionDetail(id);
-        if (Objects.isNull(safeExpectResDTO) || Objects.isNull(safeExpectInfoResDTO) || Objects.isNull(safeExpectCollectionUnionResDTO)) {
-            return null;
+        if (safeExpectCollectionUnionResDTO != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分");
+            safeExpectCollectionUnionResDTO.setCollectionUnionTimeStr(safeExpectCollectionUnionResDTO.getCollectionUnionTime() != null ? sdf.format(safeExpectCollectionUnionResDTO.getCollectionUnionTime()) : null);
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分");
-        safeExpectCollectionUnionResDTO.setCollectionUnionTimeStr(safeExpectCollectionUnionResDTO.getCollectionUnionTime() != null ? sdf.format(safeExpectCollectionUnionResDTO.getCollectionUnionTime()) : null);
         Map<String, Object> dataMap = ObjectUtils.objectToMap(safeExpectResDTO);
-        dataMap.putAll(ObjectUtils.objectToMap(safeExpectInfoResDTO));
-        dataMap.putAll(ObjectUtils.objectToMap(safeExpectCollectionUnionResDTO));
+        if (safeExpectInfoResDTO != null) {
+            dataMap.putAll(ObjectUtils.objectToMap(safeExpectInfoResDTO));
+        }
+        if (safeExpectCollectionUnionResDTO != null) {
+            dataMap.putAll(ObjectUtils.objectToMap(safeExpectCollectionUnionResDTO));
+        }
         dataMap.put("safeExpectQr", QrCodeUtil.generateAsBase64(jumppage +
                 "?page=pages/anticipatedSafety/detail" +
                 "&id="+ safeExpectResDTO.getId(), initQrConfig(), "png"));

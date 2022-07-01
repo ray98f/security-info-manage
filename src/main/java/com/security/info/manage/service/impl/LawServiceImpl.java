@@ -192,6 +192,11 @@ public class LawServiceImpl implements LawService {
     }
 
     @Override
+    public List<String> getLawCatalogRole(String userId) {
+        return lawMapper.getLawCatalogRole(userId);
+    }
+
+    @Override
     public void addLawCatalogRole(LawCatalogUserRoleReqDTO lawCatalogUserRoleReqDTO) {
         if (Objects.isNull(lawCatalogUserRoleReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);

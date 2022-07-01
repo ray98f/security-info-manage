@@ -136,8 +136,13 @@
         where catalog_id=#{id} and is_delete=0;
     </update>
 
+    <select id="getLawCatalogRole" resultType="java.lang.String">
+        select law_catalog_id from t_law_catalog_user where user_id=#{userId}
+    </select>
+
     <insert id="addLawCatalogRole">
         <foreach collection="userIds" index="index" item="userId" separator="">
+            delete from t_law_catalog_user where user_id=#{userId};
             <foreach collection="lawCatalogIds" index="index" item="lawCatalogId" separator="">
                 insert into t_law_catalog_user(id, law_catalog_id, user_id, role)
                 select replace(uuid(),"-",""), #{lawCatalogId}, #{userId}, #{role}

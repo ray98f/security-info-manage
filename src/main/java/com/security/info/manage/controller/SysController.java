@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -47,12 +48,14 @@ public class SysController {
 
     @PostMapping("/login")
     @ApiOperation(value = "登录")
+    @LogMaker(value = "网页端-平台登录")
     public DataResponse<Map<String, Object>> login(@RequestBody LoginReqDTO loginReqDTO) throws Exception {
         return DataResponse.of(sysService.login(loginReqDTO));
     }
 
     @GetMapping("/scan/login")
     @ApiOperation(value = "扫码登录")
+    @LogMaker(value = "网页端-扫码登录")
     public DataResponse<Map<String, Object>> scanLogin(@RequestParam String code) {
         return DataResponse.of(sysService.scanLogin(code));
     }
@@ -73,6 +76,7 @@ public class SysController {
 
     @GetMapping("/vx/login")
     @ApiOperation(value = "微信授权登录")
+    @LogMaker(value = "微信小程序-授权登录")
     public DataResponse<Map<String, Object>> vxLogin(@RequestParam String code) {
         return DataResponse.of(sysService.vxLogin(code));
     }
@@ -111,6 +115,7 @@ public class SysController {
 
     @PostMapping("/menu/modify")
     @ApiOperation(value = "菜单修改")
+    @LogMaker(value = "网页端-系统设置菜单管理修改")
     public DataResponse<T> modifyMenu(@RequestBody MenuReqDTO menuReqDTO) {
         sysService.modifyMenu(menuReqDTO);
         return DataResponse.success();
@@ -118,6 +123,7 @@ public class SysController {
 
     @PostMapping("/menu/add")
     @ApiOperation(value = "菜单新增")
+    @LogMaker(value = "网页端-系统设置菜单管理新增")
     public DataResponse<T> addMenu(@RequestBody MenuReqDTO menuReqDTO) {
         sysService.addMenu(menuReqDTO);
         return DataResponse.success();
@@ -125,6 +131,7 @@ public class SysController {
 
     @PostMapping("/menu/delete")
     @ApiOperation(value = "菜单删除")
+    @LogMaker(value = "网页端-系统设置菜单管理删除")
     public DataResponse<T> deleteMenu(@RequestBody MenuReqDTO menuReqDTO) {
         sysService.deleteMenu(menuReqDTO);
         return DataResponse.success();
@@ -146,6 +153,7 @@ public class SysController {
 
     @PostMapping("/role/delete")
     @ApiOperation(value = "删除角色")
+    @LogMaker(value = "网页端-系统设置角色管理删除")
     public DataResponse<T> deleteRole(@RequestBody RoleReqDTO roleReqDTO) {
         sysService.deleteRole(roleReqDTO);
         return DataResponse.success();
@@ -153,6 +161,7 @@ public class SysController {
 
     @PostMapping("/role/add")
     @ApiOperation(value = "新增角色")
+    @LogMaker(value = "网页端-系统设置角色管理新增")
     public DataResponse<T> insertRole(@RequestBody RoleReqDTO roleReqDTO) {
         sysService.insertRole(roleReqDTO);
         return DataResponse.success();
@@ -160,6 +169,7 @@ public class SysController {
 
     @PostMapping("/role/modify")
     @ApiOperation(value = "修改角色")
+    @LogMaker(value = "网页端-系统设置角色管理修改")
     public DataResponse<T> updateRole(@RequestBody RoleReqDTO roleReqDTO) {
         sysService.updateRole(roleReqDTO);
         return DataResponse.success();
@@ -180,6 +190,7 @@ public class SysController {
 
     @PostMapping("/role/user/add")
     @ApiOperation(value = "新增角色绑定人员")
+    @LogMaker(value = "网页端-系统设置角色绑定人员新增")
     public DataResponse<T> addUserRole(@RequestBody UserRoleReqDTO userRoleReqDTO) {
         sysService.addUserRole(userRoleReqDTO);
         return DataResponse.success();
@@ -187,6 +198,7 @@ public class SysController {
 
     @PostMapping("/role/user/delete")
     @ApiOperation(value = "删除角色绑定人员")
+    @LogMaker(value = "网页端-系统设置角色绑定人员删除")
     public DataResponse<T> deleteUserRole(@RequestBody UserRoleReqDTO userRoleReqDTO) {
         sysService.deleteUserRole(userRoleReqDTO);
         return DataResponse.success();
@@ -196,9 +208,14 @@ public class SysController {
     @ApiOperation(value = "获取操作日志列表")
     public PageResponse<OperationLogResDTO> listOperLog(@RequestParam(required = false) String startTime,
                                                         @RequestParam(required = false) String endTime,
-                                                        @RequestParam(required = false) Integer type,
-                                                        @RequestParam(required = false) String operationType,
                                                         @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(sysService.listOperLog(startTime, endTime, type, operationType, pageReqDTO));
+        return PageResponse.of(sysService.listOperLog(startTime, endTime, pageReqDTO));
+    }
+
+    @GetMapping("/menu")
+    @ApiOperation(value = "menu新增初始数据")
+    public DataResponse<T> menu() {
+        sysService.menu();
+        return DataResponse.success();
     }
 }

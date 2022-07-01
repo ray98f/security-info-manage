@@ -18,7 +18,7 @@ public interface RiskMapper {
 
     Page<RiskInfoResDTO> listRisk(Page<RiskInfoResDTO> page, Integer level, Integer type, String module,
                                   String responsibilityDept, String responsibilityCenter, String responsibilityPost,
-                                  String responsibilityUser, String searchKey, String describeMayOccur);
+                                  String responsibilityUser, String searchKey, String describeMayOccur, Integer status);
 
     List<RiskInfoResDTO> exportRisk(Integer type);
 

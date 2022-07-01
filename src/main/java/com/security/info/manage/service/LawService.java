@@ -29,6 +29,8 @@ public interface LawService {
 
     void deleteLawCatalog(LawCatalogReqDTO trainReqDTO);
 
+    List<String> getLawCatalogRole(String userId);
+
     void addLawCatalogRole(LawCatalogUserRoleReqDTO lawCatalogUserRoleReqDTO);
 
     Page<LawResDTO> listLaw(String catalogId, String name, PageReqDTO pageReqDTO);

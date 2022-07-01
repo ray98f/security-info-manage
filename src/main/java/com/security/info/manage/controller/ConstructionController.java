@@ -1,5 +1,6 @@
 package com.security.info.manage.controller;
 
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.DataResponse;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.PageResponse;
@@ -53,6 +54,7 @@ public class ConstructionController {
 
     @PostMapping("/type/modify")
     @ApiOperation(value = "施工作业类型修改")
+    @LogMaker(value = "网页端-双重预防机制施工作业类型修改")
     public DataResponse<T> modifyConstructionType(@RequestBody ConstructionTypeReqDTO constructionTypeReqDTO) {
         constructionService.modifyConstructionType(constructionTypeReqDTO);
         return DataResponse.success();
@@ -60,6 +62,7 @@ public class ConstructionController {
 
     @PostMapping("/type/add")
     @ApiOperation(value = "施工作业类型新增")
+    @LogMaker(value = "网页端-双重预防机制施工作业类型新增")
     public DataResponse<T> addConstructionType(@RequestBody ConstructionTypeReqDTO constructionTypeReqDTO) {
         constructionService.addConstructionType(constructionTypeReqDTO);
         return DataResponse.success();
@@ -67,6 +70,7 @@ public class ConstructionController {
 
     @PostMapping("/type/delete")
     @ApiOperation(value = "施工作业类型删除")
+    @LogMaker(value = "网页端-双重预防机制施工作业类型删除")
     public DataResponse<T> deleteConstructionType(@RequestBody ConstructionTypeReqDTO constructionTypeReqDTO) {
         constructionService.deleteConstructionType(constructionTypeReqDTO);
         return DataResponse.success();
@@ -83,6 +87,7 @@ public class ConstructionController {
 
     @PostMapping("/weekPlan/modify")
     @ApiOperation(value = "周计划修改")
+    @LogMaker(value = "网页端-双重预防机制周计划修改")
     public DataResponse<T> modifyWeekPlan(@RequestBody WeekPlanReqDTO weekPlanReqDTO) {
         constructionService.modifyWeekPlan(weekPlanReqDTO);
         return DataResponse.success();
@@ -90,6 +95,7 @@ public class ConstructionController {
 
     @PostMapping("/weekPlan/add")
     @ApiOperation(value = "周计划新增")
+    @LogMaker(value = "网页端-双重预防机制周计划新增")
     public DataResponse<T> addWeekPlan(@RequestBody WeekPlanReqDTO weekPlanReqDTO) {
         constructionService.addWeekPlan(weekPlanReqDTO);
         return DataResponse.success();
@@ -97,6 +103,7 @@ public class ConstructionController {
 
     @PostMapping("/weekPlan/delete")
     @ApiOperation(value = "周计划删除")
+    @LogMaker(value = "网页端-双重预防机制周计划删除")
     public DataResponse<T> deleteWeekPlan(@RequestBody WeekPlanReqDTO weekPlanReqDTO) {
         constructionService.deleteWeekPlan(weekPlanReqDTO);
         return DataResponse.success();
@@ -127,6 +134,7 @@ public class ConstructionController {
 
     @PostMapping("/add")
     @ApiOperation(value = "施工作业新增")
+    @LogMaker(value = "网页端-双重预防机制周计划删除")
     public DataResponse<T> addConstruction(@RequestBody ConstructionReqDTO constructionReqDTO) {
         constructionService.addConstruction(constructionReqDTO);
         return DataResponse.success();
@@ -134,6 +142,7 @@ public class ConstructionController {
 
     @PostMapping("/modify")
     @ApiOperation(value = "施工作业修改")
+    @LogMaker(value = "网页端-双重预防机制施工作业修改")
     public DataResponse<T> modifyConstruction(@RequestBody ConstructionReqDTO constructionReqDTO) {
         constructionService.modifyConstruction(constructionReqDTO);
         return DataResponse.success();
@@ -141,6 +150,7 @@ public class ConstructionController {
 
     @PostMapping("/delete")
     @ApiOperation(value = "施工作业删除")
+    @LogMaker(value = "网页端-双重预防机制施工作业删除")
     public DataResponse<T> deleteConstruction(@RequestBody List<String> ids) {
         constructionService.deleteConstruction(ids);
         return DataResponse.success();
@@ -148,6 +158,7 @@ public class ConstructionController {
 
     @PostMapping("/import")
     @ApiOperation(value = "施工作业导入")
+    @LogMaker(value = "网页端-双重预防机制施工作业导入")
     public DataResponse<T> importConstruction(@RequestParam MultipartFile file, String planId) {
         constructionService.importConstruction(file, planId);
         return DataResponse.success();
