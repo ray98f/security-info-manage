@@ -65,20 +65,20 @@
 
     <insert id="importApplianceConfig">
         <foreach collection="list" index="index" item="appliance" separator=";">
-            insert into t_appliance_user_config(id, year, dept_id, user_id, user_name, appliance_id, work_type,
-            hazard_factors, num, receiving_time, effective_time, remark,
+            insert into t_appliance_user_config(id, year, org_name, dept_name, work_area_name, dept_id, user_id,
+            user_name, appliance_id, work_type, hazard_factors, num, receiving_time, effective_time, remark,
             <if test="appliance.status!=null">
                 status,
             </if>
             create_by)
-             select #{appliance.id}, #{appliance.year},
-            (select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1),
+            select #{appliance.id}, #{appliance.year}, #{appliance.orgName}, #{appliance.deptName}, #{appliance.workAreaName},
+            (select id from sys_dept where org_name=#{appliance.workAreaName} and is_delete=0 limit 1),
             <if test="appliance.userName!='工区工长'">
                 (select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1),
             </if>
             <if test="appliance.userName=='工区工长'">
                 (select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
-                where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+                where p.org_id=(select id from sys_dept where org_name=#{appliance.workAreaName} and is_delete=0 limit 1)
                 and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1),
             </if>
             #{appliance.userName},
@@ -91,13 +91,13 @@
             #{appliance.createBy}
             from dual
             WHERE not exists (SELECT id FROM t_appliance_user_config
-            WHERE dept_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+            WHERE dept_id=(select id from sys_dept where org_name=#{appliance.workAreaName} and is_delete=0 limit 1)
             <if test="appliance.userName!='工区工长'">
                 and user_id=(select user_id from sys_user_ext where real_name=#{appliance.userName} and status=0 and is_delete=0 limit 1)
             </if>
             <if test="appliance.userName=='工区工长'">
                 and user_id=(select up.user_id from sys_post as p left join sys_user_post as up on up.post_id=p.id
-                where p.org_id=(select id from sys_dept where org_name=#{appliance.deptName} and is_delete=0 limit 1)
+                where p.org_id=(select id from sys_dept where org_name=#{appliance.workAreaName} and is_delete=0 limit 1)
                 and p.status=0 and p.is_delete=0 and p.post_name='工区工长' limit 1)
             </if>
             and appliance_id=(select id from t_appliance where name=#{appliance.applianceName} and code=#{appliance.applianceCode} and is_delete=0 limit 1)
@@ -109,7 +109,8 @@
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
-        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        (case when d.org_name is null then auc.work_area_name else d.org_name end) as work_area_name,
+        u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
@@ -123,7 +124,8 @@
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
-        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        (case when d.org_name is null then auc.work_area_name else d.org_name end) as work_area_name,
+        u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
@@ -149,7 +151,8 @@
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
-        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        (case when d.org_name is null then auc.work_area_name else d.org_name end) as work_area_name,
+        u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
@@ -169,7 +172,8 @@
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
-        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        (case when d.org_name is null then auc.work_area_name else d.org_name end) as work_area_name,
+        u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
@@ -236,7 +240,8 @@
         select auc.id, auc.year, auc.dept_id, auc.user_id, auc.appliance_id, auc.work_type, auc.hazard_factors, auc.is_confirm,
         auc.num, auc.receiving_time, auc.effective_time, auc.change_reason, auc.last_id, auc.remark, auc.status,
         a.type as appliance_type, a.code as appliance_code, a.name as appliance_name, a.manufacturer, f.file_url as certificate, a.unit,
-        d.org_name as dept_name, u.real_name as user_name, u.user_no
+        (case when d.org_name is null then auc.work_area_name else d.org_name end) as work_area_name,
+        u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
         left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0

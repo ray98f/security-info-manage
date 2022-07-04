@@ -21,6 +21,15 @@ public class ApplianceConfigResDTO {
     @ApiModelProperty(value = "年度")
     private Integer year;
 
+    @ApiModelProperty(value = "部门名称")
+    private String orgName;
+
+    @ApiModelProperty(value = "科室名称")
+    private String deptName;
+
+    @ApiModelProperty(value = "工区名称")
+    private String workAreaName;
+
     @ApiModelProperty(value = "员工id")
     private String userId;
 
@@ -32,9 +41,6 @@ public class ApplianceConfigResDTO {
 
     @ApiModelProperty(value = "部门id")
     private String deptId;
-
-    @ApiModelProperty(value = "部门名称")
-    private String deptName;
 
     @ApiModelProperty(value = "涉及相关作业类型")
     private String workType;

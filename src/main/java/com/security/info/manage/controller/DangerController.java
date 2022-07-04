@@ -105,7 +105,7 @@ public class DangerController {
 
     @GetMapping("/vx/list")
     @ApiOperation(value = "微信端-获取我的隐患列表")
-    public PageResponse<DangerResDTO> vxListDanger(@RequestParam @ApiParam(value = "1 我上报的 2 我整改的") Integer type,
+    public PageResponse<DangerResDTO> vxListDanger(@RequestParam @ApiParam(value = "1 我上报的 2 我整改的 3 我审核的") Integer type,
                                                    @Valid PageReqDTO pageReqDTO) {
         return PageResponse.of(dangerService.vxListDanger(type, pageReqDTO));
     }
@@ -175,6 +175,26 @@ public class DangerController {
                                        @RequestParam(required = false) @ApiParam(value = "整改期限") String rectifyTerm,
                                        @RequestParam(required = false) @ApiParam(value = "整改意见") String opinion) {
         dangerService.issueDanger(dangerId, deptId, userId, rectifyTerm, opinion);
+        return DataResponse.success();
+    }
+
+    @GetMapping("/rectify")
+    @ApiOperation(value = "问题整改")
+    @LogMaker(value = "网页端-问题检查问题排查管理问题整改")
+    public DataResponse<T> rectifyDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
+                                         @RequestParam(required = false) @ApiParam(value = "人员id") String userId,
+                                         @RequestParam(required = false) @ApiParam(value = "整改措施") String rectifyMeasure,
+                                         @RequestParam(required = false) @ApiParam(value = "整改后图片") String afterPic) {
+        dangerService.rectifyDanger(dangerId, userId, rectifyMeasure, afterPic);
+        return DataResponse.success();
+    }
+
+    @GetMapping("/rectify/examine")
+    @ApiOperation(value = "问题整改审核")
+    @LogMaker(value = "网页端-问题检查问题排查管理问题整改审核")
+    public DataResponse<T> rectifyExamineDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
+                                                @RequestParam @ApiParam(value = "审核状态 0 未审核 1 审核通过 2 审核不通过") Integer status) {
+        dangerService.rectifyExamineDanger(dangerId, status);
         return DataResponse.success();
     }
 

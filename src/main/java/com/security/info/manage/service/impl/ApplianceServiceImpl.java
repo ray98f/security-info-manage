@@ -132,8 +132,12 @@ public class ApplianceServiceImpl implements ApplianceService {
                 ApplianceConfigReqDTO reqDTO = new ApplianceConfigReqDTO();
                 cells.getCell(1).setCellType(1);
                 reqDTO.setYear(cells.getCell(1) == null ? null : Integer.valueOf(cells.getCell(1).getStringCellValue()));
+                cells.getCell(2).setCellType(1);
+                reqDTO.setOrgName(cells.getCell(2) == null ? null : cells.getCell(2).getStringCellValue());
+                cells.getCell(3).setCellType(1);
+                reqDTO.setDeptName(cells.getCell(3) == null ? null : cells.getCell(3).getStringCellValue());
                 cells.getCell(4).setCellType(1);
-                reqDTO.setDeptName(cells.getCell(4) == null ? null : cells.getCell(4).getStringCellValue());
+                reqDTO.setWorkAreaName(cells.getCell(4) == null ? null : cells.getCell(4).getStringCellValue());
                 cells.getCell(6).setCellType(1);
                 reqDTO.setUserName(cells.getCell(6) == null ? null : cells.getCell(6).getStringCellValue());
                 cells.getCell(7).setCellType(1);

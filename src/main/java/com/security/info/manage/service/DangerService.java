@@ -54,6 +54,10 @@ public interface DangerService {
 
     void issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion);
 
+    void rectifyDanger(String dangerId, String userId, String rectifyMeasure, String afterPic);
+
+    void rectifyExamineDanger(String dangerId, Integer status);
+
     void exportDanger(HttpServletResponse response);
 
     List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);

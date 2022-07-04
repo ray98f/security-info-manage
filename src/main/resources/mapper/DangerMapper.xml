@@ -109,6 +109,18 @@
         limit 1
     </select>
 
+    <select id="selectExamineUserStatus" resultType="java.lang.Integer">
+        select count(1) from t_danger_rectify
+        where danger_id=#{dangerId} and is_delete=0
+        <if test="userId!=null and userId!='' and type==1">
+            and rectify_user_id=#{userId}
+        </if>
+        <if test="userId!=null and userId!='' and type==2">
+            and examine_user_id=#{userId}
+        </if>
+        limit 1
+    </select>
+
     <select id="listDangerExamine" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
         select de.id, de.danger_id, de.user_type, de.examine_user_id, de.examine_time, de.opinion, de.status,
         ue.real_name as examine_user_name from t_danger_examine as de
@@ -117,8 +129,17 @@
         order by user_type asc
     </select>
 
+    <select id="getDangerRectify" resultType="com.security.info.manage.dto.res.DangerRectifyResDTO">
+        select dr.id, dr.danger_id, dr.rectify_user_id, dr.rectify_time, dr.rectify_measure, dr.after_pic, dr.examine_user_id,
+        dr.examine_time, dr.status, dr.is_eliminate, ue1.real_name as rectify_user_name, ue2.real_name as examine_user_name
+        from t_danger_rectify as dr
+        left join sys_user_ext as ue1 on ue1.user_id=dr.rectify_user_id and ue1.status=0 and ue1.is_delete=0
+        left join sys_user_ext as ue2 on ue2.user_id=dr.examine_user_id and ue2.status=0 and ue2.is_delete=0
+        where dr.danger_id=#{id} and dr.is_delete=0
+    </select>
+
     <select id="listDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -155,7 +176,7 @@
     </select>
 
     <select id="vxListDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -166,8 +187,11 @@
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
         <if test="type==2 and userId!=null and userId!=''">
-            left join t_danger_examine as de on de.danger_id=d.id and de.is_delete=0
             left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
+        </if>
+        <if test="type==3 and userId!=null and userId!=''">
+            left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
+            left join t_danger_examine as de on de.danger_id=d.id and de.is_delete=0
         </if>
         left join sys_entry as e1 on e1.id=d.build_entry_id
         left join sys_entry_plate as ep1 on ep1.id=e1.plate_id
@@ -180,14 +204,17 @@
             and d.create_by=#{userId}
         </if>
         <if test="type==2 and userId!=null and userId!=''">
-            and de.examine_user_id=#{userId} or dr.rectify_user_id=#{userId} or dr.examine_user_id=#{userId}
+            and dr.rectify_user_id=#{userId}
+        </if>
+        <if test="type==3 and userId!=null and userId!=''">
+            and de.examine_user_id=#{userId} or dr.examine_user_id=#{userId}
         </if>
         group by d.id
         order by d.create_date desc
     </select>
 
     <select id="vxNearbyDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -209,7 +236,7 @@
     </select>
 
     <select id="getDangerDetail" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use,
+        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -437,6 +464,36 @@
         where danger_id=#{dangerId} and status=0;
         insert into t_danger_rectify(id, danger_id, rectify_user_id, create_by)
         value (replace(uuid(),"-",""), #{dangerId}, #{userId}, #{createBy});
+    </update>
+
+    <update id="rectifyDanger">
+        update t_danger set
+        status=4, update_by=#{createBy}, update_date=now()
+        where id=#{dangerId} and is_delete=0;
+        update t_danger_rectify set
+        rectify_time=now(), examine_user_id=#{userId},
+        <if test="rectifyMeasure!=null">
+            rectify_measure=#{rectifyMeasure},
+        </if>
+        <if test="afterPic!=null">
+            after_pic=#{afterPic},
+        </if>
+        update_by=#{createBy}
+        where danger_id=#{dangerId} and status=0;
+    </update>
+
+    <update id="rectifyExamineDanger">
+        update t_danger_rectify set
+        examine_time=now(), status=#{status}, update_by=#{createBy}, update_date=now()
+        where danger_id=#{dangerId} and is_delete=0;
+        update t_danger set
+        <if test="status==1">
+            status=5,
+        </if>
+        <if test="status==2">
+            status=6,
+        </if>
+        update_by=#{createBy}, update_date=now() where id=#{dangerId} and is_delete=0;
     </update>
 
     <select id="exportDanger" resultType="com.security.info.manage.dto.res.DangerExportResDTO">

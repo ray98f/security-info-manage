@@ -21,6 +21,9 @@ public class DangerResDTO {
     @ApiModelProperty(value = "编号")
     private String no;
 
+    @ApiModelProperty(value = "责任部门")
+    private String responsibilityDeptId;
+
     @ApiModelProperty(value = "隐患区域id")
     private String regionId;
 
@@ -139,7 +142,7 @@ public class DangerResDTO {
     @ApiModelProperty(value = "是否使用 0 否 1 是")
     private Integer isUse;
 
-    @ApiModelProperty(value = "状态 0 未审核 1 审核中 2 审核通过待下发 3 已下发待整改 4 整改中 5 整改完成 6 审核不通过")
+    @ApiModelProperty(value = "状态 0 未审核 1 审核中 2 审核通过待下发 3 整改中 4 整改完成待审核 5 整改完成 6 审核不通过")
     private Integer status;
 
     @ApiModelProperty(value = "用户审核状态 0 未审核 1 已审核")
@@ -147,6 +150,9 @@ public class DangerResDTO {
 
     @ApiModelProperty(value = "隐患审核流程")
     private List<DangerExamineResDTO> dangerExamines;
+
+    @ApiModelProperty(value = "隐患整改流程")
+    private DangerRectifyResDTO dangerRectify;
 
     @ApiModelProperty(value = "创建时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

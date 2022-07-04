@@ -21,8 +21,14 @@ public class ApplianceConfigReqDTO {
     @ApiModelProperty(value = "年度")
     private Integer year;
 
-    @ApiModelProperty(value = "工区名称")
+    @ApiModelProperty(value = "部门名称")
+    private String orgName;
+
+    @ApiModelProperty(value = "科室名称")
     private String deptName;
+
+    @ApiModelProperty(value = "工区名称")
+    private String workAreaName;
 
     @ApiModelProperty(value = "领取人姓名")
     private String userName;

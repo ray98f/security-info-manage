@@ -164,11 +164,7 @@ public class HazardFactorServiceImpl implements HazardFactorService {
         if (Objects.isNull(postHazardFactorReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        Integer result = hazardFactorMapper.selectPostHazardFactorIsExist(postHazardFactorReqDTO.getPostId());
-        if (result > 0) {
-            throw new CommonException(ErrorCode.POST_HAZARD_FACTOR_EXIST);
-        }
-        result = hazardFactorMapper.modifyPostHazardFactor(postHazardFactorReqDTO);
+        Integer result = hazardFactorMapper.modifyPostHazardFactor(postHazardFactorReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
