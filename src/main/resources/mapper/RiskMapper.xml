@@ -263,6 +263,9 @@
             <if test="risk.describeObjectFactor!=null and risk.describeObjectFactor!=''">
                 and describe_object_factor=#{risk.describeObjectFactor}
             </if>
+            <if test="risk.describeMayOccur!=null and risk.describeMayOccur!=''">
+                and describe_may_occur=#{risk.describeMayOccur}
+            </if>
             <if test="risk.responsibilityDept!=null and risk.responsibilityDept!=''">
                 and responsibility_dept=#{risk.responsibilityDept}
             </if>
