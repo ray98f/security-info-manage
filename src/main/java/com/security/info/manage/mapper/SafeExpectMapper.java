@@ -9,6 +9,7 @@ import com.security.info.manage.entity.SafeExpectUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,6 +54,8 @@ public interface SafeExpectMapper {
     Integer cancelSafeExpect(SafeExpectReqDTO safeExpectReqDTO);
 
     Page<SafeExpectUserResDTO> listSafeExpectUser(Page<SafeExpectUserResDTO> page, String id);
+
+    String selectSafeExpectTime(String id);
 
     Integer signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
 

@@ -33,11 +33,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author frp
@@ -237,9 +236,16 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     }
 
     @Override
-    public void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO) {
+    public void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO) throws ParseException {
         if (Objects.isNull(safeExpectUserResDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        String time = safeExpectMapper.selectSafeExpectTime(safeExpectUserResDTO.getId());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date now = new Date(System.currentTimeMillis());
+        Date timeDate = afterTwentyMinutesToNowDate(sdf.parse(time));
+        if (now.after(timeDate)) {
+            throw new CommonException(ErrorCode.SIGN_TIME_ERROR);
         }
         Integer result = safeExpectMapper.signSafeExpectUser(safeExpectUserResDTO);
         if (result < 0) {
@@ -249,6 +255,12 @@ public class SafeExpectServiceImpl implements SafeExpectService {
 
     @Override
     public void vxSignSafeExpectUser(String id, Integer isSign) {
+        SafeExpectResDTO safeExpectResDTO = safeExpectMapper.getSafeExpectDetail(id);
+        Date now = new Date(System.currentTimeMillis());
+        Date timeDate = afterTwentyMinutesToNowDate(safeExpectResDTO.getTime());
+        if (now.after(timeDate)) {
+            throw new CommonException(ErrorCode.SIGN_TIME_ERROR);
+        }
         Integer result = safeExpectMapper.vxSignSafeExpectUser(id, isSign, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
@@ -323,6 +335,13 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         // 设置背景色（灰色）
         config.setBackColor(Color.WHITE.getRGB());
         return config;
+    }
+
+    public static Date afterTwentyMinutesToNowDate(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE, 20);
+        return calendar.getTime();
     }
 
 }

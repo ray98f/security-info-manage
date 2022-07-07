@@ -194,7 +194,8 @@ public enum ErrorCode {
     USER_NAME_EXIST(32000009, "user.name.exist"),
     ZTT_4G_ERROR(4000000, "ztt.4g.error"),
     USER_ERROR(4000000, "user.error"),
-    SAFE_EXPECT_TEMPLATE_NUM_MAX(4000000, "safe.expect.template.num.max");
+    SAFE_EXPECT_TEMPLATE_NUM_MAX(4000000, "safe.expect.template.num.max"),
+    SIGN_TIME_ERROR(32000006, "sign.time.error"),;
 
     private Integer code;
 

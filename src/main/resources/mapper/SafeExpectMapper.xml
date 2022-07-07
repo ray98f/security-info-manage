@@ -205,6 +205,13 @@
         order by s.is_sign desc
     </select>
 
+    <select id="selectSafeExpectTime" resultType="java.lang.String">
+        select se.time
+        from t_safe_expect_user as seu
+        left join t_safe_expect as se on se.id=seu.safe_expect_id and se.is_delete=0
+        where seu.id=#{id}
+    </select>
+
     <update id="signSafeExpectUser">
         update t_safe_expect_user set
         is_sign=#{isSign}, sign_time=now()

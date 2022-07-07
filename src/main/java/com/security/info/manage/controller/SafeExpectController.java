@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +115,7 @@ public class SafeExpectController {
     @PostMapping("/user/sign")
     @ApiOperation(value = "安全预想会人员签到")
     @LogMaker(value = "网页端-双重预防机制安全预想会人员签到")
-    public DataResponse<T> signSafeExpectUser(@RequestBody SafeExpectUserResDTO safeExpectUserResDTO) {
+    public DataResponse<T> signSafeExpectUser(@RequestBody SafeExpectUserResDTO safeExpectUserResDTO) throws ParseException {
         safeExpectService.signSafeExpectUser(safeExpectUserResDTO);
         return DataResponse.success();
     }

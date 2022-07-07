@@ -9,6 +9,7 @@ import com.security.info.manage.dto.res.SafeExpectTemplateResDTO;
 import com.security.info.manage.dto.res.SafeExpectUserResDTO;
 import com.security.info.manage.entity.File;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public interface SafeExpectService {
 
     Page<SafeExpectUserResDTO> listSafeExpectUser(String id, PageReqDTO pageReqDTO);
 
-    void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO);
+    void signSafeExpectUser(SafeExpectUserResDTO safeExpectUserResDTO) throws ParseException;
 
     void vxSignSafeExpectUser(String id, Integer isSign);
 
