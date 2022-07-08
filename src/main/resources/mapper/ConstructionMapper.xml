@@ -140,12 +140,13 @@
     <select id="getConstructionDetail" resultType="com.security.info.manage.dto.res.ConstructionResDTO">
         select c.id, c.plan_id, c.type_id, c.date, c.sort, c.no, c.org_id, c.start_time, c.end_time, c.is_day, c.name, c.region,
         c.electric_arrange, c.protect_measures, c.coordination_requirement, c.user_id, c.phone, c.remark, c.status,
-        ct.name as type_name, wp.name as plan_name, d.org_name as org_name, ue.real_name as user_name
+        ct.name as type_name, wp.name as plan_name, d.org_name as org_name, ue.real_name as user_name, se.id as safe_expect_id
         from t_construction as c
         left join t_construction_type as ct on c.type_id=ct.id and ct.is_delete=0
         left join t_weak_plan as wp on c.plan_id=wp.id and wp.is_delete=0
         left join sys_dept as d on c.org_id=d.id and d.is_delete=0
         left join sys_user_ext as ue on c.user_id=ue.user_id and ue.is_delete=0
+        left join t_safe_expect as se on se.work_id=c.id and se.is_delete=0
         where c.is_delete=0 and c.id=#{id}
         order by c.date asc, c.sort asc, c.create_date desc
     </select>

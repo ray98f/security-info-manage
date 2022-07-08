@@ -16,6 +16,9 @@ public class ConstructionResDTO {
     @ApiModelProperty(value = "id")
     private String id;
 
+    @ApiModelProperty(value = "安全预想会id")
+    private String safeExpectId;
+
     @ApiModelProperty(value = "周计划id")
     private String planId;
 
