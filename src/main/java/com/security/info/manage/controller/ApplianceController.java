@@ -135,15 +135,16 @@ public class ApplianceController {
 
     @GetMapping("/warn/list")
     @ApiOperation(value = "获取劳保到期预警列表")
-    public PageResponse<ApplianceWarnResDTO> listApplianceWarn(@Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(applianceService.listApplianceWarn(pageReqDTO));
+    public PageResponse<ApplianceWarnResDTO> listApplianceWarn(@RequestParam(required = false) String deptId,
+                                                               @Valid PageReqDTO pageReqDTO) {
+        return PageResponse.of(applianceService.listApplianceWarn(deptId, pageReqDTO));
     }
 
     @PostMapping("/warn/handle")
     @ApiOperation(value = "处理劳保到期预警")
-    @LogMaker(value = "网页端-双重预防机制处理劳保到期预警")
-    public DataResponse<T> handleApplianceWarn(@RequestBody ApplianceWarnResDTO applianceWarnResDTO) {
-        applianceService.handleApplianceWarn(applianceWarnResDTO.getId());
+    @LogMaker(value = "网页端-双重预防机制处理劳保到期预警(批量)")
+    public DataResponse<T> handleApplianceWarn(@RequestBody List<String> ids) {
+        applianceService.handleApplianceWarn(ids);
         return DataResponse.success();
     }
 

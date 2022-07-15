@@ -262,17 +262,17 @@ public class ApplianceServiceImpl implements ApplianceService {
     }
 
     @Override
-    public Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO) {
+    public Page<ApplianceWarnResDTO> listApplianceWarn(String deptId, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return applianceMapper.listApplianceWarn(pageReqDTO.of());
+        return applianceMapper.listApplianceWarn(pageReqDTO.of(), deptId);
     }
 
     @Override
-    public void handleApplianceWarn(String id) {
-        if (Objects.isNull(id)) {
+    public void handleApplianceWarn(List<String> ids) {
+        if (Objects.isNull(ids) || ids.isEmpty()) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        Integer result = applianceMapper.modifyApplianceWarn(id);
+        Integer result = applianceMapper.modifyApplianceWarn(ids);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

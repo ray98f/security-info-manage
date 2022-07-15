@@ -519,17 +519,17 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
-    public Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO, Integer type) {
+    public Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO, Integer type, String deptId) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return physicalMapper.listPhysicalWarn(pageReqDTO.of(), type);
+        return physicalMapper.listPhysicalWarn(pageReqDTO.of(), type, deptId);
     }
 
     @Override
-    public void handlePhysicalWarn(String id) {
-        if (Objects.isNull(id)) {
+    public void handlePhysicalWarn(List<String> ids) {
+        if (Objects.isNull(ids) || ids.isEmpty()) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        Integer result = physicalMapper.handlePhysicalWarn(id);
+        Integer result = physicalMapper.handlePhysicalWarn(ids);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

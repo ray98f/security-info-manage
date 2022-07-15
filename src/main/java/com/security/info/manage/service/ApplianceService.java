@@ -43,9 +43,9 @@ public interface ApplianceService {
 
     void changeAppliance(ApplianceConfigReqDTO applianceConfigReqDTO);
 
-    Page<ApplianceWarnResDTO> listApplianceWarn(PageReqDTO pageReqDTO);
+    Page<ApplianceWarnResDTO> listApplianceWarn(String deptId, PageReqDTO pageReqDTO);
 
-    void handleApplianceWarn(String id);
+    void handleApplianceWarn(List<String> ids);
 
     List<ApplianceConfigResDTO> userArchives(String id);
 

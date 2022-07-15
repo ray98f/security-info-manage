@@ -229,11 +229,18 @@
         left join sys_user_post as up on up.user_id=auc.user_id
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
         where aw.is_delete=0
+        <if test="deptId!=null and deptId!=''">
+            and d.id=#{deptId}
+        </if>
         order by aw.create_date desc
     </select>
 
     <update id="modifyApplianceWarn">
-        update t_appliance_warning set status=1 where id=#{id} and is_delete=0
+        update t_appliance_warning set status=1 where id in (
+        <foreach collection="list" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+        ) and is_delete=0
     </update>
 
     <select id="userArchives" resultType="com.security.info.manage.dto.res.ApplianceConfigResDTO">

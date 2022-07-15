@@ -577,11 +577,18 @@
         <if test="type!=null">
             and pw.type=#{type}
         </if>
+        <if test="deptId!=null and deptId!=''">
+            and d.id=#{deptId}
+        </if>
         group by pw.id
         order by pw.create_date desc
     </select>
 
     <update id="handlePhysicalWarn">
-        update t_physical_warning set status=1 where id=#{id} and is_delete=0
+        update t_physical_warning set status=1 where id in (
+        <foreach collection="list" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+        ) and is_delete=0
     </update>
 </mapper>

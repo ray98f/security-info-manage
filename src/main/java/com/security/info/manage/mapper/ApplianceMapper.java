@@ -52,9 +52,9 @@ public interface ApplianceMapper {
 
     void addApplianceWarning(List<ApplianceConfigResDTO> list, String userId);
 
-    Page<ApplianceWarnResDTO> listApplianceWarn(Page<ApplianceWarnResDTO> page);
+    Page<ApplianceWarnResDTO> listApplianceWarn(Page<ApplianceWarnResDTO> page, String deptId);
 
-    Integer modifyApplianceWarn(String id);
+    Integer modifyApplianceWarn(List<String> list);
 
     List<ApplianceConfigResDTO> userArchives(String id);
 }

@@ -56,7 +56,7 @@ public interface PhysicalService {
 
     Page<PhysicalUserResDTO> vxMinePhysical(PageReqDTO pageReqDTO);
 
-    Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO, Integer type);
+    Page<PhysicalWarnResDTO> listPhysicalWarn(PageReqDTO pageReqDTO, Integer type, String deptId);
 
-    void handlePhysicalWarn(String id);
+    void handlePhysicalWarn(List<String> ids);
 }

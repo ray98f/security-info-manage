@@ -2,6 +2,7 @@ package com.security.info.manage.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.base.Joiner;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.*;
 import com.security.info.manage.dto.res.PostChangeListResDTO;
@@ -13,6 +14,7 @@ import com.security.info.manage.exception.CommonException;
 import com.security.info.manage.mapper.FileMapper;
 import com.security.info.manage.mapper.PostMapper;
 import com.security.info.manage.mapper.TrainMapper;
+import com.security.info.manage.service.MsgService;
 import com.security.info.manage.service.PostService;
 import com.security.info.manage.service.TrainService;
 import com.security.info.manage.utils.FileUtils;
@@ -25,6 +27,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +54,12 @@ public class TrainServiceImpl implements TrainService {
 
     @Autowired
     private FileMapper fileMapper;
+
+    @Autowired
+    private MsgService msgService;
+
+    @Value("${vx-business.jumppage}")
+    private String jumppage;
 
     @Override
     public Page<TrainResDTO> listTrain(String name, String startTime, String endTime, PageReqDTO pageReqDTO) {
@@ -118,8 +127,15 @@ public class TrainServiceImpl implements TrainService {
         }
         trainReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
         Integer result = trainMapper.modifyTrain(trainReqDTO);
+        String[] users = trainReqDTO.getUserIds().split(",");
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
+        } else if (users.length > 0 || !Objects.isNull(trainReqDTO.getLecturer())) {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(users) + (Objects.isNull(trainReqDTO.getLecturer()) ? "" : "|" + trainReqDTO.getLecturer()));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的健康培训通知，请前往小程序查看。" +
+                    "<a href=\" " + jumppage + "?page=pages/train/detail&id=" + trainReqDTO.getId() + "\">跳转小程序</a>"));
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 
@@ -131,8 +147,15 @@ public class TrainServiceImpl implements TrainService {
         trainReqDTO.setId(TokenUtil.getUuId());
         trainReqDTO.setUserId(TokenUtil.getCurrentPersonNo());
         Integer result = trainMapper.addTrain(trainReqDTO);
+        String[] users = trainReqDTO.getUserIds().split(",");
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
+        } else if (users.length > 0 || !Objects.isNull(trainReqDTO.getLecturer())) {
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(users) + (Objects.isNull(trainReqDTO.getLecturer()) ? "" : "|" + trainReqDTO.getLecturer()));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的健康培训通知，请前往小程序查看。" +
+                    "<a href=\" " + jumppage + "?page=pages/train/detail&id=" + trainReqDTO.getId() + "\">跳转小程序</a>"));
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 

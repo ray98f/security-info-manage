@@ -89,7 +89,7 @@ public interface PhysicalMapper {
 
     void addPhysicalWarning(List<PhysicalUserResDTO> list);
 
-    Page<PhysicalWarnResDTO> listPhysicalWarn(Page<PhysicalWarnResDTO> page, Integer type);
+    Page<PhysicalWarnResDTO> listPhysicalWarn(Page<PhysicalWarnResDTO> page, Integer type, String deptId);
 
-    Integer handlePhysicalWarn(String id);
+    Integer handlePhysicalWarn(List<String> list);
 }
