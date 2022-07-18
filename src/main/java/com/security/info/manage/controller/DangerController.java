@@ -244,4 +244,10 @@ public class DangerController {
         return DataResponse.of(dangerService.chartStatistics(regionId, unit, workArea));
     }
 
+    @GetMapping("/statistics/month")
+    @ApiOperation(value = "安全隐患类别月统计统计")
+    public DataResponse<List<DangerMonthStatisticsResDTO>> dangerMonthStatistics(@RequestParam String month) {
+        return DataResponse.of(dangerService.dangerMonthStatistics(month));
+    }
+
 }

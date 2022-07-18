@@ -233,15 +233,26 @@
     </insert>
 
     <select id="listPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
-        select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review,
-        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no, p.type,
+        select pu.id, pu.physical_id, pu.physical_no, pu.user_id, pu.new_user_id, pu.user_name, pu.is_review, u.main_dept as dept_id,
+        pu.last_physical_user_id, pu.status, pu.result, pu.mobile, ue.user_no, p.type, d.org_name as dept_name,
         pu.physical_time, pu.create_date, f1.file_url as file_word, f2.file_url as file_pdf from t_physical_user as pu
+        left join sys_user as u on u.id=pu.user_id and u.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
         left join sys_user_ext as ue on ue.user_id=pu.user_id and ue.is_delete=0 and ue.status=0
         left join sys_file as f1 on f1.id=pu.file_word and f1.is_delete=0
         left join sys_file as f2 on f2.id=pu.file_pdf and f2.is_delete=0
         left join t_physical as p on p.id=pu.physical_id and p.is_delete=0
         where pu.physical_id=#{id} and pu.is_delete=0
-        order by pu.create_date desc, p.create_date desc
+        <if test="status!=null">
+            and pu.status=#{status}
+        </if>
+        <if test="result!=null">
+            and pu.result=#{result}
+        </if>
+        <if test="deptId!=null and deptId!=''">
+            and u.main_dept=#{deptId}
+        </if>
+        order by pu.create_date desc, d.sort asc, pu.id asc
     </select>
 
     <select id="selectPhysicalUserById" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
@@ -535,16 +546,18 @@
     </insert>
 
     <update id="modifyPhysicalFeedback">
-        update t_physical_feedback set
-        <if test="applyOpinions!=null and applyOpinions!=''">
-            apply_opinions=#{applyOpinions},
-        </if>
-        <if test="status!=null">
-            apply_time=now(), status=#{status}, audit_id=#{updateBy},
-        </if>
-        update_by=#{updateBy}
-        where physical_id=#{physicalId} and physical_user_id=#{physicalUserId} and is_delete=0;
-        update t_physical_user set status=2 where id=#{physicalUserId};
+        <foreach collection="list" index="index" item="feedback" separator=";">
+            update t_physical_feedback set
+            <if test="feedback.applyOpinions!=null and feedback.applyOpinions!=''">
+                apply_opinions=#{feedback.applyOpinions},
+            </if>
+            <if test="feedback.status!=null">
+                apply_time=now(), status=#{feedback.status}, audit_id=#{updateBy},
+            </if>
+            update_by=#{updateBy}
+            where physical_id=#{feedback.physicalId} and physical_user_id=#{feedback.physicalUserId} and is_delete=0;
+            update t_physical_user set status=2 where id=#{feedback.physicalUserId}
+        </foreach>
     </update>
 
     <select id="listExpiredPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
@@ -590,5 +603,18 @@
             #{id}
         </foreach>
         ) and is_delete=0
+    </update>
+
+    <select id="selectNewUserNotBind" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
+        select pu.physical_id, pu.id, pu.user_name, pu.mobile from t_physical_user as pu
+        where pu.physical_id=#{id} and pu.new_user_id is not null and pu.user_id is null and pu.status=3
+    </select>
+
+    <update id="bindNewUser">
+        <foreach collection="list" index="index" item="physical" separator=";">
+            update t_physical_user set
+            user_id=(select id from sys_user where mobile=#{physical.mobile} and status=1 and is_delete=0)
+            where id=#{physical.id}
+        </foreach>
     </update>
 </mapper>

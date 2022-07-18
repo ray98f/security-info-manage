@@ -41,7 +41,7 @@ public interface PhysicalMapper {
 
     Integer vxConfirmPhysicalUser(String id, String userId);
 
-    Page<PhysicalUserResDTO> listPhysicalUser(Page<PhysicalUserResDTO> page, String id);
+    Page<PhysicalUserResDTO> listPhysicalUser(Page<PhysicalUserResDTO> page, String id, String deptId, Integer status, Integer result);
 
     PhysicalResult getPhysicalResult(String id);
 
@@ -83,7 +83,7 @@ public interface PhysicalMapper {
 
     Integer insertPhysicalFeedback(PhysicalFeedback physicalFeedback);
 
-    Integer modifyPhysicalFeedback(PhysicalFeedback physicalFeedback);
+    Integer modifyPhysicalFeedback(List<PhysicalFeedback> list, String updateBy);
 
     List<PhysicalUserResDTO> listExpiredPhysicalUser();
 
@@ -92,4 +92,8 @@ public interface PhysicalMapper {
     Page<PhysicalWarnResDTO> listPhysicalWarn(Page<PhysicalWarnResDTO> page, Integer type, String deptId);
 
     Integer handlePhysicalWarn(List<String> list);
+
+    List<PhysicalUserResDTO> selectNewUserNotBind(String id);
+
+    Integer bindNewUser(List<PhysicalUserResDTO> list);
 }

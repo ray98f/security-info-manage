@@ -139,4 +139,11 @@ public class UserController {
     public DataResponse<UserResDTO> getUserInfo(@RequestParam String id){
         return DataResponse.of(userService.getUserInfo(id));
     }
+
+    @GetMapping("/pageLeave")
+    @ApiOperation(value = "分页查询离职用户列表")
+    public PageResponse<UserResDTO> selectLeaveUser(@RequestParam(required = false) @ApiParam("姓名") String name,
+                                                    @Valid PageReqDTO pageReqDTO){
+        return PageResponse.of(userService.selectLeaveUser(name, pageReqDTO));
+    }
 }

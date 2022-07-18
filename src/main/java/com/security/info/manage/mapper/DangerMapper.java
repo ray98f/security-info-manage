@@ -95,4 +95,6 @@ public interface DangerMapper {
     List<DangerChartStatisticsResDTO.ChartStatistics> newAddStatistics(String regionId, String unit, String workArea);
 
     List<DangerChartStatisticsResDTO.ChartStatistics> legacyStatistics(String regionId, String unit, String workArea);
+
+    DangerMonthStatisticsResDTO dangerMonthStatistics(Integer type, String month);
 }

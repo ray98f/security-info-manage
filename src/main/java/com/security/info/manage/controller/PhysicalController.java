@@ -62,7 +62,7 @@ public class PhysicalController {
     @PostMapping("/add")
     @ApiOperation(value = "新增体检流程")
     @LogMaker(value = "网页端-职业健康体检流程新增")
-    public DataResponse<T> addPhysical(@RequestBody PhysicalReqDTO physicalReqDTO) {
+    public DataResponse<T> addPhysical(@RequestBody PhysicalReqDTO physicalReqDTO) throws Exception {
         physicalService.addPhysical(physicalReqDTO);
         return DataResponse.success();
     }
@@ -89,6 +89,13 @@ public class PhysicalController {
         return DataResponse.of(physicalService.addNewUser(file));
     }
 
+    @GetMapping("/newUser/bind")
+    @ApiOperation(value = "入职绑定")
+    public DataResponse<T> bindNewUser(@RequestParam String id) {
+        physicalService.bindNewUser(id);
+        return DataResponse.success();
+    }
+
     @GetMapping("/detail")
     @ApiOperation(value = "获取体检流程详情")
     public DataResponse<PhysicalResDTO> getPhysicalDetail(@RequestParam String id) {
@@ -106,8 +113,11 @@ public class PhysicalController {
     @GetMapping("/user/list")
     @ApiOperation(value = "体检用户列表")
     public PageResponse<PhysicalUserResDTO> listPhysicalUser(@RequestParam String id,
+                                                             @RequestParam(required = false) String deptId,
+                                                             @RequestParam(required = false) Integer status,
+                                                             @RequestParam(required = false) Integer result,
                                                              @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(physicalService.listPhysicalUser(id, pageReqDTO));
+        return PageResponse.of(physicalService.listPhysicalUser(id, deptId, status, result, pageReqDTO));
     }
 
     @GetMapping("/user/detail")
@@ -167,8 +177,8 @@ public class PhysicalController {
     @PostMapping("/feedback/modify")
     @ApiOperation(value = "审批体检反馈")
     @LogMaker(value = "网页端-职业健康体检反馈审批")
-    public DataResponse<T> modifyFeedback(@RequestBody PhysicalFeedback physicalFeedback) {
-        physicalService.modifyFeedback(physicalFeedback);
+    public DataResponse<T> modifyFeedback(@RequestBody List<PhysicalFeedback> list) {
+        physicalService.modifyFeedback(list);
         return DataResponse.success();
     }
 

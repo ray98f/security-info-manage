@@ -71,4 +71,6 @@ public interface DangerService {
     List<String> listWorkAreaStatistics(String regionId);
 
     DangerChartStatisticsResDTO chartStatistics(String regionId, String unit, String workArea);
+
+    List<DangerMonthStatisticsResDTO> dangerMonthStatistics(String month);
 }

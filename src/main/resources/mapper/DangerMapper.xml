@@ -697,4 +697,10 @@
         GROUP BY month
         ORDER BY month
     </select>
+
+    <select id="dangerMonthStatistics" resultType="com.security.info.manage.dto.res.DangerMonthStatisticsResDTO">
+        select case when count(id) is null then 0 else count(id) end as num
+        from t_danger where is_danger_prob=1 and danger_category=#{type}
+        and is_delete=0 and date_format(check_time, '%Y-%m')=#{month}
+    </select>
 </mapper>

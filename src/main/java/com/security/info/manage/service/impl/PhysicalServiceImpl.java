@@ -1,6 +1,10 @@
 package com.security.info.manage.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.aliyun.dysmsapi20170525.Client;
+import com.aliyun.dysmsapi20170525.models.SendSmsRequest;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
+import com.aliyun.teautil.Common;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.base.Joiner;
@@ -74,6 +78,18 @@ public class PhysicalServiceImpl implements PhysicalService {
     public static final String PT_PHYSICAL_NO = "ZTT-PT-";
     public static final String LG_PHYSICAL_NO = "ZTT-LG-";
 
+    @Value("${aliyun.accessKeyId}")
+    private String keyId;
+
+    @Value("${aliyun.accessKeySecret}")
+    private String keySecret;
+
+    @Value("${aliyun.verifyCode}")
+    private String verifyCode;
+
+    @Value("${aliyun.signName}")
+    private String signName;
+
     @Autowired
     private PhysicalMapper physicalMapper;
 
@@ -145,7 +161,7 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
-    public void addPhysical(PhysicalReqDTO physicalReqDTO) {
+    public void addPhysical(PhysicalReqDTO physicalReqDTO) throws Exception {
         if (Objects.isNull(physicalReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
@@ -208,6 +224,20 @@ public class PhysicalServiceImpl implements PhysicalService {
                 vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(userIds));
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新" + typeName + "，请前往小程序查看处理。"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
+            }
+        } else {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            String start = sdf1.format(physicalReqDTO.getStartTime());
+            String end = sdf1.format(physicalReqDTO.getStartTime());
+            Client client = SendUtils.createClient(keyId, keySecret);
+            SendSmsRequest request = new SendSmsRequest()
+                    .setPhoneNumbers(physicalReqDTO.getUsers().stream().map(User::getMobile).collect(Collectors.joining(",")))
+                    .setSignName(signName)
+                    .setTemplateCode(verifyCode)
+                    .setTemplateParam("{\"start\":\"" + start + "\",\"end\":\"" + end + "\"}");
+            SendSmsResponse response = client.sendSms(request);
+            if (Common.equalString(response.body.code, "OK")) {
+                log.info("新人入职体检通知-短信发送成功");
             }
         }
     }
@@ -285,6 +315,17 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
+    public void bindNewUser(String id) {
+        List<PhysicalUserResDTO> list = physicalMapper.selectNewUserNotBind(id);
+        if (list != null && !list.isEmpty()) {
+            Integer result = physicalMapper.bindNewUser(list);
+            if (result < 0) {
+                throw new CommonException(ErrorCode.UPDATE_ERROR);
+            }
+        }
+    }
+
+    @Override
     public PhysicalResDTO getPhysicalDetail(String id) {
         return physicalMapper.getPhysicalDetail(id);
     }
@@ -298,9 +339,9 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
-    public Page<PhysicalUserResDTO> listPhysicalUser(String id, PageReqDTO pageReqDTO) {
+    public Page<PhysicalUserResDTO> listPhysicalUser(String id, String deptId, Integer status, Integer result, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return physicalMapper.listPhysicalUser(pageReqDTO.of(), id);
+        return physicalMapper.listPhysicalUser(pageReqDTO.of(), id, deptId, status, result);
     }
 
     @Override
@@ -454,12 +495,11 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
-    public void modifyFeedback(PhysicalFeedback physicalFeedback) {
-        if (Objects.isNull(physicalFeedback)) {
+    public void modifyFeedback(List<PhysicalFeedback> list) {
+        if (Objects.isNull(list) || list.isEmpty()) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        physicalFeedback.setUpdateBy(TokenUtil.getCurrentPersonNo());
-        Integer result = physicalMapper.modifyPhysicalFeedback(physicalFeedback);
+        Integer result = physicalMapper.modifyPhysicalFeedback(list, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

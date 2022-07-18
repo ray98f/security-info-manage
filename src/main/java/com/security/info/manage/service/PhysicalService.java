@@ -6,6 +6,7 @@ import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.PhysicalReqDTO;
 import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.PhysicalFeedback;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +21,7 @@ public interface PhysicalService {
 
     Page<PhysicalResDTO> listPhysical(String sStartTime, String sEndTime, String eStartTime, String eEndTime, Integer type, Integer isBusiness, PageReqDTO pageReqDTO);
 
-    void addPhysical(PhysicalReqDTO physicalReqDTO);
+    void addPhysical(PhysicalReqDTO physicalReqDTO) throws Exception;
 
     void modifyPhysical(PhysicalReqDTO physicalReqDTO);
 
@@ -28,11 +29,13 @@ public interface PhysicalService {
 
     List<NewUserReqDTO> addNewUser(MultipartFile file);
 
+    void bindNewUser(String id);
+
     PhysicalResDTO getPhysicalDetail(String id);
 
     void vxConfirmPhysicalUser(String id);
 
-    Page<PhysicalUserResDTO> listPhysicalUser(String id, PageReqDTO pageReqDTO);
+    Page<PhysicalUserResDTO> listPhysicalUser(String id, String deptId, Integer status, Integer result, PageReqDTO pageReqDTO);
 
     PhysicalUserResDTO getPhysicalUserDetail(String id);
 
@@ -48,7 +51,7 @@ public interface PhysicalService {
 
     void addFeedback(PhysicalFeedback physicalFeedback);
 
-    void modifyFeedback(PhysicalFeedback physicalFeedback);
+    void modifyFeedback(List<PhysicalFeedback> list);
 
     UserArchivesResDTO userArchives(String id);
 

@@ -227,4 +227,10 @@ public class UserServiceImpl implements UserService {
     public UserResDTO getUserInfo(String id) {
         return userMapper.selectUser(id);
     }
+
+    @Override
+    public Page<UserResDTO> selectLeaveUser(String name, PageReqDTO pageReqDTO) {
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
+        return userMapper.selectLeaveUser(pageReqDTO.of(), name);
+    }
 }

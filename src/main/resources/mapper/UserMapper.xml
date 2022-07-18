@@ -27,28 +27,30 @@
             #{user.gender}, #{doName}
             FROM DUAL
             WHERE not exists (SELECT id FROM sys_user WHERE id=#{user.userid} and is_delete=0);
+            update sys_user set
+            name=#{user.name}, mobile=#{user.mobile}, telephone=#{user.telephone}, email=#{user.email},
+            biz_mail=#{user.biz_mail}, status=#{user.status}, open_userid=#{user.open_userid}, main_dept=#{user.main_department},
+            avatar=#{user.avatar}, thumb_avatar=#{user.thumb_avatar}, qr_code=#{user.qr_code}, address=#{user.address},
+            gender=#{user.gender} where id=#{user.userid};
             insert into sys_user_ext(id, user_id, real_name, create_by)
             SELECT replace(uuid(),"-",""), #{user.userid}, #{user.name}, #{doName}
             FROM DUAL
-            WHERE not exists (SELECT id FROM sys_user_ext WHERE user_id=#{user.userid} and is_delete=0)
+            WHERE not exists (SELECT id FROM sys_user_ext WHERE user_id=#{user.userid} and is_delete=0);
+            update sys_user_ext set
+            real_name=#{user.name} where user_id=#{user.userid}
         </foreach>
     </insert>
 
     <select id="selectUserIds" resultType="java.lang.String">
-        select id from sys_user where is_delete=0
+        select id from sys_user where is_delete=0 and status!=5
     </select>
 
     <update id="deleteUser">
-        update sys_user set is_delete=1, update_by=#{doName} where id in (
+        update sys_user set status=5, update_by=#{doName} where id in (
         <foreach collection="list" index="index" item="id" separator=",">
             #{id}
         </foreach>
-        );
-        update sys_user_ext set is_delete=1, update_by=#{doName} where user_id in (
-        <foreach collection="list" index="index" item="id" separator=",">
-            #{id}
-        </foreach>
-        );
+        )
     </update>
 
     <insert id="insertUserRole">
@@ -125,7 +127,7 @@
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
         left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
         left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
-        where u.is_delete=0
+        where u.is_delete=0 and u.status!=5
         <if test="status!=null">
             and u.status=#{status}
         </if>
@@ -151,7 +153,7 @@
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
         left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
         left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
-        where u.is_delete=0
+        where u.is_delete=0 and u.status!=5
         <if test="status!=null">
             and u.status=#{status}
         </if>
@@ -200,4 +202,20 @@
         post_id=#{postId}
         where id=#{id} and user_id=#{userId}
     </update>
+
+    <select id="selectLeaveUser" resultType="com.security.info.manage.dto.res.UserResDTO">
+        select u.*, ue.user_name, ue.password, ue.user_no, ue.age, ue.status as user_status, ue.real_name,
+        d.org_name as dept_name, GROUP_CONCAT(ur.role_id) as user_roles, GROUP_CONCAT(p.post_name) as post_name
+        from sys_user as u
+        left join sys_user_role as ur on u.id=ur.user_id
+        left join sys_user_post as up on up.user_id=u.id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
+        left join sys_user_ext as ue on ue.user_id=u.id and ue.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
+        where u.is_delete=0 and u.status=5
+        <if test="name!=null and name!=''">
+            and u.name like CONCAT('%',#{name},'%')
+        </if>
+        group by u.id
+    </select>
 </mapper>

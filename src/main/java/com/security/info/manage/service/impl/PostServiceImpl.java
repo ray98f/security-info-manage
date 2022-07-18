@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -128,7 +129,7 @@ public class PostServiceImpl implements PostService {
         List<PostChangeListResDTO> list = postMapper.userArchives(id);
         if (list != null && !list.isEmpty()) {
             for (PostChangeListResDTO postChangeListResDTO : list) {
-                postChangeListResDTO.setFileList(fileMapper.selectFileInfo(Arrays.asList(postChangeListResDTO.getFiles().split(","))));
+                postChangeListResDTO.setFile(fileMapper.selectFileInfo(Collections.singletonList(postChangeListResDTO.getFiles())).get(0));
             }
         }
         return list;

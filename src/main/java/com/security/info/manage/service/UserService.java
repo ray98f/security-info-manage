@@ -80,4 +80,6 @@ public interface UserService {
     void modifyUserPost(PostReqDTO postReqDTO);
 
     UserResDTO getUserInfo(String id);
+
+    Page<UserResDTO> selectLeaveUser(String name, PageReqDTO pageReqDTO);
 }

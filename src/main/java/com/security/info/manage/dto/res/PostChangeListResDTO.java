@@ -50,7 +50,7 @@ public class PostChangeListResDTO {
     private String files;
 
     @ApiModelProperty(value = "文件列表")
-    private List<File> fileList;
+    private File file;
 
     @ApiModelProperty(value = "告警状态(0待处理;1已处理)")
     private Integer status;

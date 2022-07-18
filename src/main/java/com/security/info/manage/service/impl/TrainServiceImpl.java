@@ -134,7 +134,7 @@ public class TrainServiceImpl implements TrainService {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(users) + (Objects.isNull(trainReqDTO.getLecturer()) ? "" : "|" + trainReqDTO.getLecturer()));
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的健康培训通知，请前往小程序查看。" +
-                    "<a href=\" " + jumppage + "?page=pages/train/detail&id=" + trainReqDTO.getId() + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/train/detail&id=" + trainReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -154,7 +154,7 @@ public class TrainServiceImpl implements TrainService {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(Joiner.on("|").join(users) + (Objects.isNull(trainReqDTO.getLecturer()) ? "" : "|" + trainReqDTO.getLecturer()));
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的健康培训通知，请前往小程序查看。" +
-                    "<a href=\" " + jumppage + "?page=pages/train/detail&id=" + trainReqDTO.getId() + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/train/detail&id=" + trainReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }

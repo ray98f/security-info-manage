@@ -114,3 +114,9 @@ ztt-4g:
 safe-expect:
   template:
     num: 5
+
+aliyun:
+  accessKeyId: LTAI3MpFPRn4zBK5
+  accessKeySecret: 9x0XLMV45km8wXkOMMQDu6e56UTeK5
+  verifyCode: SMS_246160377
+  signName: 中铁通轨道运营有限公司

@@ -111,4 +111,6 @@ public interface UserMapper {
     Integer selectUserPostIsExist(PostReqDTO postReqDTO);
 
     Integer modifyUserPost(PostReqDTO postReqDTO);
+
+    Page<UserResDTO> selectLeaveUser(Page<UserResDTO> page, String name);
 }

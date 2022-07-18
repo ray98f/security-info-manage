@@ -22,6 +22,7 @@ import com.security.info.manage.utils.ExcelPortUtil;
 import com.security.info.manage.utils.ObjectUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;;
@@ -304,7 +305,7 @@ public class DangerServiceImpl implements DangerService {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
-                    "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -329,7 +330,7 @@ public class DangerServiceImpl implements DangerService {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
-                    "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -438,7 +439,7 @@ public class DangerServiceImpl implements DangerService {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(checkUserId);
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
-                        "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + res.getDangerId() + "\">跳转小程序</a>"));
+                        "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         } else {
@@ -449,7 +450,7 @@ public class DangerServiceImpl implements DangerService {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(userId);
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
-                        "<a href=\" " + jumppage + "?page=pages/reportProblems/index&type=4&id=" + res.getDangerId() + "\">跳转小程序</a>"));
+                        "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         }
@@ -495,7 +496,7 @@ public class DangerServiceImpl implements DangerService {
                 "标准化工区建设-标准化词条", "标准化工区建设-扣除分值", "标准化工区建设-换算分值", "安全生产标准化-版块",
                 "安全生产标准化-类别", "安全生产标准化-词条", "安全生产标准化-考核分值", "安全隐患排查与治理-隐患类别",
                 "安全隐患排查与治理-隐患等级", "图片", "整改时限", "是否销项", "整改/防护措施", "整改后图片", "责任部门",
-                "责任工区" , "整改责任人", "备注");
+                "责任工区", "整改责任人", "备注");
         List<DangerExportResDTO> exportDanger = dangerMapper.exportDanger();
         List<Map<String, String>> list = new ArrayList<>();
         if (exportDanger != null && !exportDanger.isEmpty()) {
@@ -633,6 +634,21 @@ public class DangerServiceImpl implements DangerService {
         resDTO.setNewAddStatistics(newAdd);
         resDTO.setLegacyStatistics(legacy);
         return resDTO;
+    }
+
+    @Override
+    public List<DangerMonthStatisticsResDTO> dangerMonthStatistics(String month) {
+        if (Objects.isNull(month)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        List<DangerMonthStatisticsResDTO> list = new ArrayList<>();
+        String[] s = new String[]{"安全装置", "设备设施", "管理", "作业环境", "作业行为", "其他"};
+        for (int i = 0; i < s.length; i++) {
+            DangerMonthStatisticsResDTO resDTO = dangerMapper.dangerMonthStatistics(i + 1, month);
+            resDTO.setName(s[i]);
+            list.add(resDTO);
+        }
+        return list;
     }
 
 }
