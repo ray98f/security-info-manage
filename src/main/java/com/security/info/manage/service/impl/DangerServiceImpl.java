@@ -172,6 +172,8 @@ public class DangerServiceImpl implements DangerService {
                     resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
                 } else if (resDTO.getStatus() == 4) {
                     resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+                } else if (resDTO.getStatus() == 5) {
+                    resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 } else {
                     resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 }
@@ -203,6 +205,8 @@ public class DangerServiceImpl implements DangerService {
                     resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
                 } else if (resDTO.getStatus() == 4) {
                     resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+                } else if (resDTO.getStatus() == 5) {
+                    resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 } else {
                     resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 }
@@ -230,21 +234,23 @@ public class DangerServiceImpl implements DangerService {
                 if (resDTO.getBeforePic() != null && !"".equals(resDTO.getBeforePic())) {
                     resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
                 }
-                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
-                if (resDTO.getStatus() == 3) {
-                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
-                } else if (resDTO.getStatus() == 4) {
-                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
-                } else {
-                    resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-                }
-                DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
-                if (!Objects.isNull(dangerRectify)) {
-                    if (dangerRectify.getAfterPic() != null && !"".equals(dangerRectify.getAfterPic())) {
-                        dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(Arrays.asList(dangerRectify.getAfterPic().split(","))));
-                    }
-                }
-                resDTO.setDangerRectify(dangerRectify);
+//                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
+//                if (resDTO.getStatus() == 3) {
+//                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
+//                } else if (resDTO.getStatus() == 4) {
+//                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+//                } else if (resDTO.getStatus() == 5) {
+//                    resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+//                } else {
+//                    resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+//                }
+//                DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
+//                if (!Objects.isNull(dangerRectify)) {
+//                    if (dangerRectify.getAfterPic() != null && !"".equals(dangerRectify.getAfterPic())) {
+//                        dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(Arrays.asList(dangerRectify.getAfterPic().split(","))));
+//                    }
+//                }
+//                resDTO.setDangerRectify(dangerRectify);
             }
         }
         page.setRecords(list);
@@ -265,6 +271,8 @@ public class DangerServiceImpl implements DangerService {
             res.setUserStatus(dangerMapper.selectExamineUserStatus(res.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
         } else if (res.getStatus() == 4) {
             res.setUserStatus(dangerMapper.selectExamineUserStatus(res.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+        } else if (res.getStatus() == 5) {
+            res.setUserStatus(dangerMapper.selectCheckUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
         } else {
             res.setUserStatus(dangerMapper.selectUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
         }
@@ -468,7 +476,7 @@ public class DangerServiceImpl implements DangerService {
             }
             deptId = res.getId();
         }
-        Integer result = dangerMapper.issueDanger(dangerId, deptId, userId, rectifyTerm, opinion, TokenUtil.getCurrentPersonNo());
+        Integer result = dangerMapper.issueDanger(dangerId, deptId, Arrays.asList(userId.split(",")), rectifyTerm, opinion, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
@@ -485,6 +493,14 @@ public class DangerServiceImpl implements DangerService {
     @Override
     public void rectifyExamineDanger(String dangerId, Integer status) {
         Integer result = dangerMapper.rectifyExamineDanger(dangerId, status, TokenUtil.getCurrentPersonNo());
+        if (result < 0) {
+            throw new CommonException(ErrorCode.UPDATE_ERROR);
+        }
+    }
+
+    @Override
+    public void rectifyPassDanger(String dangerId, Integer status) {
+        Integer result = dangerMapper.rectifyPassDanger(dangerId, status, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

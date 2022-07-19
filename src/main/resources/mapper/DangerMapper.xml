@@ -121,6 +121,13 @@
         limit 1
     </select>
 
+    <select id="selectCheckUserStatus" resultType="java.lang.Integer">
+        select count(1) from t_danger_rectify as dr
+        left join t_danger as d on d.id=dr.danger_id
+        where dr.danger_id=#{dangerId} and dr.is_delete=0 and d.check_user_id=#{userId} and dr.check_user_status=1
+        limit 1
+    </select>
+
     <select id="listDangerExamine" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
         select de.id, de.danger_id, de.user_type, de.examine_user_id, de.examine_time, de.opinion, de.status,
         ue.real_name as examine_user_name from t_danger_examine as de
@@ -207,7 +214,7 @@
             and dr.rectify_user_id=#{userId}
         </if>
         <if test="type==3 and userId!=null and userId!=''">
-            and de.examine_user_id=#{userId} or dr.examine_user_id=#{userId}
+            and de.examine_user_id=#{userId} or dr.examine_user_id=#{userId} or (d.check_user_id=#{userId} and dr.check_user_status=1)
         </if>
         group by d.id
         order by d.create_date desc
@@ -462,8 +469,10 @@
         update t_danger_examine set
         examine_time=now(), opinion=#{opinion}, status=1, update_by=#{createBy}
         where danger_id=#{dangerId} and status=0;
-        insert into t_danger_rectify(id, danger_id, rectify_user_id, create_by)
-        value (replace(uuid(),"-",""), #{dangerId}, #{userId}, #{createBy});
+        <foreach collection="list" index="index" item="userId" separator=";">
+            insert into t_danger_rectify(id, danger_id, rectify_user_id, create_by)
+            value (replace(uuid(),"-",""), #{dangerId}, #{userId}, #{createBy})
+        </foreach>
     </update>
 
     <update id="rectifyDanger">
@@ -479,12 +488,16 @@
             after_pic=#{afterPic},
         </if>
         update_by=#{createBy}
-        where danger_id=#{dangerId} and status=0;
+        where danger_id=#{dangerId} and rectify_user_id=#{userId} and status=0;
+        delete from t_danger_rectify where danger_id=#{dangerId} and rectify_user_id!=#{userId};
     </update>
 
     <update id="rectifyExamineDanger">
         update t_danger_rectify set
         examine_time=now(), status=#{status}, update_by=#{createBy}, update_date=now()
+        <if test="status==1">
+            , check_user_status=1
+        </if>
         where danger_id=#{dangerId} and is_delete=0;
         update t_danger set
         <if test="status==1">
@@ -492,6 +505,26 @@
         </if>
         <if test="status==2">
             status=6,
+        </if>
+        update_by=#{createBy}, update_date=now() where id=#{dangerId} and is_delete=0;
+    </update>
+
+    <update id="rectifyPassDanger">
+        update t_danger_rectify set
+        <if test="status==2">
+            check_user_status=#{status},
+        </if>
+        <if test="status==3">
+            check_user_status=0,
+        </if>
+        update_by=#{createBy}, update_date=now()
+        where danger_id=#{dangerId} and is_delete=0;
+        update t_danger set
+        <if test="status==2">
+            status=7,
+        </if>
+        <if test="status==3">
+            status=3,
         </if>
         update_by=#{createBy}, update_date=now() where id=#{dangerId} and is_delete=0;
     </update>

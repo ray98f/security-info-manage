@@ -198,6 +198,15 @@ public class DangerController {
         return DataResponse.success();
     }
 
+    @GetMapping("/rectify/pass")
+    @ApiOperation(value = "检查人通过问题整改")
+    @LogMaker(value = "网页端-问题检查问题排查管理问题整改通过")
+    public DataResponse<T> rectifyPassDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
+                                             @RequestParam @ApiParam(value = "拟稿人审核状态 0 未开始 1 审核中 2 审核通过 3 审核不通过") Integer status) {
+        dangerService.rectifyPassDanger(dangerId, status);
+        return DataResponse.success();
+    }
+
     @GetMapping("/export")
     @ApiOperation(value = "导出隐患")
     @LogMaker(value = "网页端-问题检查问题排查管理导出")

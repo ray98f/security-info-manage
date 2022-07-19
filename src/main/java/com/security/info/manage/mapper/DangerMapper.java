@@ -40,6 +40,8 @@ public interface DangerMapper {
 
     Integer selectExamineUserStatus(String dangerId, String userId, Integer type);
 
+    Integer selectCheckUserStatus(String dangerId, String userId);
+
     List<DangerExamineResDTO> listDangerExamine(String dangerId);
 
     DangerRectifyResDTO getDangerRectify(String dangerId);
@@ -68,11 +70,13 @@ public interface DangerMapper {
 
     Integer examineDanger(String id, String opinion, Integer status, String userId, String dangerId, Integer userType, String examineUserId);
 
-    Integer issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion, String createBy);
+    Integer issueDanger(String dangerId, String deptId, List<String> list, String rectifyTerm, String opinion, String createBy);
 
     Integer rectifyDanger(String dangerId, String userId, String rectifyMeasure, String afterPic, String createBy);
 
     Integer rectifyExamineDanger(String dangerId, Integer status, String createBy);
+
+    Integer rectifyPassDanger(String dangerId, Integer status, String createBy);
 
     List<DangerExportResDTO> exportDanger();
 

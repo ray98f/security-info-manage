@@ -219,7 +219,7 @@
 
     <select id="listApplianceWarn" resultType="com.security.info.manage.dto.res.ApplianceWarnResDTO">
         select aw.id, aw.info, aw.appliance_user_id, aw.status, aw.ring_time, d.org_name as dept_name,
-        p.post_name, ue.user_no, ue.real_name as user_name, a.name as appliance_name, auc.user_id
+        GROUP_CONCAT(p.post_name) as post_name, ue.user_no, ue.real_name as user_name, a.name as appliance_name, auc.user_id
         from t_appliance_warning as aw
         left join t_appliance_user_config as auc on auc.id=aw.appliance_user_id and auc.is_delete=0
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
@@ -232,7 +232,8 @@
         <if test="deptId!=null and deptId!=''">
             and d.id=#{deptId}
         </if>
-        order by aw.create_date desc
+        group by aw.id
+        order by aw.create_date desc, p.audit_level asc
     </select>
 
     <update id="modifyApplianceWarn">
