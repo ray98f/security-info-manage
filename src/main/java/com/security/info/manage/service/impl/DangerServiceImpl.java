@@ -480,6 +480,11 @@ public class DangerServiceImpl implements DangerService {
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
+        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+        vxSendTextMsgReqDTO.setTouser(userId.replaceAll(",", "|"));
+        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改通知，请前往小程序查看处理。" +
+                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+        msgService.sendTextMsg(vxSendTextMsgReqDTO);
     }
 
     @Override
@@ -488,6 +493,11 @@ public class DangerServiceImpl implements DangerService {
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
+        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+        vxSendTextMsgReqDTO.setTouser(userId);
+        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改审批通知，请前往小程序查看处理。" +
+                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+        msgService.sendTextMsg(vxSendTextMsgReqDTO);
     }
 
     @Override

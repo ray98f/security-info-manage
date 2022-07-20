@@ -138,11 +138,13 @@
 
     <select id="getDangerRectify" resultType="com.security.info.manage.dto.res.DangerRectifyResDTO">
         select dr.id, dr.danger_id, dr.rectify_user_id, dr.rectify_time, dr.rectify_measure, dr.after_pic, dr.examine_user_id,
-        dr.examine_time, dr.status, dr.is_eliminate, ue1.real_name as rectify_user_name, ue2.real_name as examine_user_name
+        dr.examine_time, dr.status, dr.is_eliminate, group_concat(ue1.real_name) as rectify_user_name,
+        group_concat(ue2.real_name) as examine_user_name
         from t_danger_rectify as dr
         left join sys_user_ext as ue1 on ue1.user_id=dr.rectify_user_id and ue1.status=0 and ue1.is_delete=0
         left join sys_user_ext as ue2 on ue2.user_id=dr.examine_user_id and ue2.status=0 and ue2.is_delete=0
         where dr.danger_id=#{id} and dr.is_delete=0
+        group by dr.danger_id
     </select>
 
     <select id="listDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
@@ -480,7 +482,7 @@
         status=4, update_by=#{createBy}, update_date=now()
         where id=#{dangerId} and is_delete=0;
         update t_danger_rectify set
-        rectify_time=now(), examine_user_id=#{userId},
+        rectify_time=now(), examine_user_id=#{userId}, examine_time=null,
         <if test="rectifyMeasure!=null">
             rectify_measure=#{rectifyMeasure},
         </if>
@@ -488,8 +490,8 @@
             after_pic=#{afterPic},
         </if>
         update_by=#{createBy}
-        where danger_id=#{dangerId} and rectify_user_id=#{userId} and status=0;
-        delete from t_danger_rectify where danger_id=#{dangerId} and rectify_user_id!=#{userId};
+        where danger_id=#{dangerId} and rectify_user_id=#{createBy};
+        delete from t_danger_rectify where danger_id=#{dangerId} and rectify_user_id!=#{createBy};
     </update>
 
     <update id="rectifyExamineDanger">
