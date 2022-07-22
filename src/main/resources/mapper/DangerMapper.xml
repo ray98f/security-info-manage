@@ -128,12 +128,18 @@
         limit 1
     </select>
 
+    <select id="selectCreateUserStatus" resultType="java.lang.Integer">
+        select count(1) from t_danger
+        where id=#{dangerId} and is_delete=0 and check_user_id=#{userId} and status=0 and is_use=0
+        limit 1
+    </select>
+
     <select id="listDangerExamine" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
         select de.id, de.danger_id, de.user_type, de.examine_user_id, de.examine_time, de.opinion, de.status,
         ue.real_name as examine_user_name from t_danger_examine as de
         left join sys_user_ext as ue on ue.user_id=de.examine_user_id and ue.status=0 and ue.is_delete=0
         where de.danger_id=#{dangerId} and de.is_delete=0
-        order by user_type asc
+        order by de.create_date asc, de.user_type asc
     </select>
 
     <select id="getDangerRectify" resultType="com.security.info.manage.dto.res.DangerRectifyResDTO">
@@ -456,7 +462,7 @@
             </if>
         </if>
         <if test="status==2">
-            update t_danger set status=6, update_by=#{userId}, update_date=now() where id=#{dangerId} and is_delete=0;
+            update t_danger set status=0, is_use=0, update_by=#{userId}, update_date=now() where id=#{dangerId} and is_delete=0;
         </if>
     </update>
 
@@ -496,17 +502,20 @@
 
     <update id="rectifyExamineDanger">
         update t_danger_rectify set
-        examine_time=now(), status=#{status}, update_by=#{createBy}, update_date=now()
         <if test="status==1">
-            , check_user_status=1
+            examine_time=now(), status=#{status}, check_user_status=1,
         </if>
+        <if test="status==2">
+            examine_user_id=null,
+        </if>
+        update_by=#{createBy}, update_date=now()
         where danger_id=#{dangerId} and is_delete=0;
         update t_danger set
         <if test="status==1">
             status=5,
         </if>
         <if test="status==2">
-            status=6,
+            status=3,
         </if>
         update_by=#{createBy}, update_date=now() where id=#{dangerId} and is_delete=0;
     </update>

@@ -174,6 +174,8 @@ public class DangerServiceImpl implements DangerService {
                     resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
                 } else if (resDTO.getStatus() == 5) {
                     resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                } else if (resDTO.getStatus() == 0) {
+                    resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 } else {
                     resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 }
@@ -207,6 +209,8 @@ public class DangerServiceImpl implements DangerService {
                     resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
                 } else if (resDTO.getStatus() == 5) {
                     resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                } else if (resDTO.getStatus() == 0) {
+                    resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 } else {
                     resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
                 }
@@ -241,6 +245,8 @@ public class DangerServiceImpl implements DangerService {
 //                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
 //                } else if (resDTO.getStatus() == 5) {
 //                    resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+//                } else if (resDTO.getStatus() == 0) {
+//                    resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
 //                } else {
 //                    resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
 //                }
@@ -273,6 +279,8 @@ public class DangerServiceImpl implements DangerService {
             res.setUserStatus(dangerMapper.selectExamineUserStatus(res.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
         } else if (res.getStatus() == 5) {
             res.setUserStatus(dangerMapper.selectCheckUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+        } else if (res.getStatus() == 0) {
+            res.setUserStatus(dangerMapper.selectCreateUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
         } else {
             res.setUserStatus(dangerMapper.selectUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
         }
@@ -376,60 +384,6 @@ public class DangerServiceImpl implements DangerService {
 
     @Override
     public void examineDanger(String dangerId, String userId, String opinion, Integer status) {
-//        List<UserResDTO> users = deptService.getDeptUser(deptId, dangerId);
-//        if (users == null || users.isEmpty()) {
-//            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
-//        }
-//        DangerExamineResDTO res = dangerMapper.selectUserType(dangerId);
-//        if (res.getUserType() == 1) {
-//            for (UserResDTO userResDTO : users) {
-//                if ("副部长".equals(userResDTO.getUserName())) {
-//                    Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
-//                    if (result < 0) {
-//                        throw new CommonException(ErrorCode.UPDATE_ERROR);
-//                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
-//                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-//                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
-//                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
-//                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
-//                    }
-//                    break;
-//                }
-//            }
-//        } else if (res.getUserType() == 2) {
-//            for (UserResDTO userResDTO : users) {
-//                if ("部长".equals(userResDTO.getUserName())) {
-//                    Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userResDTO.getId());
-//                    if (result < 0) {
-//                        throw new CommonException(ErrorCode.UPDATE_ERROR);
-//                    } else if (userResDTO.getId() != null && !"".equals(userResDTO.getId())) {
-//                        VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-//                        vxSendTextMsgReqDTO.setTouser(userResDTO.getId());
-//                        vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
-//                        msgService.sendTextMsg(vxSendTextMsgReqDTO);
-//                    }
-//                    break;
-//                }
-//            }
-//        } else if (res.getUserType() == 3) {
-//            DangerResDTO dangerResDTO = getDangerDetail(dangerId);
-//            if (Objects.isNull(dangerResDTO)) {
-//                throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
-//            }
-//            String checkUserId = dangerMapper.selectCheckUserId(dangerId);
-//            if (Objects.isNull(checkUserId)) {
-//                throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
-//            }
-//            Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, checkUserId);
-//            if (result < 0) {
-//                throw new CommonException(ErrorCode.UPDATE_ERROR);
-//            } else if (!"".equals(checkUserId)) {
-//                VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
-//                vxSendTextMsgReqDTO.setTouser(checkUserId);
-//                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。"));
-//                msgService.sendTextMsg(vxSendTextMsgReqDTO);
-//            }
-//        }
         DangerExamineResDTO res = dangerMapper.selectUserType(dangerId);
         if (res.getUserType() == 3) {
             DangerResDTO dangerResDTO = getDangerDetail(dangerId);
@@ -446,7 +400,7 @@ public class DangerServiceImpl implements DangerService {
             } else if (!"".equals(checkUserId)) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(checkUserId);
-                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
+                vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查待下发，请前往小程序查看处理。" +
                         "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
@@ -483,7 +437,7 @@ public class DangerServiceImpl implements DangerService {
         VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
         vxSendTextMsgReqDTO.setTouser(userId.replaceAll(",", "|"));
         vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改通知，请前往小程序查看处理。" +
-                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=5&id=" + dangerId + "\">跳转小程序</a>"));
         msgService.sendTextMsg(vxSendTextMsgReqDTO);
     }
 
@@ -496,7 +450,7 @@ public class DangerServiceImpl implements DangerService {
         VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
         vxSendTextMsgReqDTO.setTouser(userId);
         vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改审批通知，请前往小程序查看处理。" +
-                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=6&id=" + dangerId + "\">跳转小程序</a>"));
         msgService.sendTextMsg(vxSendTextMsgReqDTO);
     }
 

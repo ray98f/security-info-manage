@@ -42,6 +42,8 @@ public interface DangerMapper {
 
     Integer selectCheckUserStatus(String dangerId, String userId);
 
+    Integer selectCreateUserStatus(String dangerId, String userId);
+
     List<DangerExamineResDTO> listDangerExamine(String dangerId);
 
     DangerRectifyResDTO getDangerRectify(String dangerId);
