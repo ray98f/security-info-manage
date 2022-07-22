@@ -397,7 +397,7 @@ public class DangerServiceImpl implements DangerService {
             Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, checkUserId);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
-            } else if (!"".equals(checkUserId)) {
+            } else if (!"".equals(checkUserId) && status == 1) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(checkUserId);
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查待下发，请前往小程序查看处理。" +
@@ -408,7 +408,7 @@ public class DangerServiceImpl implements DangerService {
             Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userId);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
-            } else if (userId != null && !"".equals(userId)) {
+            } else if (userId != null && !"".equals(userId) && status == 1) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(userId);
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
@@ -524,11 +524,7 @@ public class DangerServiceImpl implements DangerService {
                 list.add(map);
             }
         }
-        if (list.isEmpty()) {
-            throw new CommonException(ErrorCode.DATA_NOT_EXIST);
-        } else {
-            ExcelPortUtil.excelPort("问题检查汇总表", listName, list, null, response);
-        }
+        ExcelPortUtil.excelPort("问题检查汇总表", listName, list, null, response);
     }
 
     @Override

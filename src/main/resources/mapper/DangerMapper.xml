@@ -560,7 +560,7 @@
         left join sys_entry_plate as ep2 on e2.plate_id=ep2.id
         left join sys_file as f1 on find_in_set(f1.id,d.before_pic)>0
         left join sys_file as f2 on find_in_set(f2.id,dr.after_pic)>0
-        where d.is_use=1 and d.status=5
+        where d.is_use=1 and d.status=7
         group by d.id, dr.id
         order by d.check_time desc
     </select>
