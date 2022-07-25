@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
+import com.security.info.manage.annotation.LogMaker;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.VxAccessToken;
 import com.security.info.manage.dto.req.*;
@@ -23,12 +24,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -104,6 +110,7 @@ public class SysServiceImpl implements SysService {
 
     @Override
     public Map<String, Object> login(LoginReqDTO loginReqDTO) throws Exception {
+        Long beginTime = System.currentTimeMillis();
         if (Objects.isNull(loginReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
@@ -114,11 +121,13 @@ public class SysServiceImpl implements SysService {
         Map<String, Object> data = new HashMap<>(16);
         data.put("userInfo", resDTO);
         data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
+        saveLog("网页端-平台登录", resDTO.getUserName(), beginTime);
         return data;
     }
 
     @Override
     public Map<String, Object> scanLogin(String code) {
+        Long beginTime = System.currentTimeMillis();
         VxAccessToken accessToken = VxApiUtils.getAccessToken(corpid, pccorpsecret);
         if (accessToken == null) {
             throw new CommonException(ErrorCode.VX_ERROR, "accessToken返回为空!");
@@ -143,6 +152,7 @@ public class SysServiceImpl implements SysService {
         }
         data.put("userInfo", resDTO);
         data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));
+        saveLog("网页端-扫码登录", resDTO.getUserName(), beginTime);
         return data;
     }
 
@@ -163,6 +173,7 @@ public class SysServiceImpl implements SysService {
 
     @Override
     public Map<String, Object> vxLogin(String code) {
+        Long beginTime = System.currentTimeMillis();
         if (Objects.isNull(code)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
@@ -191,6 +202,7 @@ public class SysServiceImpl implements SysService {
         }
         data.put("userInfo", resDTO);
         data.put(TOKEN, TokenUtil.createLongTermToken(resDTO));
+        saveLog("微信小程序-授权登录", resDTO.getUserName(), beginTime);
         return data;
     }
 
@@ -408,5 +420,18 @@ public class SysServiceImpl implements SysService {
         if (list != null && !list.isEmpty()) {
             sysMapper.addButton(list);
         }
+    }
+
+    public void saveLog(String msg, String userName, Long beginTime) {
+        OperationLogResDTO operationLog = new OperationLogResDTO();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
+        operationLog.setHostIp(IpUtils.getIpAddr(request));
+        operationLog.setOperationType(msg);
+        operationLog.setParams(msg + "成功");
+        operationLog.setUserName(userName);
+        operationLog.setOperationTime(new Timestamp(System.currentTimeMillis()));
+        operationLog.setUseTime(System.currentTimeMillis() - beginTime);
+        sysMapper.addOperationLog(operationLog);
     }
 }

@@ -236,8 +236,8 @@ public class PhysicalServiceImpl implements PhysicalService {
                     .setTemplateCode(verifyCode)
                     .setTemplateParam("{\"start\":\"" + start + "\",\"end\":\"" + end + "\"}");
             SendSmsResponse response = client.sendSms(request);
-            if (Common.equalString(response.body.code, "OK")) {
-                log.info("新人入职体检通知-短信发送成功");
+            if (!Common.equalString(response.body.code, "OK")) {
+                log.error("新人入职体检通知-短信发送失败:{}", response.body.message);
             }
         }
     }

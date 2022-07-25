@@ -48,14 +48,12 @@ public class SysController {
 
     @PostMapping("/login")
     @ApiOperation(value = "登录")
-    @LogMaker(value = "网页端-平台登录")
     public DataResponse<Map<String, Object>> login(@RequestBody LoginReqDTO loginReqDTO) throws Exception {
         return DataResponse.of(sysService.login(loginReqDTO));
     }
 
     @GetMapping("/scan/login")
     @ApiOperation(value = "扫码登录")
-    @LogMaker(value = "网页端-扫码登录")
     public DataResponse<Map<String, Object>> scanLogin(@RequestParam String code) {
         return DataResponse.of(sysService.scanLogin(code));
     }
@@ -76,7 +74,6 @@ public class SysController {
 
     @GetMapping("/vx/login")
     @ApiOperation(value = "微信授权登录")
-    @LogMaker(value = "微信小程序-授权登录")
     public DataResponse<Map<String, Object>> vxLogin(@RequestParam String code) {
         return DataResponse.of(sysService.vxLogin(code));
     }
