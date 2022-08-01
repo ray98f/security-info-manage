@@ -136,10 +136,14 @@
 
     <select id="listDangerExamine" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
         select de.id, de.danger_id, de.user_type, de.examine_user_id, de.examine_time, de.opinion, de.status,
-        ue.real_name as examine_user_name from t_danger_examine as de
+        ue.real_name as examine_user_name, group_concat(p.post_name) as post_name
+        from t_danger_examine as de
         left join sys_user_ext as ue on ue.user_id=de.examine_user_id and ue.status=0 and ue.is_delete=0
+        left join sys_user_post as up on up.user_id=de.examine_user_id
+        left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0
         where de.danger_id=#{dangerId} and de.is_delete=0
-        order by de.create_date asc, de.user_type asc
+        group by de.id
+        order by de.create_date asc, de.user_type asc, p.audit_level asc
     </select>
 
     <select id="getDangerRectify" resultType="com.security.info.manage.dto.res.DangerRectifyResDTO">
