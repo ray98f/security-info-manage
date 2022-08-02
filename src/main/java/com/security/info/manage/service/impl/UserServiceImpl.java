@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
         }
         passwordReqDTO.setOldPwd(MyAESUtil.encrypt(passwordReqDTO.getOldPwd()));
         passwordReqDTO.setNewPwd(MyAESUtil.encrypt(passwordReqDTO.getNewPwd()));
-        int result = userMapper.changePwd(passwordReqDTO, TokenUtil.getCurrentUserName());
+        int result = userMapper.changePwd(passwordReqDTO, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.USER_PWD_CHANGE_FAIL);
         }
@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
         if (userReqDTO.getPassword() != null && !"".equals(userReqDTO.getPassword())) {
             userReqDTO.setPassword(MyAESUtil.encrypt(userReqDTO.getPassword()));
         }
-        result = userMapper.editUser(userReqDTO, TokenUtil.getCurrentUserName());
+        result = userMapper.editUser(userReqDTO, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }

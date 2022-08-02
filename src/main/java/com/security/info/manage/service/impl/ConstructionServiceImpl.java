@@ -298,8 +298,8 @@ public class ConstructionServiceImpl implements ConstructionService {
                 if (user != null && !user.isEmpty()) {
                     String[] data = user.replaceAll("：", ":").split(":");
                     if (data.length == 2) {
-                        reqDTO.setUserName(user.split(":")[0]);
-                        reqDTO.setPhone(user.split(":")[1]);
+                        reqDTO.setUserName(data[0]);
+                        reqDTO.setPhone(data[1]);
                     } else {
                         continue;
                     }
