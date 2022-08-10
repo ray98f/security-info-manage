@@ -31,7 +31,7 @@ public interface PostService {
 
     Page<PostWarnResDTO> listPostWarn(PageReqDTO pageReqDTO);
 
-    void handlePostWarn(String id);
+    void handlePostWarn(List<String> ids);
 
     List<PostChangeListResDTO> userArchives(String id);
 

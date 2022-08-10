@@ -111,11 +111,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void handlePostWarn(String id) {
-        if (Objects.isNull(id)) {
+    public void handlePostWarn(List<String> ids) {
+        if (Objects.isNull(ids) || ids.isEmpty()) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        Integer result = postMapper.handlePostWarn(id);
+        Integer result = postMapper.handlePostWarn(ids);
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
@@ -129,7 +129,9 @@ public class PostServiceImpl implements PostService {
         List<PostChangeListResDTO> list = postMapper.userArchives(id);
         if (list != null && !list.isEmpty()) {
             for (PostChangeListResDTO postChangeListResDTO : list) {
-                postChangeListResDTO.setFile(fileMapper.selectFileInfo(Collections.singletonList(postChangeListResDTO.getFiles())).get(0));
+                if (postChangeListResDTO.getFiles() != null && !"".equals(postChangeListResDTO.getFiles())) {
+                    postChangeListResDTO.setFile(fileMapper.selectFileInfo(Collections.singletonList(postChangeListResDTO.getFiles())).get(0));
+                }
             }
         }
         return list;

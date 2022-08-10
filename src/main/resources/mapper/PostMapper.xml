@@ -128,7 +128,11 @@
     </select>
 
     <update id="handlePostWarn">
-        update t_post_change_warning set status=1 where id=#{id} and is_delete=0
+        update t_post_change_warning set status=1 where id in (
+        <foreach collection="list" index="index" item="id" separator=",">
+            #{id}
+        </foreach>
+        ) and is_delete=0
     </update>
 
     <select id="userArchives" resultType="com.security.info.manage.dto.res.PostChangeListResDTO">

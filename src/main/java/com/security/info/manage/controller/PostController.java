@@ -87,8 +87,8 @@ public class PostController {
     @PostMapping("/warn/handle")
     @ApiOperation(value = "处理岗位异动预警")
     @LogMaker(value = "网页端-系统设置岗位异动预警处理")
-    public DataResponse<T> handlePostWarn(@RequestBody PostWarnResDTO postWarnResDTO) {
-        postService.handlePostWarn(postWarnResDTO.getId());
+    public DataResponse<T> handlePostWarn(@RequestBody List<String> ids) {
+        postService.handlePostWarn(ids);
         return DataResponse.success();
     }
 

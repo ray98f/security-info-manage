@@ -39,7 +39,7 @@ public interface PostMapper {
 
     Page<PostWarnResDTO> listPostWarn(Page<PostWarnResDTO> page);
 
-    Integer handlePostWarn(String id);
+    Integer handlePostWarn(List<String> list);
 
     List<PostChangeListResDTO> userArchives(String id);
 
