@@ -136,8 +136,10 @@
 
     <select id="listDangerExamine" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
         select de.id, de.danger_id, de.user_type, de.examine_user_id, de.examine_time, de.opinion, de.status,
-        ue.real_name as examine_user_name, group_concat(p.post_name) as post_name
+        ue.real_name as examine_user_name, group_concat(p.post_name) as post_name, d.org_name as dept_name
         from t_danger_examine as de
+        left join sys_user as u on u.id=de.examine_user_id and u.status=1 and u.is_delete=0
+        left join sys_dept as d on d.id=u.main_dept and d.is_delete=0
         left join sys_user_ext as ue on ue.user_id=de.examine_user_id and ue.status=0 and ue.is_delete=0
         left join sys_user_post as up on up.user_id=de.examine_user_id
         left join sys_post as p on p.id=up.post_id and p.is_delete=0 and p.status=0

@@ -31,6 +31,9 @@ public class DangerExamineResDTO {
     @ApiModelProperty(value = "岗位名")
     private String postName;
 
+    @ApiModelProperty(value = "部门名称")
+    private String deptName;
+
     @ApiModelProperty(value = "审核时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(
