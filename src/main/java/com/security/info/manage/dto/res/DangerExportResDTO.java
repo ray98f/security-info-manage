@@ -98,4 +98,8 @@ public class DangerExportResDTO {
 
     private String rectifyMeasure;
 
+    private String responseUnit;
+
+    private String responseWorkArea;
+
 }

@@ -23,6 +23,9 @@ public class LawReqDTO {
     @ApiModelProperty(value = "文件ids")
     private List<String> fileIds;
 
+    @ApiModelProperty(value = "排序")
+    private Integer sort;
+
     @ApiModelProperty(value = "创建人员id")
     private String createBy;
 

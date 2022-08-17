@@ -101,4 +101,8 @@ public class DangerReqDTO {
     @ApiModelProperty(value = "审核人id")
     private String examineUserId;
 
+    private String responseUnit;
+
+    private String responseWorkArea;
+
 }

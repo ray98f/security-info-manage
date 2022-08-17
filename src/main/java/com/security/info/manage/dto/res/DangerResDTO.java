@@ -148,6 +148,10 @@ public class DangerResDTO {
     @ApiModelProperty(value = "用户审核状态 0 未审核 1 已审核")
     private Integer userStatus;
 
+    private String responseUnit;
+
+    private String responseWorkArea;
+
     @ApiModelProperty(value = "隐患审核流程")
     private List<DangerExamineResDTO> dangerExamines;
 

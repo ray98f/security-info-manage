@@ -58,7 +58,7 @@ public interface DangerService {
 
     void rectifyExamineDanger(String dangerId, Integer status);
 
-    void rectifyPassDanger(String dangerId, Integer status);
+    void rectifyPassDanger(String dangerId, String condition, Integer status);
 
     void exportDanger(HttpServletResponse response);
 

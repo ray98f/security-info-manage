@@ -57,5 +57,8 @@ public class LawResDTO {
     )
     private Date updateDate;
 
+    @ApiModelProperty(value = "排序")
+    private Integer sort;
+
 
 }

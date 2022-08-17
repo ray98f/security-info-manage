@@ -165,7 +165,8 @@
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
-        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content
+        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content,
+        d.response_unit, d.response_work_area
         from t_danger as d
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
@@ -202,7 +203,8 @@
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
-        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content
+        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content,
+        d.response_unit, d.response_work_area
         from t_danger as d
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
@@ -240,7 +242,8 @@
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
-        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content
+        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content,
+        d.response_unit, d.response_work_area
         from t_danger as d
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
@@ -262,7 +265,8 @@
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
         d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
-        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content
+        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content,
+        d.response_unit, d.response_work_area
         from t_danger as d
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
@@ -345,6 +349,12 @@
         <if test="isUse==1">
             status=1,
         </if>
+        <if test="responseUnit!=null">
+            response_unit=#{responseUnit},
+        </if>
+        <if test="responseWorkArea!=null">
+            response_work_area=#{responseWorkArea},
+        </if>
         update_by=#{createBy}, update_date=now()
         where id=#{id} and is_delete=0;
         <if test="isUse==1">
@@ -375,6 +385,12 @@
         create_by,
         <if test="isUse!=null">
             is_use,
+        </if>
+        <if test="responseUnit!=null and responseUnit!=''">
+            response_unit,
+        </if>
+        <if test="responseWorkArea!=null and responseWorkArea!=''">
+            response_work_area,
         </if>
         prod_category
         <if test="isUse==1">
@@ -407,6 +423,12 @@
         #{createBy},
         <if test="isUse!=null">
             #{isUse},
+        </if>
+        <if test="responseUnit!=null and responseUnit!=''">
+            #{responseUnit},
+        </if>
+        <if test="responseWorkArea!=null and responseWorkArea!=''">
+            #{responseWorkArea},
         </if>
         #{prodCategory}
         <if test="isUse==1">
@@ -534,6 +556,9 @@
         <if test="status==3">
             check_user_status=0,
         </if>
+        <if test="condition!=null and condition!=''">
+            check_user_condition=#{condition},
+        </if>
         update_by=#{createBy}, update_date=now()
         where danger_id=#{dangerId} and is_delete=0;
         update t_danger set
@@ -552,7 +577,7 @@
         d.prod_entry_score, d.level, d.danger_category, dr.rectify_measure, d2.org_name as responsibility_dept_name,
         ue1.real_name as rectify_user_name, e1.content as build_entry, ep1.plate_name as build_plate_name,
         e2.content as prod_entry, ep2.plate_name as prod_plate_name, group_concat(distinct f1.file_url) as before_pic,
-        group_concat(distinct f2.file_url) as after_pic, dr.is_eliminate, d.responsibility_dept_id
+        group_concat(distinct f2.file_url) as after_pic, dr.is_eliminate, d.responsibility_dept_id, d.response_unit, d.response_work_area
         from t_danger as d
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0

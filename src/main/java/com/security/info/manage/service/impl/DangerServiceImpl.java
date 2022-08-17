@@ -357,7 +357,7 @@ public class DangerServiceImpl implements DangerService {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
         Integer result = dangerMapper.selectIsDangerExamine(dangerReqDTO.getId());
-        if (result != 0 && result != 4) {
+        if (result == 1 || result == 3 || result == 4) {
             throw new CommonException(ErrorCode.RESOURCE_USE);
         }
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
@@ -463,8 +463,8 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    public void rectifyPassDanger(String dangerId, Integer status) {
-        Integer result = dangerMapper.rectifyPassDanger(dangerId, status, TokenUtil.getCurrentPersonNo());
+    public void rectifyPassDanger(String dangerId, String condition, Integer status) {
+        Integer result = dangerMapper.rectifyPassDanger(dangerId, condition, status, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
@@ -491,12 +491,12 @@ public class DangerServiceImpl implements DangerService {
                 map.put("问题", resDTO.getContent());
                 map.put("标准化工区建设-版块", resDTO.getBuildPlateName());
                 map.put("标准化工区建设-标准化词条", resDTO.getBuildEntry());
-                map.put("标准化工区建设-扣除分值", String.valueOf(resDTO.getBuildScore()));
-                map.put("标准化工区建设-换算分值", String.valueOf(resDTO.getBuildConversionScore()));
+                map.put("标准化工区建设-扣除分值",  resDTO.getBuildScore()== null ? "" : String.valueOf(resDTO.getBuildScore()));
+                map.put("标准化工区建设-换算分值", resDTO.getBuildConversionScore()== null ? "" : String.valueOf(resDTO.getBuildConversionScore()));
                 map.put("安全生产标准化-版块", resDTO.getProdPlateName());
                 map.put("安全生产标准化-类别", resDTO.getProdCategory());
                 map.put("安全生产标准化-词条", resDTO.getProdEntry());
-                map.put("安全生产标准化-考核分值", String.valueOf(resDTO.getProdEntryScore()));
+                map.put("安全生产标准化-考核分值", resDTO.getProdEntryScore()== null ? "" : String.valueOf(resDTO.getProdEntryScore()));
                 map.put("安全隐患排查与治理-隐患类别", resDTO.getDangerCategory() == 1 ? "安全装置" :
                         resDTO.getDangerCategory() == 2 ? "设备设施" :
                                 resDTO.getDangerCategory() == 3 ? "管理" :
@@ -508,17 +508,8 @@ public class DangerServiceImpl implements DangerService {
                 map.put("是否销项", resDTO.getIsEliminate() == 0 ? "否" : "是");
                 map.put("整改/防护措施", resDTO.getRectifyMeasure());
                 map.put("整改后图片", resDTO.getAfterPic());
-                DeptTreeResDTO res = deptMapper.selectParent(resDTO.getResponsibilityDeptId());
-                if (!Objects.isNull(res) && !"1".equals(res.getId())) {
-                    while (!"1".equals(res.getParentId())) {
-                        res = deptMapper.selectParent(res.getId());
-                        if (Objects.isNull(res)) {
-                            break;
-                        }
-                    }
-                }
-                map.put("责任部门", res.getOrgName());
-                map.put("责任工区", resDTO.getResponsibilityDeptName());
+                map.put("责任部门", resDTO.getResponseUnit());
+                map.put("责任工区", resDTO.getResponseWorkArea());
                 map.put("整改责任人", resDTO.getRectifyUserName());
                 map.put("备注", "");
                 list.add(map);

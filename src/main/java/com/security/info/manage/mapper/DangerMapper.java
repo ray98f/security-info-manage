@@ -78,7 +78,7 @@ public interface DangerMapper {
 
     Integer rectifyExamineDanger(String dangerId, Integer status, String createBy);
 
-    Integer rectifyPassDanger(String dangerId, Integer status, String createBy);
+    Integer rectifyPassDanger(String dangerId, String condition, Integer status, String createBy);
 
     List<DangerExportResDTO> exportDanger();
 

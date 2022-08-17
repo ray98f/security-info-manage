@@ -202,8 +202,9 @@ public class DangerController {
     @ApiOperation(value = "检查人通过问题整改")
     @LogMaker(value = "网页端-问题检查问题排查管理问题整改通过")
     public DataResponse<T> rectifyPassDanger(@RequestParam @ApiParam(value = "隐患id") String dangerId,
+                                             @RequestParam(required = false) @ApiParam(value = "问题整改情况复查") String condition,
                                              @RequestParam @ApiParam(value = "拟稿人审核状态 0 未开始 1 审核中 2 审核通过 3 审核不通过") Integer status) {
-        dangerService.rectifyPassDanger(dangerId, status);
+        dangerService.rectifyPassDanger(dangerId, condition, status);
         return DataResponse.success();
     }
 
