@@ -497,12 +497,12 @@ public class DangerServiceImpl implements DangerService {
                 map.put("安全生产标准化-类别", resDTO.getProdCategory());
                 map.put("安全生产标准化-词条", resDTO.getProdEntry());
                 map.put("安全生产标准化-考核分值", resDTO.getProdEntryScore()== null ? "" : String.valueOf(resDTO.getProdEntryScore()));
-                map.put("安全隐患排查与治理-隐患类别", resDTO.getDangerCategory() == 1 ? "安全装置" :
+                map.put("安全隐患排查与治理-隐患类别", resDTO.getDangerCategory() != null ? (resDTO.getDangerCategory() == 1 ? "安全装置" :
                         resDTO.getDangerCategory() == 2 ? "设备设施" :
                                 resDTO.getDangerCategory() == 3 ? "管理" :
                                         resDTO.getDangerCategory() == 4 ? "作业环境" :
-                                                resDTO.getDangerCategory() == 5 ? "作业行为" : "其他");
-                map.put("安全隐患排查与治理-隐患等级", resDTO.getLevel() == 1 ? "一般" : "重大");
+                                                resDTO.getDangerCategory() == 5 ? "作业行为" : "其他") : "");
+                map.put("安全隐患排查与治理-隐患等级", resDTO.getLevel() != null ? (resDTO.getLevel() == 1 ? "一般" : "重大") : "");
                 map.put("图片", resDTO.getBeforePic());
                 map.put("整改时限", sdf.format(resDTO.getRectifyTerm()));
                 map.put("是否销项", resDTO.getIsEliminate() == 0 ? "否" : "是");
