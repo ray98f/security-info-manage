@@ -168,7 +168,8 @@
     </select>
 
     <select id="selectRegionIsExist" resultType="java.lang.Integer">
-        SELECT count(1) FROM t_region WHERE name=#{name} and code=#{code} and type_id=#{typeId} and is_delete=0
+        SELECT count(1) FROM t_region WHERE name=#{name} and code=#{code}
+        and type_id=#{typeId} and is_delete=0 and parent_id=#{parentId}
         <if test="id!=null">
             and id!=#{id}
         </if>
