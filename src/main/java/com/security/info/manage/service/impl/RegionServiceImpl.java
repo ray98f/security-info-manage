@@ -111,25 +111,25 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public List<RegionResDTO> listRegion() {
         List<RegionResDTO> root = regionMapper.listRegionRoot();
-        if (root != null && !root.isEmpty()) {
-            for (RegionResDTO regionResDTO : root) {
-                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
-                regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
-                regionResDTO.setQrCode(null);
-            }
-        }
+//        if (root != null && !root.isEmpty()) {
+//            for (RegionResDTO regionResDTO : root) {
+//                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+//                regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
+//                regionResDTO.setQrCode(null);
+//            }
+//        }
         List<RegionResDTO> child = regionMapper.listRegionBody();
-        if (child != null && !child.isEmpty()) {
-            for (RegionResDTO regionResDTO : child) {
-                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
-                regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
-                regionResDTO.setQrCode(QrCodeUtil.generateAsBase64(jumppage +
-                        "?page=pages/database/detail1" +
-                        "&id="+ regionResDTO.getParentId() +
-                        "&ids=" + regionResDTO.getId() +
-                        "&name=" + name, initQrConfig(), "png"));
-            }
-        }
+//        if (child != null && !child.isEmpty()) {
+//            for (RegionResDTO regionResDTO : child) {
+//                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+//                regionResDTO.setParentNames((name == null || "".equals(name) ? "/" + regionResDTO.getName() : name + "," + regionResDTO.getName()).replaceAll(",", "/"));
+//                regionResDTO.setQrCode(QrCodeUtil.generateAsBase64(jumppage +
+//                        "?page=pages/database/detail1" +
+//                        "&id="+ regionResDTO.getParentId() +
+//                        "&ids=" + regionResDTO.getId() +
+//                        "&name=" + name, initQrConfig(), "png"));
+//            }
+//        }
         RegionTreeToolUtils res = new RegionTreeToolUtils(root, child);
         return res.getTree();
     }
@@ -148,21 +148,38 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
+    public RegionResDTO getRegionQr(String id) {
+        if (Objects.isNull(id)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        RegionResDTO regionResDTO = regionMapper.getRegionDetail(id);
+        if (!Objects.isNull(regionResDTO)) {
+            String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+            regionResDTO.setQrCode(QrCodeUtil.generateAsBase64(jumppage +
+                    "?page=pages/database/detail1" +
+                    "&id="+ regionResDTO.getParentId() +
+                    "&ids=" + regionResDTO.getId() +
+                    "&name=" + name, initQrConfig(), "png"));
+        }
+        return regionResDTO;
+    }
+
+    @Override
     public List<RegionResDTO> listAllRegion() {
         List<RegionResDTO> root = regionMapper.listAllRegionRoot();
-        if (root != null && !root.isEmpty()) {
-            for (RegionResDTO regionResDTO : root) {
-                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
-                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
-            }
-        }
+//        if (root != null && !root.isEmpty()) {
+//            for (RegionResDTO regionResDTO : root) {
+//                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+//                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
+//            }
+//        }
         List<RegionResDTO> body = regionMapper.listAllRegionBody();
-        if (body != null && !body.isEmpty()) {
-            for (RegionResDTO regionResDTO : body) {
-                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
-                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
-            }
-        }
+//        if (body != null && !body.isEmpty()) {
+//            for (RegionResDTO regionResDTO : body) {
+//                String name = regionMapper.selectParentNames(regionResDTO.getParentIds());
+//                regionResDTO.setParentNames(name == null || "".equals(name) ? regionResDTO.getName() : name + "," + regionResDTO.getName());
+//            }
+//        }
         RegionTreeToolUtils res = new RegionTreeToolUtils(root, body);
         return res.getTree();
     }

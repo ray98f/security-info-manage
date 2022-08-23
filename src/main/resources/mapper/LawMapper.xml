@@ -154,8 +154,9 @@
     </insert>
 
     <select id="listLaw" resultType="com.security.info.manage.dto.res.LawResDTO">
-        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
-        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name, l.sort
+        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, l.id, f.id as file_id,
+        f.file_name, f.biz_code, f.file_url, f.create_date, f.update_date, l.create_by,
+        ue.real_name as create_name, l.sort
         from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
         left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
         left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0
@@ -166,12 +167,13 @@
         <if test="name!=null and name!=''">
             and f.file_name like CONCAT('%',#{name},'%')
         </if>
-        order by l.create_date desc, l.sort asc
+        order by l.sort asc
     </select>
 
     <select id="vxListLaw" resultType="com.security.info.manage.dto.res.LawResDTO">
-        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
-        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name, l.sort
+        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, l.id, f.id as file_id,
+        f.file_name, f.biz_code, f.file_url, f.create_date, f.update_date, l.create_by,
+        ue.real_name as create_name, l.sort
         from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
         left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
         left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0
@@ -179,7 +181,7 @@
         <if test="catalogId!=null and catalogId!=''">
             and l.catalog_id=#{catalogId}
         </if>
-        order by l.create_date desc, l.sort asc
+        order by l.sort asc
     </select>
 
     <insert id="addLaw">
@@ -188,6 +190,12 @@
             value (replace(uuid(),"-",""), #{lawCatalogId}, #{fileId}, #{sort}, #{createBy})
         </foreach>
     </insert>
+
+    <update id="modifyLaw">
+        update t_law set
+        sort=#{sort}, update_by=#{createBy}
+        where id=#{id} and is_delete=0
+    </update>
 
     <update id="deleteLaw">
         update t_law set
@@ -199,8 +207,9 @@
     </update>
 
     <select id="selectLawByFileId" resultType="com.security.info.manage.dto.res.LawResDTO">
-        select distinct l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
-        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name
+        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, l.id, f.id as file_id,
+        f.file_name, f.biz_code, f.file_url, f.create_date, f.update_date, l.create_by,
+        ue.real_name as create_name, l.sort
         from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
         left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
         left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0
@@ -210,8 +219,9 @@
     </select>
 
     <select id="selectLawByFileIdAndCatalogIds" resultType="com.security.info.manage.dto.res.LawResDTO">
-        select distinct l.catalog_id as law_catalog_id, lc.name as law_catalog_name, f.id, f.file_name, f.biz_code,
-        f.file_url, f.create_date, f.update_date, l.create_by, ue.real_name as create_name
+        select l.catalog_id as law_catalog_id, lc.name as law_catalog_name, l.id, f.id as file_id,
+        f.file_name, f.biz_code, f.file_url, f.create_date, f.update_date, l.create_by,
+        ue.real_name as create_name, l.sort
         from t_law as l left join sys_file as f on f.id=l.file_id and f.is_delete=0
         left join sys_user_ext as ue on ue.user_id=l.create_by and ue.status=0 and ue.is_delete=0
         left join t_law_catalog as lc on lc.id=l.catalog_id and lc.status=0 and lc.is_delete=0

@@ -111,7 +111,7 @@ public class ApplianceServiceImpl implements ApplianceService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void importApplianceConfig(MultipartFile file) {
+    public void importApplianceConfig(MultipartFile file) throws Exception {
         try {
             Workbook workbook;
             String fileName = file.getOriginalFilename();
@@ -155,10 +155,10 @@ public class ApplianceServiceImpl implements ApplianceService {
                 String str = cells.getCell(14) == null ? null : cells.getCell(14).getStringCellValue();
                 Matcher m = Pattern.compile("[^0-9]").matcher(Objects.requireNonNull(str));
                 reqDTO.setEffectiveTime(DateUtils.getMonthNewDate(reqDTO.getReceivingTime(), Integer.valueOf(m.replaceAll("").trim())));
-                cells.getCell(16).setCellType(1);
-                reqDTO.setChangeReason(cells.getCell(16) == null ? null : cells.getCell(16).getStringCellValue());
                 cells.getCell(17).setCellType(1);
-                reqDTO.setRemark(cells.getCell(17) == null ? null : cells.getCell(17).getStringCellValue());
+                reqDTO.setChangeReason(cells.getCell(17) == null ? null : cells.getCell(17).getStringCellValue());
+                cells.getCell(18).setCellType(1);
+                reqDTO.setRemark(cells.getCell(18) == null ? null : cells.getCell(18).getStringCellValue());
                 reqDTO.setId(TokenUtil.getUuId());
                 reqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -177,25 +177,30 @@ public class ApplianceServiceImpl implements ApplianceService {
 
     @Override
     public void exportApplianceConfig(HttpServletResponse response) {
-        // 列名
-        List<String> listName = Arrays.asList("年度", "工号", "姓名", "部门名称", "涉及相关作业类型", "接触职业病危害因素", "用品编号", "用品名称", "领取数量", "领取时间", "有效期", "更换原因", "备注", "是否已确认", "状态");
+        List<String> listName = Arrays.asList("年度", "部门名称", "科室", "工区名称", "物资类别", "领用人", "涉及相关作业类型",
+                "接触职业病危害因素", "防护用品名称", "规格型号", "领取数量", "领取时间", "有效期", "生产厂家", "生产厂家", "合格证",
+                "备注", "是否已确认", "状态");
         List<ApplianceConfigResDTO> applianceConfigList = applianceMapper.listApplianceConfig();
-        // 列名 数据
         List<Map<String, String>> list = new ArrayList<>();
         if (applianceConfigList != null && !applianceConfigList.isEmpty()) {
             for (ApplianceConfigResDTO applianceConfigResDTO : applianceConfigList) {
                 Map<String, String> map = new HashMap<>();
                 map.put("年度", applianceConfigResDTO.getYear().toString());
-                map.put("工号", applianceConfigResDTO.getUserNo());
-                map.put("姓名", applianceConfigResDTO.getUserName());
-                map.put("部门名称", applianceConfigResDTO.getDeptName());
+                map.put("部门名称", applianceConfigResDTO.getOrgName());
+                map.put("科室", applianceConfigResDTO.getDeptName());
+                map.put("工区名称", applianceConfigResDTO.getWorkAreaName());
+                map.put("物资类别", applianceConfigResDTO.getApplianceType() == 1 ? "公共用品" : "个人用品");
+                map.put("领用人", applianceConfigResDTO.getUserName());
                 map.put("涉及相关作业类型", applianceConfigResDTO.getWorkType());
                 map.put("接触职业病危害因素", applianceConfigResDTO.getHazardFactors());
-                map.put("用品编号", applianceConfigResDTO.getApplianceCode());
-                map.put("用品名称", applianceConfigResDTO.getApplianceName());
+                map.put("防护用品名称", applianceConfigResDTO.getApplianceName());
+                map.put("规格型号", applianceConfigResDTO.getApplianceCode());
                 map.put("领取数量", applianceConfigResDTO.getNum().toString());
-                map.put("领取时间", applianceConfigResDTO.getReceivingTime().toString());
-                map.put("有效期", applianceConfigResDTO.getEffectiveTime().toString());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                map.put("领取时间", sdf.format(applianceConfigResDTO.getReceivingTime()));
+                map.put("有效期", sdf.format(applianceConfigResDTO.getEffectiveTime()));
+                map.put("生产厂家", applianceConfigResDTO.getManufacturer());
+                map.put("合格证", applianceConfigResDTO.getCertificate());
                 map.put("更换原因", applianceConfigResDTO.getChangeReason());
                 map.put("备注", applianceConfigResDTO.getRemark());
                 map.put("是否已确认", applianceConfigResDTO.getIsConfirm() == 0 ? "否" : "是");
@@ -203,7 +208,6 @@ public class ApplianceServiceImpl implements ApplianceService {
                 list.add(map);
             }
         }
-        // 将需要写入Excel的数据传入
         ExcelPortUtil.excelPort("劳保用品配备信息", listName, list, null, response);
     }
 

@@ -75,7 +75,7 @@ public class ApplianceController {
     @PostMapping("/user/import")
     @ApiOperation(value = "劳保用品配备导入")
     @LogMaker(value = "网页端-双重预防机制劳保用品配备导入")
-    public DataResponse<T> importApplianceConfig(@RequestParam MultipartFile file) {
+    public DataResponse<T> importApplianceConfig(@RequestParam MultipartFile file) throws Exception {
         applianceService.importApplianceConfig(file);
         return DataResponse.success();
     }

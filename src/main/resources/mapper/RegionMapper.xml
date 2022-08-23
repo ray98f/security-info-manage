@@ -76,7 +76,7 @@
         left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
         left join sys_risk_level as rl on rl.id=r.level
         where r.is_delete=0
-        order by r.create_date asc
+        order by r.code asc
     </select>
 
     <select id="listRegionRoot" resultType="com.security.info.manage.dto.res.RegionResDTO">
@@ -90,7 +90,7 @@
         left join t_region as r1 on find_in_set(r1.id,r.parent_ids)>0
         where r.is_delete=0 and r.parent_id=0
         group by r.id
-        order by r.create_date asc
+        order by r.code asc
     </select>
 
     <select id="listRegionBody" resultType="com.security.info.manage.dto.res.RegionResDTO">
@@ -104,7 +104,7 @@
         left join t_region as r1 on find_in_set(r1.id,r.parent_ids)>0
         where r.is_delete=0 and r.parent_id!=0
         group by r.id
-        order by r.create_date asc
+        order by r.code asc
     </select>
 
     <select id="listAllRegionRoot" resultType="com.security.info.manage.dto.res.RegionResDTO">
@@ -115,7 +115,7 @@
         left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
         left join sys_risk_level as rl on rl.id=r.level
         where r.is_delete=0 and r.status=0 and r.parent_id=0
-        order by r.create_date asc
+        order by r.code asc
     </select>
 
     <select id="listAllRegionBody" resultType="com.security.info.manage.dto.res.RegionResDTO">
@@ -126,7 +126,7 @@
         left join t_region_type as rt on rt.id=r.type_id and rt.is_delete=0
         left join sys_risk_level as rl on rl.id=r.level
         where r.is_delete=0 and r.status=0 and r.parent_id!=0
-        order by r.create_date asc
+        order by r.code asc
     </select>
 
     <select id="getRegionDetail" resultType="com.security.info.manage.dto.res.RegionResDTO">

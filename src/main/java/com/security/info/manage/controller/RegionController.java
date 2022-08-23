@@ -83,6 +83,12 @@ public class RegionController {
         return DataResponse.of(regionService.getRegionDetail(id));
     }
 
+    @GetMapping("/qr")
+    @ApiOperation(value = "获取区域二维码")
+    public DataResponse<RegionResDTO> getRegionQr(@RequestParam String id) {
+        return DataResponse.of(regionService.getRegionQr(id));
+    }
+
     @GetMapping("/listAll")
     @ApiOperation(value = "获取所有区域列表")
     public DataResponse<List<RegionResDTO>> listAllRegion() {

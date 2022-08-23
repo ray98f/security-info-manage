@@ -228,6 +228,18 @@ public class LawServiceImpl implements LawService {
     }
 
     @Override
+    public void modifyLaw(LawReqDTO lawReqDTO) {
+        if (Objects.isNull(lawReqDTO)) {
+            throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
+        }
+        lawReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+        Integer result = lawMapper.modifyLaw(lawReqDTO);
+        if (result < 0) {
+            throw new CommonException(ErrorCode.FILE_UPLOAD_FAIL);
+        }
+    }
+
+    @Override
     public void deleteLaw(LawReqDTO lawReqDTO) {
         if (Objects.isNull(lawReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);

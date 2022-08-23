@@ -11,6 +11,9 @@ import java.util.List;
 @Data
 public class LawReqDTO {
 
+    @ApiModelProperty(value = "法律法规id")
+    private String id;
+
     @ApiModelProperty(value = "法律法规目录id")
     private String lawCatalogId;
 

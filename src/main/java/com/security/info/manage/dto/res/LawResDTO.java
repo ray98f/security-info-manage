@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class LawResDTO {
 
-    @ApiModelProperty(value = "法律法规文件id")
+    @ApiModelProperty(value = "法律法规id")
     private String id;
 
     @ApiModelProperty(value = "法律法规目录id")
@@ -22,6 +22,9 @@ public class LawResDTO {
 
     @ApiModelProperty(value = "法律法规目录名称")
     private String lawCatalogName;
+
+    @ApiModelProperty(value = "法律法规文件id")
+    private String fileId;
 
     @ApiModelProperty(value = "文件名称")
     private String fileName;

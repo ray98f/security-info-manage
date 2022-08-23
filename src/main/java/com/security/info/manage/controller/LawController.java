@@ -110,6 +110,14 @@ public class LawController {
         return DataResponse.success();
     }
 
+    @PostMapping("/modify")
+    @ApiOperation(value = "法律法规文件修改")
+    @LogMaker(value = "网页端-法律法规文件修改")
+    public DataResponse<T> modifyLaw(@RequestBody LawReqDTO lawReqDTO) {
+        lawService.modifyLaw(lawReqDTO);
+        return DataResponse.success();
+    }
+
     @PostMapping("/delete")
     @ApiOperation(value = "法律法规文件删除")
     @LogMaker(value = "网页端-法律法规文件删除")

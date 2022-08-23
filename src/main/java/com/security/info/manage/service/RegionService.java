@@ -30,6 +30,8 @@ public interface RegionService {
 
     RegionResDTO getRegionDetail(String id);
 
+    RegionResDTO getRegionQr(String id);
+
     List<RegionResDTO> listAllRegion();
 
     List<VxRegionResDTO> vxListAllRegion();

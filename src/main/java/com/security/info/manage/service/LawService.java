@@ -37,6 +37,8 @@ public interface LawService {
 
     void addLaw(LawReqDTO lawReqDTO);
 
+    void modifyLaw(LawReqDTO lawReqDTO);
+
     void deleteLaw(LawReqDTO lawReqDTO);
 
     String previewLaw(String url, String fileName);

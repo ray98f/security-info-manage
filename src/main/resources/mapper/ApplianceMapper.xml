@@ -113,7 +113,7 @@
         u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
-        left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
+        left join sys_dept as d on d.id=auc.dept_id and d.is_delete=0
         left join sys_user_ext as u on u.user_id=auc.user_id and u.is_delete=0 and u.status=0
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0
@@ -128,7 +128,7 @@
         u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
-        left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
+        left join sys_dept as d on d.id=auc.dept_id and d.is_delete=0
         left join sys_user_ext as u on u.user_id=auc.user_id and u.is_delete=0 and u.status=0
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0
@@ -155,8 +155,8 @@
         u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
-        left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
-        left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        left join sys_dept as d on d.id=auc.dept_id and d.is_delete=0
+        left join sys_user_ext as u on u.user_id=auc.user_id and u.is_delete=0 and u.status=0
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0 and auc.user_id=#{userId}
         order by auc.create_date desc
@@ -176,8 +176,8 @@
         u.real_name as user_name, u.user_no, auc.org_name, auc.dept_name
         from t_appliance_user_config as auc
         left join t_appliance as a on a.id=auc.appliance_id and a.is_delete=0
-        left join sys_dept as d on d.id=auc.dept_id and a.is_delete=0
-        left join sys_user_ext as u on u.user_id=auc.user_id and a.is_delete=0 and u.status=0
+        left join sys_dept as d on d.id=auc.dept_id and d.is_delete=0
+        left join sys_user_ext as u on u.user_id=auc.user_id and u.is_delete=0 and u.status=0
         left join sys_file as f on f.id=a.certificate and f.is_delete=0
         where auc.is_delete=0 and auc.id=#{id}
     </select>

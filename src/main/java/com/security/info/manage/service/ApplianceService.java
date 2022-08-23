@@ -27,7 +27,7 @@ public interface ApplianceService {
 
     void deleteAppliance(ApplianceReqDTO applianceReqDTO);
 
-    void importApplianceConfig(MultipartFile file);
+    void importApplianceConfig(MultipartFile file) throws Exception;
 
     void exportApplianceConfig(HttpServletResponse response);
 

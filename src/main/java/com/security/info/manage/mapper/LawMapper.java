@@ -52,6 +52,8 @@ public interface LawMapper {
 
     Integer addLaw(LawReqDTO lawReqDTO);
 
+    Integer modifyLaw(LawReqDTO lawReqDTO);
+
     Integer deleteLaw(LawReqDTO lawReqDTO);
 
     LawResDTO selectLawByFileId(String fileId, String userId);
