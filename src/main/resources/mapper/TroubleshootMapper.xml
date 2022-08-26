@@ -59,7 +59,7 @@
     </update>
 
     <select id="listTroubleshoot" resultType="com.security.info.manage.dto.res.TroubleshootResDTO">
-        select a.id, a.type_id, a.name, a.pdf, b.name as type_name
+        select a.id, a.type_id, a.name, a.pdf, b.name as type_name, a.sort
         from t_troubleshoot as a
         left join t_troubleshoot_type as b on b.id=a.type_id and b.is_delete=0 and b.status=0
         where a.is_delete=0
@@ -69,11 +69,11 @@
         <if test="typeId!=null and typeId!=''">
             and a.type_id=#{typeId}
         </if>
-        order by a.create_date desc
+        order by a.sort desc
     </select>
 
     <select id="getTroubleshootDetail" resultType="com.security.info.manage.dto.res.TroubleshootResDTO">
-        select a.id, a.type_id, a.name, a.pdf, b.name as type_name
+        select a.id, a.type_id, a.name, a.pdf, b.name as type_name, a.sort
         from t_troubleshoot as a
         left join t_troubleshoot_type as b on b.id=a.type_id and b.is_delete=0 and b.status=0
         where a.is_delete=0 and a.id=#{id}
@@ -88,8 +88,16 @@
     </select>
 
     <insert id="insertTroubleshoot">
-        insert into t_troubleshoot(id, type_id, name, pdf, create_by)
-        value (#{id}, #{typeId}, #{name}, #{pdf}, #{createBy})
+        insert into t_troubleshoot(id, type_id, name, pdf,
+        <if test="sort!=null">
+            sort,
+        </if>
+        create_by)
+        value (#{id}, #{typeId}, #{name}, #{pdf},
+        <if test="sort!=null">
+            #{sort},
+        </if>
+        #{createBy})
     </insert>
 
     <update id="modifyTroubleshoot">
@@ -102,6 +110,9 @@
         </if>
         <if test="pdf!=null">
             pdf=#{pdf},
+        </if>
+        <if test="sort!=null">
+            sort=#{sort},
         </if>
         update_by=#{createBy}
         where id=#{id} and is_delete=0

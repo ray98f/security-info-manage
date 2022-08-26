@@ -30,6 +30,9 @@ public class TroubleshootReqDTO {
     @ApiModelProperty(value = "pdf文件路径")
     private String pdf;
 
+    @ApiModelProperty(value = "排序")
+    private Integer sort;
+
     @ApiModelProperty(value = "创建人")
     private String createBy;
 }
