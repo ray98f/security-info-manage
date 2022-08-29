@@ -77,6 +77,9 @@ public class UserResDTO {
     @ApiModelProperty(value = "岗位名称")
     private String postName;
 
+    @ApiModelProperty(value = "角色权限codes")
+    private String userRoles;
+
     public UserResDTO() {}
 
     public UserResDTO(String id, String name, String realName) {
