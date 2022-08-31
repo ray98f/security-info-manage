@@ -356,12 +356,8 @@ public class DangerServiceImpl implements DangerService {
         if (Objects.isNull(dangerReqDTO)) {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
-        Integer result = dangerMapper.selectIsDangerExamine(dangerReqDTO.getId());
-        if (result == 1 || result == 3 || result == 4) {
-            throw new CommonException(ErrorCode.RESOURCE_USE);
-        }
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-        result = dangerMapper.deleteDanger(dangerReqDTO);
+        Integer result = dangerMapper.deleteDanger(dangerReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.DELETE_ERROR);
         }
