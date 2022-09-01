@@ -25,12 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +43,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class DangerServiceImpl implements DangerService {
+
+    public static final String SERIAL_NUMBER_WT_DANGER = ":serial:num:danger:wt";
+    public static final String WT_DANGER_NO = "ZTT-WT-";
 
     @Autowired
     private DangerMapper dangerMapper;
@@ -60,6 +67,15 @@ public class DangerServiceImpl implements DangerService {
 
     @Value("${vx-business.jumppage}")
     private String jumppage;
+
+    @Value("${pro.name}")
+    private String proName;
+
+    @Value("${spring.redis.key-prefix}")
+    private String keyPrefix;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public List<DeptTreeResDTO> listDept(Integer type) {
@@ -332,7 +348,28 @@ public class DangerServiceImpl implements DangerService {
             throw new CommonException(ErrorCode.PARAM_NULL_ERROR);
         }
         dangerReqDTO.setId(TokenUtil.getUuId());
-        dangerReqDTO.setNo(TokenUtil.getUuId());
+        //流水号生成
+        String no;
+        no = proName + keyPrefix + SERIAL_NUMBER_WT_DANGER;
+        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(no))) {
+            try {
+                stringRedisTemplate.opsForValue().set(no, "1", 25, TimeUnit.HOURS);
+            } catch (Exception e) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                e.printStackTrace(new PrintStream(out));
+                throw new CommonException(ErrorCode.CACHE_ERROR, no, out.toString());
+            }
+        }
+        int num = Integer.parseInt(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(no)));
+        String numStr = String.valueOf(num);
+        StringBuilder str = new StringBuilder(numStr);
+        for (int i = 0; i < 4 - numStr.length(); i++) {
+            str.insert(0, "0");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String today = sdf.format(new Date(System.currentTimeMillis()));
+        dangerReqDTO.setNo(WT_DANGER_NO + today + "-" + str);
+        stringRedisTemplate.opsForValue().set(no, String.valueOf(num + 1), 0);
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
         if (dangerReqDTO.getCheckUserId() == null || "".equals(dangerReqDTO.getCheckUserId())) {
             dangerReqDTO.setCheckUserId(TokenUtil.getCurrentPersonNo());

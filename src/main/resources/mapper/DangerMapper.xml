@@ -160,7 +160,8 @@
     </select>
 
     <select id="listDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
+        select distinct d.id, d.no, d.region_id, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
+        d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -171,6 +172,7 @@
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
         <if test="userId!=null and userId!=''">
             left join t_danger_examine as de on de.danger_id=d.id and de.is_delete=0
         </if>
@@ -198,7 +200,8 @@
     </select>
 
     <select id="vxListDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select distinct d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
+        select distinct d.id, d.no, d.region_id, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
+        d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -209,6 +212,7 @@
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
         <if test="type==2 and userId!=null and userId!=''">
             left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
         </if>
@@ -237,7 +241,8 @@
     </select>
 
     <select id="vxNearbyDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
+        select distinct d.id, d.no, d.region_id, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
+        d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -248,6 +253,7 @@
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
         left join sys_entry as e1 on e1.id=d.build_entry_id
         left join sys_entry_plate as ep1 on ep1.id=e1.plate_id
         left join sys_dept as d2 on d2.id=ep1.dept_id and d2.is_delete=0
@@ -260,7 +266,8 @@
     </select>
 
     <select id="getDangerDetail" resultType="com.security.info.manage.dto.res.DangerResDTO">
-        select d.id, d.no, d.region_id, r.name as region_name, d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
+        select distinct d.id, d.no, d.region_id, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
+        d.address, d.content, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
         d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
         d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
@@ -271,6 +278,7 @@
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
         left join sys_entry as e1 on e1.id=d.build_entry_id
         left join sys_entry_plate as ep1 on ep1.id=e1.plate_id
         left join sys_dept as d2 on d2.id=ep1.dept_id and d2.is_delete=0
@@ -572,7 +580,8 @@
     </update>
 
     <select id="exportDanger" resultType="com.security.info.manage.dto.res.DangerExportResDTO">
-        select d.id, d.no, d.check_time, r.name as region_name, d.address, d.content, d.rectify_term, d.build_score,
+        select d.id, d.no, d.check_time, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
+        d.address, d.content, d.rectify_term, d.build_score,
         d1.org_name as check_dept_name, ue.real_name as check_user_name, d.build_conversion_score, d.prod_category,
         d.prod_entry_score, d.level, d.danger_category, dr.rectify_measure, d2.org_name as responsibility_dept_name,
         ue1.real_name as rectify_user_name, e1.content as build_entry, ep1.plate_name as build_plate_name,
@@ -580,6 +589,7 @@
         group_concat(distinct f2.file_url) as after_pic, dr.is_eliminate, d.responsibility_dept_id, d.response_unit, d.response_work_area
         from t_danger as d
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
+        left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
         left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
