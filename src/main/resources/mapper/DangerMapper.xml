@@ -193,7 +193,7 @@
             and d.is_danger_prob=1
         </if>
         <if test="userId!=null and userId!=''">
-            and de.examine_user_id=#{userId} or d.check_user_id=#{userId} or d.create_by=#{userId}
+            and (de.examine_user_id=#{userId} or d.check_user_id=#{userId} or d.create_by=#{userId})
         </if>
         group by d.id
         order by d.create_date desc
@@ -234,7 +234,7 @@
             and dr.rectify_user_id=#{userId}
         </if>
         <if test="type==3 and userId!=null and userId!=''">
-            and de.examine_user_id=#{userId} or dr.examine_user_id=#{userId} or (d.check_user_id=#{userId} and dr.check_user_status=1)
+            and (de.examine_user_id=#{userId} or dr.examine_user_id=#{userId} or (d.check_user_id=#{userId} and dr.check_user_status=1))
         </if>
         group by d.id
         order by d.create_date desc
