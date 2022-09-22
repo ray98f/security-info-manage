@@ -70,6 +70,8 @@ public interface DangerMapper {
 
     String selectCheckUserId(String dangerId);
 
+    String selectRectifyUserId(String dangerId);
+
     Integer examineDanger(String id, String opinion, Integer status, String userId, String dangerId, Integer userType, String examineUserId);
 
     Integer issueDanger(String dangerId, String deptId, List<String> list, String rectifyTerm, String opinion, String createBy);

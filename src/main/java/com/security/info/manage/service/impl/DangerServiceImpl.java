@@ -417,16 +417,17 @@ public class DangerServiceImpl implements DangerService {
 
     @Override
     public void examineDanger(String dangerId, String userId, String opinion, Integer status) {
+        String checkUserId = dangerMapper.selectCheckUserId(dangerId);
+        if (Objects.isNull(checkUserId)) {
+            throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
+        }
         DangerExamineResDTO res = dangerMapper.selectUserType(dangerId);
         if (res.getUserType() == 3) {
             DangerResDTO dangerResDTO = getDangerDetail(dangerId);
             if (Objects.isNull(dangerResDTO)) {
                 throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
             }
-            String checkUserId = dangerMapper.selectCheckUserId(dangerId);
-            if (Objects.isNull(checkUserId)) {
-                throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
-            }
+
             Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, checkUserId);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
@@ -448,6 +449,15 @@ public class DangerServiceImpl implements DangerService {
                         "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
+        }
+
+        //增加回退通知
+        if(status == 2){
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(checkUserId);
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您上报的隐患被退回，请前往小程序查看处理。" +
+                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
 
@@ -493,6 +503,25 @@ public class DangerServiceImpl implements DangerService {
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
+
+        //20220922 addBy zhangxin 部长驳回通知
+        if(status == 2){
+            String rectifyUserId = dangerMapper.selectRectifyUserId(dangerId);
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(rectifyUserId);
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改被退回，请前往小程序查看处理。" +
+                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=5&id=" + dangerId + "\">跳转小程序</a>"));
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+        }else if(status == 1){
+            //整改完成通知
+            String checkUserId = dangerMapper.selectCheckUserId(dangerId);
+            VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
+            vxSendTextMsgReqDTO.setTouser(checkUserId);
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您上报的隐患已整改完成，请前往小程序审核。" +
+                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+            msgService.sendTextMsg(vxSendTextMsgReqDTO);
+        }
+
     }
 
     @Override

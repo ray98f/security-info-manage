@@ -228,7 +228,7 @@
         left join sys_dept as d3 on d3.id=ep2.dept_id and d3.is_delete=0
         where d.is_delete=0
         <if test="type==1 and userId!=null and userId!=''">
-            and d.create_by=#{userId}
+            and d.check_user_id=#{userId}
         </if>
         <if test="type==2 and userId!=null and userId!=''">
             and dr.rectify_user_id=#{userId}
@@ -484,6 +484,10 @@
 
     <select id="selectCheckUserId" resultType="java.lang.String">
         select check_user_id from t_danger where is_delete=0 and id=#{dangerId} and is_use=1
+    </select>
+
+    <select id="selectRectifyUserId" resultType="java.lang.String">
+        select rectify_user_id from t_danger_rectify where is_delete=0 and danger_id=#{dangerId}
     </select>
 
     <update id="examineDanger">
