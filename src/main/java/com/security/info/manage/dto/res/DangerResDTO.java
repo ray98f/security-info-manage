@@ -36,6 +36,9 @@ public class DangerResDTO {
     @ApiModelProperty(value = "隐患问题内容")
     private String content;
 
+    @ApiModelProperty(value = "整改意见")
+    private String remarks;
+
     @ApiModelProperty(value = "整改前图片")
     private String beforePic;
 

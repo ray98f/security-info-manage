@@ -455,8 +455,7 @@ public class DangerServiceImpl implements DangerService {
         if(status == 2){
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(checkUserId);
-            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您上报的隐患被退回，请前往小程序查看处理。" +
-                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您上报的隐患被退回，请前往小程序查看处理。" ));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
