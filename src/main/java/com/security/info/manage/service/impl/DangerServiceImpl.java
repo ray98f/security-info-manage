@@ -26,7 +26,8 @@ import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Service;;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -416,6 +417,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
+    @Transactional
     public void examineDanger(String dangerId, String userId, String opinion, Integer status) {
         String checkUserId = dangerMapper.selectCheckUserId(dangerId);
         if (Objects.isNull(checkUserId)) {
@@ -461,6 +463,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
+    @Transactional
     public void issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion) {
         DeptTreeResDTO res = deptMapper.selectParent(deptId);
         if (!Objects.isNull(res) && !"1".equals(res.getId())) {
@@ -484,6 +487,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
+    @Transactional
     public void rectifyDanger(String dangerId, String userId, String rectifyMeasure, String afterPic) {
         Integer result = dangerMapper.rectifyDanger(dangerId, userId, rectifyMeasure, afterPic, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
@@ -497,6 +501,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
+    @Transactional
     public void rectifyExamineDanger(String dangerId, Integer status) {
         Integer result = dangerMapper.rectifyExamineDanger(dangerId, status, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
@@ -524,6 +529,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
+    @Transactional
     public void rectifyPassDanger(String dangerId, String condition, Integer status) {
         Integer result = dangerMapper.rectifyPassDanger(dangerId, condition, status, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
