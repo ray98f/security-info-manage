@@ -37,7 +37,7 @@ public interface ConstructionService {
 
     void deleteWeekPlan(WeekPlanReqDTO weekPlanReqDTO);
 
-    Page<ConstructionResDTO> listConstruction(String planId, String startTime, String endTime, String name, String planName, PageReqDTO pageReqDTO);
+    Page<ConstructionResDTO> listConstruction(String planId, String startTime, String endTime, String name, String planName, String orgId, PageReqDTO pageReqDTO);
 
     ConstructionResDTO getConstructionDetail(String id);
 

@@ -160,9 +160,9 @@ public class ConstructionServiceImpl implements ConstructionService {
     }
 
     @Override
-    public Page<ConstructionResDTO> listConstruction(String planId, String startTime, String endTime, String name, String planName, PageReqDTO pageReqDTO) {
+    public Page<ConstructionResDTO> listConstruction(String planId, String startTime, String endTime, String name, String planName, String orgId, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        return constructionMapper.listConstruction(pageReqDTO.of(), planId, startTime, endTime, name, planName);
+        return constructionMapper.listConstruction(pageReqDTO.of(), planId, startTime, endTime, name, planName, orgId);
     }
 
     @Override

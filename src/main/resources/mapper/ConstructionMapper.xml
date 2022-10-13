@@ -66,7 +66,7 @@
         <if test="endTime!=null and endTime!=''">
             and #{endTime}>=date_format(end_time, '%Y-%m-%d')
         </if>
-        order by create_date asc
+        order by start_time desc
     </select>
 
     <select id="selectWeekPlanIsExist" resultType="java.lang.Integer">
@@ -127,6 +127,9 @@
         </if>
         <if test="planName!=null and planName!=''">
             and wp.name like concat('%', #{planName},'%')
+        </if>
+        <if test="orgId!=null and orgId!=''">
+            and c.org_id=#{orgId}
         </if>
         <if test="endTime!=null and endTime!=''">
             and #{endTime}>=c.end_time

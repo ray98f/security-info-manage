@@ -116,8 +116,9 @@ public class ConstructionController {
                                                              @RequestParam(required = false) @ApiParam(value = "结束时间") String endTime,
                                                              @RequestParam(required = false) @ApiParam(value = "作业名称") String name,
                                                              @RequestParam(required = false) @ApiParam(value = "周计划名称") String planName,
+                                                             @RequestParam(required = false) @ApiParam(value = "作业部门id") String orgId,
                                                              @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(constructionService.listConstruction(planId, startTime, endTime, name, planName, pageReqDTO));
+        return PageResponse.of(constructionService.listConstruction(planId, startTime, endTime, name, planName, orgId, pageReqDTO));
     }
 
     @GetMapping("/detail")

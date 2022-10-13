@@ -42,7 +42,7 @@ public interface ConstructionMapper {
 
     Integer deleteWeekPlan(WeekPlanReqDTO weekPlanReqDTO);
 
-    Page<ConstructionResDTO> listConstruction(Page<ConstructionResDTO> page, String planId, String startTime, String endTime, String name, String planName);
+    Page<ConstructionResDTO> listConstruction(Page<ConstructionResDTO> page, String planId, String startTime, String endTime, String name, String planName, String orgId);
 
     ConstructionResDTO getConstructionDetail(String id);
 
