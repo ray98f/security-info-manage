@@ -563,7 +563,7 @@
     <select id="listExpiredPhysicalUser" resultType="com.security.info.manage.dto.res.PhysicalUserResDTO">
         select pu.id, pu.physical_id, pu.user_name, pu.user_id from t_physical_user as pu
         left join t_physical as p on pu.physical_id=p.id and p.is_delete=0
-        where now()>p.end_time and 3>pu.status and pu.is_delete=0
+        where now()>p.end_time and 3>pu.status and pu.is_delete=0 and pu.user_id is not null
     </select>
 
     <insert id="addPhysicalWarning">
