@@ -123,6 +123,9 @@ public class SafeExpectServiceImpl implements SafeExpectService {
         }
         safeExpectReqDTO.setId(TokenUtil.getUuId());
         safeExpectReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
+        if (safeExpectReqDTO.getWorkName() == null || "".equals(safeExpectReqDTO.getWorkName())) {
+            safeExpectReqDTO.setWorkName(safeExpectReqDTO.getWorkNo());
+        }
         result = safeExpectMapper.addSafeExpect(safeExpectReqDTO);
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
