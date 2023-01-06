@@ -211,8 +211,9 @@ public class DangerController {
     @GetMapping("/export")
     @ApiOperation(value = "导出隐患")
     @LogMaker(value = "网页端-问题检查问题排查管理导出")
-    public void exportDanger(HttpServletResponse response) {
-        dangerService.exportDanger(response);
+    public void exportDanger(@RequestParam(required = false) Integer type,
+                             HttpServletResponse response) {
+        dangerService.exportDanger(type, response);
     }
 
     @GetMapping("/statistics/type")

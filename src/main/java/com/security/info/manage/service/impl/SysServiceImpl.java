@@ -310,10 +310,8 @@ public class SysServiceImpl implements SysService {
 
     @Override
     public Page<Role> listRole(Integer status, String roleName, PageReqDTO pageReqDTO) {
-        pageReqDTO.setPageSize(50);
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
-        Page<Role> res = sysMapper.listRole(pageReqDTO.of(), status, roleName);
-        return res;
+        return sysMapper.listRole(pageReqDTO.of(), status, roleName);
     }
 
     @Override

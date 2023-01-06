@@ -327,7 +327,7 @@
     <select id="selectIfAdmin" resultType="java.lang.Integer">
         SELECT count(1) FROM sys_user_role as ur
         left join sys_role as r on r.id=ur.role_id and r.status=0 and r.is_delete=0
-        where ur.user_id=#{userId} and r.role_code='admin'
+        where ur.user_id=#{userId} and r.role_name='系统管理员'
         limit 1
     </select>
 

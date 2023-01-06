@@ -60,7 +60,7 @@ public interface DangerService {
 
     void rectifyPassDanger(String dangerId, String condition, Integer status);
 
-    void exportDanger(HttpServletResponse response);
+    void exportDanger(Integer type, HttpServletResponse response);
 
     List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);
 

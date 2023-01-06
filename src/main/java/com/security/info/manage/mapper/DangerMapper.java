@@ -82,7 +82,7 @@ public interface DangerMapper {
 
     Integer rectifyPassDanger(String dangerId, String condition, Integer status, String createBy);
 
-    List<DangerExportResDTO> exportDanger();
+    List<DangerExportResDTO> exportDanger(Integer type, String userId);
 
     List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);
 

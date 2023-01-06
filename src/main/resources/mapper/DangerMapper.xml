@@ -604,6 +604,9 @@
         from t_danger as d
         left join t_region as r on r.id=d.region_id and r.is_delete=0 and r.status=0
         left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
+        <if test="userId!=null and userId!=''">
+            left join t_danger_examine as de on de.danger_id=d.id and de.is_delete=0
+        </if>
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
         left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
@@ -616,6 +619,18 @@
         left join sys_file as f1 on find_in_set(f1.id,d.before_pic)>0
         left join sys_file as f2 on find_in_set(f2.id,dr.after_pic)>0
         where d.is_use=1 and d.status=7 and d.is_delete=0
+        <if test="type==1">
+            and d.is_build_prob=1
+        </if>
+        <if test="type==2">
+            and d.is_prod_prob=1
+        </if>
+        <if test="type==3">
+            and d.is_danger_prob=1
+        </if>
+        <if test="userId!=null and userId!=''">
+            and (de.examine_user_id=#{userId} or d.check_user_id=#{userId} or d.create_by=#{userId})
+        </if>
         group by d.id, dr.id
         order by d.check_time desc
     </select>
