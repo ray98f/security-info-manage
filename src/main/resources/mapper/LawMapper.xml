@@ -58,6 +58,7 @@
         from t_law_catalog as lc
         left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
         where lc.is_delete=0 and lc.parent_id='root' and lc.status=0 and ((lcu.user_id=#{userId} and lcu.role like '%1%') or lc.is_public=1)
+        group by lc.id
         order by lc.sort
     </select>
 
@@ -67,6 +68,7 @@
         left join t_law_catalog_user as lcu on lcu.law_catalog_id=lc.id
         where lc.is_delete=0 and lc.parent_id!='root' and lc.status=0 and ((lcu.user_id=#{userId} and lcu.role like '%1%') or lc.is_public=1)
         and lc.parent_id=#{catalogId}
+        group by lc.id
         order by lc.sort
     </select>
 
