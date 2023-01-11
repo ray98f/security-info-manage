@@ -595,7 +595,7 @@
 
     <select id="exportDanger" resultType="com.security.info.manage.dto.res.DangerExportResDTO">
         select d.id, d.no, d.check_time, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
-        d.address, d.content, d.rectify_term, d.build_score,
+        d.address, d.content, d.rectify_term, d.build_score, d.status,
         d1.org_name as check_dept_name, ue.real_name as check_user_name, d.build_conversion_score, d.prod_category,
         d.prod_entry_score, d.level, d.danger_category, dr.rectify_measure, d2.org_name as responsibility_dept_name,
         ue1.real_name as rectify_user_name, e1.content as build_entry, ep1.plate_name as build_plate_name,
@@ -618,7 +618,7 @@
         left join sys_entry_plate as ep2 on e2.plate_id=ep2.id
         left join sys_file as f1 on find_in_set(f1.id,d.before_pic)>0
         left join sys_file as f2 on find_in_set(f2.id,dr.after_pic)>0
-        where d.is_use=1 and d.status=7 and d.is_delete=0
+        where d.is_use=1 and d.is_delete=0
         <if test="type==1">
             and d.is_build_prob=1
         </if>

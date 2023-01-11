@@ -191,7 +191,8 @@
         <if test="roleName!=null and roleName!=''">
             and role_name like CONCAT('%',#{roleName},'%')
         </if>
-        ORDER BY sort DESC
+        group by id
+        ORDER BY sort DESC, role_code asc
     </select>
 
     <select id="selectRoleUse" resultType="java.lang.Integer">

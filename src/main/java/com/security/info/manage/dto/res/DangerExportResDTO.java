@@ -102,4 +102,6 @@ public class DangerExportResDTO {
 
     private String responseWorkArea;
 
+    private Integer status;
+
 }
