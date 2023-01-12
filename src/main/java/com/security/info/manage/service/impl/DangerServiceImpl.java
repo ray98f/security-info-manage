@@ -454,10 +454,10 @@ public class DangerServiceImpl implements DangerService {
         }
 
         //增加回退通知
-        if(status == 2){
+        if (status == 2) {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(checkUserId);
-            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您上报的隐患被退回，请前往小程序查看处理。" ));
+            vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您上报的隐患被退回，请前往小程序查看处理。"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -509,14 +509,14 @@ public class DangerServiceImpl implements DangerService {
         }
 
         //20220922 addBy zhangxin 部长驳回通知
-        if(status == 2){
+        if (status == 2) {
             String rectifyUserId = dangerMapper.selectRectifyUserId(dangerId);
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(rectifyUserId);
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改被退回，请前往小程序查看处理。" +
                     "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=5&id=" + dangerId + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
-        }else if(status == 1){
+        } else if (status == 1) {
             //整改完成通知
             String checkUserId = dangerMapper.selectCheckUserId(dangerId);
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
@@ -543,7 +543,7 @@ public class DangerServiceImpl implements DangerService {
                 "标准化工区建设-标准化词条", "标准化工区建设-扣除分值", "标准化工区建设-换算分值", "安全生产标准化-版块",
                 "安全生产标准化-类别", "安全生产标准化-词条", "安全生产标准化-考核分值", "安全隐患排查与治理-隐患类别",
                 "安全隐患排查与治理-隐患等级", "图片", "整改时限", "是否销项", "整改/防护措施", "整改后图片", "责任部门",
-                "责任工区", "整改责任人", "备注");
+                "责任工区", "整改责任人", "状态", "备注");
         List<DangerExportResDTO> exportDanger;
         if (sysMapper.selectIfAdmin(TokenUtil.getCurrentPersonNo()) == 1) {
             exportDanger = dangerMapper.exportDanger(type, null);
@@ -563,12 +563,12 @@ public class DangerServiceImpl implements DangerService {
                 map.put("问题", resDTO.getContent());
                 map.put("标准化工区建设-版块", resDTO.getBuildPlateName());
                 map.put("标准化工区建设-标准化词条", resDTO.getBuildEntry());
-                map.put("标准化工区建设-扣除分值",  resDTO.getBuildScore()== null ? "" : String.valueOf(resDTO.getBuildScore()));
-                map.put("标准化工区建设-换算分值", resDTO.getBuildConversionScore()== null ? "" : String.valueOf(resDTO.getBuildConversionScore()));
+                map.put("标准化工区建设-扣除分值", resDTO.getBuildScore() == null ? "" : String.valueOf(resDTO.getBuildScore()));
+                map.put("标准化工区建设-换算分值", resDTO.getBuildConversionScore() == null ? "" : String.valueOf(resDTO.getBuildConversionScore()));
                 map.put("安全生产标准化-版块", resDTO.getProdPlateName());
                 map.put("安全生产标准化-类别", resDTO.getProdCategory());
                 map.put("安全生产标准化-词条", resDTO.getProdEntry());
-                map.put("安全生产标准化-考核分值", resDTO.getProdEntryScore()== null ? "" : String.valueOf(resDTO.getProdEntryScore()));
+                map.put("安全生产标准化-考核分值", resDTO.getProdEntryScore() == null ? "" : String.valueOf(resDTO.getProdEntryScore()));
                 map.put("安全隐患排查与治理-隐患类别", resDTO.getDangerCategory() != null ? (resDTO.getDangerCategory() == 1 ? "安全装置" :
                         resDTO.getDangerCategory() == 2 ? "设备设施" :
                                 resDTO.getDangerCategory() == 3 ? "管理" :
@@ -576,13 +576,14 @@ public class DangerServiceImpl implements DangerService {
                                                 resDTO.getDangerCategory() == 5 ? "作业行为" : "其他") : "");
                 map.put("安全隐患排查与治理-隐患等级", resDTO.getLevel() != null ? (resDTO.getLevel() == 1 ? "一般" : "重大") : "");
                 map.put("图片", resDTO.getBeforePic());
-                map.put("整改时限", sdf.format(resDTO.getRectifyTerm()));
-                map.put("是否销项", resDTO.getIsEliminate() == 0 ? "否" : "是");
+                map.put("整改时限", resDTO.getRectifyTerm() == null ? "" : sdf.format(resDTO.getRectifyTerm()));
+                map.put("是否销项", resDTO.getIsEliminate() == null ? "" : resDTO.getIsEliminate() == 0 ? "否" : "是");
                 map.put("整改/防护措施", resDTO.getRectifyMeasure());
                 map.put("整改后图片", resDTO.getAfterPic());
                 map.put("责任部门", resDTO.getResponseUnit());
                 map.put("责任工区", resDTO.getResponseWorkArea());
                 map.put("整改责任人", resDTO.getRectifyUserName());
+                map.put("状态", resDTO.getStatus() == 3 ? "整改中" : resDTO.getStatus() == 7 ? "归档" : resDTO.getStatus() == 6 ? "审核不通过" : "审核中");
                 map.put("备注", "");
                 list.add(map);
             }
