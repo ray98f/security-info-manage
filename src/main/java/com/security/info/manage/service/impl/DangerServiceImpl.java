@@ -170,13 +170,13 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    public Page<DangerResDTO> listDanger(Integer type, PageReqDTO pageReqDTO) {
+    public Page<DangerResDTO> listDanger(Integer type,Integer status, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         Page<DangerResDTO> page;
         if (sysMapper.selectIfAdmin(TokenUtil.getCurrentPersonNo()) == 1) {
-            page = dangerMapper.listDanger(pageReqDTO.of(), type, null);
+            page = dangerMapper.listDanger(pageReqDTO.of(), type, status,null);
         } else {
-            page = dangerMapper.listDanger(pageReqDTO.of(), type, TokenUtil.getCurrentPersonNo());
+            page = dangerMapper.listDanger(pageReqDTO.of(), type, status,TokenUtil.getCurrentPersonNo());
         }
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
@@ -618,13 +618,14 @@ public class DangerServiceImpl implements DangerService {
     @Override
     public List<DangerRegionStatisticsResDTO> dangerRegionStatistics(String regionId, String date) {
         List<DangerRegionStatisticsResDTO> list = dangerMapper.selectRootRegion(regionId);
+        List<DangerRegionStatisticsResDTO> newList = new ArrayList<>();
         if (!Objects.isNull(list) && !list.isEmpty()) {
             for (DangerRegionStatisticsResDTO res : list) {
                 List<String> regions = dangerMapper.selectBodyRegion(res.getRegionId());
                 regions.add(res.getRegionId());
-                DangerRegionStatisticsResDTO.RegionStatistics regionStatistics = dangerMapper.dangerRegionStatistics(regions, date);
+                RegionStatisticsResDTO regionStatistics = dangerMapper.dangerRegionStatistics(regions, date);
                 if (Objects.isNull(regionStatistics)) {
-                    regionStatistics = new DangerRegionStatisticsResDTO.RegionStatistics();
+                    regionStatistics = new RegionStatisticsResDTO();
                     regionStatistics.setTotal(0);
                     regionStatistics.setLastLegacy(0);
                     regionStatistics.setNowAdd(0);
@@ -634,9 +635,10 @@ public class DangerServiceImpl implements DangerService {
                     regionStatistics.setCycleSolveBroadcast(0);
                 }
                 res.setRegionStatistics(regionStatistics);
+                newList.add(res);
             }
         }
-        return list;
+        return newList;
     }
 
     @Override

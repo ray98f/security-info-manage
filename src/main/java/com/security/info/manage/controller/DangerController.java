@@ -99,8 +99,9 @@ public class DangerController {
     @GetMapping("/list")
     @ApiOperation(value = "获取隐患列表")
     public PageResponse<DangerResDTO> listDanger(@RequestParam(required = false) Integer type,
+                                                 @RequestParam(required = false) Integer status,
                                                  @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(dangerService.listDanger(type, pageReqDTO));
+        return PageResponse.of(dangerService.listDanger(type, status,pageReqDTO));
     }
 
     @GetMapping("/vx/list")
