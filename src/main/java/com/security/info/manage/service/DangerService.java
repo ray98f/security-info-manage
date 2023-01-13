@@ -34,7 +34,7 @@ public interface DangerService {
 
     void deleteEntry(EntryPlate.Entry entry);
 
-    Page<DangerResDTO> listDanger(Integer type, PageReqDTO pageReqDTO);
+    Page<DangerResDTO> listDanger(Integer type,Integer status, PageReqDTO pageReqDTO);
 
     Page<DangerResDTO> vxListDanger(Integer type, PageReqDTO pageReqDTO);
 

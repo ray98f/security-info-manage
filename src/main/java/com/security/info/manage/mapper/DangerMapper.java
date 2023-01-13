@@ -48,7 +48,7 @@ public interface DangerMapper {
 
     DangerRectifyResDTO getDangerRectify(String dangerId);
 
-    Page<DangerResDTO> listDanger(Page<DangerResDTO> page, Integer type, String userId);
+    Page<DangerResDTO> listDanger(Page<DangerResDTO> page, Integer type, Integer status,String userId);
 
     Page<DangerResDTO> vxListDanger(Page<DangerResDTO> page, Integer type, String userId);
 
@@ -94,7 +94,7 @@ public interface DangerMapper {
 
     List<String> selectBodyRegion(String regionId);
 
-    DangerRegionStatisticsResDTO.RegionStatistics dangerRegionStatistics(List<String> regions, String date);
+    RegionStatisticsResDTO dangerRegionStatistics(List<String> regions, String date);
 
     List<String> listUnitStatistics(String regionId);
 

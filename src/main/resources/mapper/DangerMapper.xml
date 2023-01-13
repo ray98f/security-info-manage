@@ -175,6 +175,7 @@
         left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
         <if test="userId!=null and userId!=''">
             left join t_danger_examine as de on de.danger_id=d.id and de.is_delete=0
+            left join t_danger_rectify as dr on dr.danger_id=d.id and de.is_delete=0
         </if>
         left join sys_entry as e1 on e1.id=d.build_entry_id
         left join sys_entry_plate as ep1 on ep1.id=e1.plate_id
@@ -183,6 +184,9 @@
         left join sys_entry_plate as ep2 on ep2.id=e2.plate_id
         left join sys_dept as d3 on d3.id=ep2.dept_id and d3.is_delete=0
         where d.is_delete=0
+        <if test="status !=null">
+            and d.status=#{status}
+        </if>
         <if test="type==1">
             and d.is_build_prob=1
         </if>
@@ -193,7 +197,8 @@
             and d.is_danger_prob=1
         </if>
         <if test="userId!=null and userId!=''">
-            and (de.examine_user_id=#{userId} or d.check_user_id=#{userId} or d.create_by=#{userId})
+            and (de.examine_user_id=#{userId} or d.check_user_id=#{userId} or d.create_by=#{userId} or dr.rectify_user_id=#{userId} or dr.examine_user_id=#{userId})
+
         </if>
         group by d.id
         order by d.create_date desc
@@ -721,7 +726,7 @@
         select id from t_region where is_delete=0 and status=0 and parent_id=#{regionId}
     </select>
 
-    <select id="dangerRegionStatistics" resultType="com.security.info.manage.dto.res.DangerRegionStatisticsResDTO">
+    <select id="dangerRegionStatistics" resultType="com.security.info.manage.dto.res.RegionStatisticsResDTO">
         select
         (select count(*) from t_danger where region_id in (
         <foreach collection="regions" index="index" item="region" separator=",">
