@@ -609,7 +609,7 @@
         </if>
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
-        left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
+        left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0 and d.status>=4
         left join sys_dept as d2 on d2.id=d.responsibility_dept_id and d2.is_delete=0
         left join sys_user_ext as ue1 on dr.rectify_user_id=ue1.user_id and ue1.status=0 and ue1.is_delete=0
         left join sys_entry as e1 on e1.id=d.build_entry_id
