@@ -48,7 +48,7 @@ public interface DangerMapper {
 
     DangerRectifyResDTO getDangerRectify(String dangerId);
 
-    Page<DangerResDTO> listDanger(Page<DangerResDTO> page, Integer type, Integer status,String userId);
+    Page<DangerResDTO> listDanger(Page<DangerResDTO> page, Integer type, Integer status, String name, String userId);
 
     Page<DangerResDTO> vxListDanger(Page<DangerResDTO> page, Integer type, String userId);
 
@@ -82,7 +82,7 @@ public interface DangerMapper {
 
     Integer rectifyPassDanger(String dangerId, String condition, Integer status, String createBy);
 
-    List<DangerExportResDTO> exportDanger(Integer type, String userId);
+    List<DangerExportResDTO> exportDanger(Integer type, Integer status, String name, String userId);
 
     List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);
 

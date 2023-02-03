@@ -34,7 +34,7 @@ public interface DangerService {
 
     void deleteEntry(EntryPlate.Entry entry);
 
-    Page<DangerResDTO> listDanger(Integer type,Integer status, PageReqDTO pageReqDTO);
+    Page<DangerResDTO> listDanger(Integer type,Integer status, String name, PageReqDTO pageReqDTO);
 
     Page<DangerResDTO> vxListDanger(Integer type, PageReqDTO pageReqDTO);
 
@@ -60,7 +60,7 @@ public interface DangerService {
 
     void rectifyPassDanger(String dangerId, String condition, Integer status);
 
-    void exportDanger(Integer type, HttpServletResponse response);
+    void exportDanger(Integer type, Integer status, String name, HttpServletResponse response);
 
     List<DangerTypeStatisticsResDTO> dangerTypeStatistics(String date);
 

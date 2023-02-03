@@ -198,7 +198,9 @@
         </if>
         <if test="userId!=null and userId!=''">
             and (de.examine_user_id=#{userId} or d.check_user_id=#{userId} or d.create_by=#{userId} or dr.rectify_user_id=#{userId} or dr.examine_user_id=#{userId})
-
+        </if>
+        <if test="name!=null and name!=''">
+            and ue.real_name like concat('%', #{name},'%')
         </if>
         group by d.id
         order by d.create_date desc
@@ -624,6 +626,9 @@
         left join sys_file as f1 on find_in_set(f1.id,d.before_pic)>0
         left join sys_file as f2 on find_in_set(f2.id,dr.after_pic)>0
         where d.is_use=1 and d.is_delete=0
+        <if test="status !=null">
+            and d.status=#{status}
+        </if>
         <if test="type==1">
             and d.is_build_prob=1
         </if>
@@ -635,6 +640,9 @@
         </if>
         <if test="userId!=null and userId!=''">
             and (de.examine_user_id=#{userId} or d.check_user_id=#{userId} or d.create_by=#{userId})
+        </if>
+        <if test="name!=null and name!=''">
+            and ue.real_name like concat('%', #{name},'%')
         </if>
         group by d.id, dr.id
         order by d.check_time desc

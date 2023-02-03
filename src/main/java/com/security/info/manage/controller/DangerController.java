@@ -100,8 +100,9 @@ public class DangerController {
     @ApiOperation(value = "获取隐患列表")
     public PageResponse<DangerResDTO> listDanger(@RequestParam(required = false) Integer type,
                                                  @RequestParam(required = false) Integer status,
+                                                 @RequestParam(required = false) String name,
                                                  @Valid PageReqDTO pageReqDTO) {
-        return PageResponse.of(dangerService.listDanger(type, status,pageReqDTO));
+        return PageResponse.of(dangerService.listDanger(type, status, name, pageReqDTO));
     }
 
     @GetMapping("/vx/list")
@@ -213,8 +214,10 @@ public class DangerController {
     @ApiOperation(value = "导出隐患")
     @LogMaker(value = "网页端-问题检查问题排查管理导出")
     public void exportDanger(@RequestParam(required = false) Integer type,
+                             @RequestParam(required = false) Integer status,
+                             @RequestParam(required = false) String name,
                              HttpServletResponse response) {
-        dangerService.exportDanger(type, response);
+        dangerService.exportDanger(type, status, name, response);
     }
 
     @GetMapping("/statistics/type")

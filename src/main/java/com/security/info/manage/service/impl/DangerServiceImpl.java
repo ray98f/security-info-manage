@@ -170,13 +170,13 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    public Page<DangerResDTO> listDanger(Integer type,Integer status, PageReqDTO pageReqDTO) {
+    public Page<DangerResDTO> listDanger(Integer type,Integer status, String name, PageReqDTO pageReqDTO) {
         PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         Page<DangerResDTO> page;
         if (sysMapper.selectIfAdmin(TokenUtil.getCurrentPersonNo()) == 1) {
-            page = dangerMapper.listDanger(pageReqDTO.of(), type, status,null);
+            page = dangerMapper.listDanger(pageReqDTO.of(), type, status, name, null);
         } else {
-            page = dangerMapper.listDanger(pageReqDTO.of(), type, status,TokenUtil.getCurrentPersonNo());
+            page = dangerMapper.listDanger(pageReqDTO.of(), type, status, name, TokenUtil.getCurrentPersonNo());
         }
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
@@ -538,7 +538,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    public void exportDanger(Integer type, HttpServletResponse response) {
+    public void exportDanger(Integer type, Integer status, String name, HttpServletResponse response) {
         List<String> listName = Arrays.asList("编号", "时间", "地点", "检查部门", "检查人", "问题", "标准化工区建设-版块",
                 "标准化工区建设-标准化词条", "标准化工区建设-扣除分值", "标准化工区建设-换算分值", "安全生产标准化-版块",
                 "安全生产标准化-类别", "安全生产标准化-词条", "安全生产标准化-考核分值", "安全隐患排查与治理-隐患类别",
@@ -546,9 +546,9 @@ public class DangerServiceImpl implements DangerService {
                 "责任工区", "整改责任人", "状态", "备注");
         List<DangerExportResDTO> exportDanger;
         if (sysMapper.selectIfAdmin(TokenUtil.getCurrentPersonNo()) == 1) {
-            exportDanger = dangerMapper.exportDanger(type, null);
+            exportDanger = dangerMapper.exportDanger(type, status, name, null);
         } else {
-            exportDanger = dangerMapper.exportDanger(type, TokenUtil.getCurrentPersonNo());
+            exportDanger = dangerMapper.exportDanger(type, status, name, TokenUtil.getCurrentPersonNo());
         }
         List<Map<String, String>> list = new ArrayList<>();
         if (exportDanger != null && !exportDanger.isEmpty()) {
