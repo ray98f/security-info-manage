@@ -253,7 +253,7 @@ public class DangerController {
 
     @GetMapping("/statistics/chart")
     @ApiOperation(value = "新增问题统计")
-    public DataResponse<DangerChartStatisticsResDTO> chartStatistics(@RequestParam String regionId,
+    public DataResponse<DangerChartStatisticsResDTO> chartStatistics(@RequestParam(required = false) String regionId,
                                                                      @RequestParam(required = false) String unit,
                                                                      @RequestParam(required = false) String workArea) {
         return DataResponse.of(dangerService.chartStatistics(regionId, unit, workArea));

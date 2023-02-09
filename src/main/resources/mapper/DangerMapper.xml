@@ -796,7 +796,10 @@
         COUNT(d.id) as num
         FROM
         t_danger as d left join t_region as r on r.id=d.region_id and r.status=0 and r.is_delete=0
-        WHERE d.is_use=1 and d.is_delete=0 and region_id=#{regionId} and year(d.create_date)=year(now())
+        WHERE d.is_use=1 and d.is_delete=0 and year(d.create_date)=year(now())
+        <if test="regionId!=null and regionId!=''">
+            and region_id=#{regionId}
+        </if>
         <if test="unit!=null and unit!=''">
             and r.response_unit=#{unit}
         </if>
@@ -813,8 +816,11 @@
         COUNT(d.id) as num
         FROM
         t_danger as d left join t_region as r on r.id=d.region_id and r.status=0 and r.is_delete=0
-        WHERE d.is_use=1 and d.is_delete=0 and region_id=#{regionId} and year(d.create_date)=year(now())
+        WHERE d.is_use=1 and d.is_delete=0 and year(d.create_date)=year(now())
         and d.status not in (5,6)
+        <if test="regionId!=null and regionId!=''">
+            and region_id=#{regionId}
+        </if>
         <if test="unit!=null and unit!=''">
             and r.response_unit=#{unit}
         </if>
