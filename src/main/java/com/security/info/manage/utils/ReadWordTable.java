@@ -186,7 +186,7 @@ public class ReadWordTable {
                 physicalResult.setName(table.getRow(i).getCell(1).getText());
                 physicalResult.setSex(table.getRow(i).getCell(2) == null ? 0 : "男".equals(table.getRow(i).getCell(2).getText()) ? 1 : 2);
                 physicalResult.setAge(Integer.valueOf(table.getRow(i).getCell(3).getText()));
-                physicalResult.setWorkYear(Integer.valueOf(table.getRow(i).getCell(4).getText()));
+                physicalResult.setWorkYear(Double.valueOf(table.getRow(i).getCell(4).getText()));
                 physicalResult.setWorkType(table.getRow(i).getCell(5).getText());
                 physicalResult.setHazardFactorName(table.getRow(i).getCell(6).getText());
                 physicalResult.setWarningIndex(table.getRow(i).getCell(7).getText());
@@ -218,7 +218,7 @@ public class ReadWordTable {
                     physicalResult.setName(HtmlUtil.removeHtmlTag(row.select("td").get(1).toString()));
                     physicalResult.setSex("".equals(HtmlUtil.removeHtmlTag(row.select("td").get(2).toString())) ? 0 : "男".equals(HtmlUtil.removeHtmlTag(row.select("td").get(2).toString())) ? 1 : 2);
                     physicalResult.setAge(Integer.valueOf(HtmlUtil.removeHtmlTag(row.select("td").get(3).toString())));
-                    physicalResult.setWorkYear(Integer.valueOf(HtmlUtil.removeHtmlTag(row.select("td").get(4).toString())));
+                    physicalResult.setWorkYear(Double.valueOf(HtmlUtil.removeHtmlTag(row.select("td").get(4).toString())));
                     physicalResult.setWorkType(HtmlUtil.removeHtmlTag(row.select("td").get(5).toString()));
                     physicalResult.setHazardFactorName(HtmlUtil.removeHtmlTag(row.select("td").get(6).toString()));
                     physicalResult.setWarningIndex(HtmlUtil.removeHtmlTag(row.select("td").get(7).toString()));
@@ -240,7 +240,7 @@ public class ReadWordTable {
                     physicalResult.setName(HtmlUtil.removeHtmlTag(row.select("td").get(1).toString()));
                     physicalResult.setSex("".equals(HtmlUtil.removeHtmlTag(row.select("td").get(2).toString())) ? 0 : "男".equals(HtmlUtil.removeHtmlTag(row.select("td").get(2).toString())) ? 1 : 2);
                     physicalResult.setAge(Integer.valueOf(HtmlUtil.removeHtmlTag(row.select("td").get(3).toString())));
-                    physicalResult.setWorkYear(Integer.valueOf(HtmlUtil.removeHtmlTag(row.select("td").get(4).toString())));
+                    physicalResult.setWorkYear(Double.valueOf(HtmlUtil.removeHtmlTag(row.select("td").get(4).toString())));
                     physicalResult.setWorkType(HtmlUtil.removeHtmlTag(row.select("td").get(5).toString()));
                     physicalResult.setHazardFactorName(HtmlUtil.removeHtmlTag(row.select("td").get(6).toString()));
                     physicalResult.setWarningIndex(HtmlUtil.removeHtmlTag(row.select("td").get(7).toString()));
