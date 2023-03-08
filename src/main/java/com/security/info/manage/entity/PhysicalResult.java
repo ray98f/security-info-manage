@@ -32,7 +32,7 @@ public class PhysicalResult extends BaseEntity {
     private String phone;
 
     @ApiModelProperty(value = "接害工龄")
-    private Integer workYear;
+    private Double workYear;
 
     @ApiModelProperty(value = "工种")
     private String workType;
