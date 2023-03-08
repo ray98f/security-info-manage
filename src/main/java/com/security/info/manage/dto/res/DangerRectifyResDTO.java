@@ -24,6 +24,14 @@ public class DangerRectifyResDTO {
     @ApiModelProperty(value = "整改责任人")
     private String rectifyUserId;
 
+    @ApiModelProperty(value = "整改时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(
+            pattern = "yyyy-MM-dd HH:mm:ss",
+            timezone = "GMT+8"
+    )
+    private Date rectifyTime;
+
     @ApiModelProperty(value = "整改责任人名")
     private String rectifyUserName;
 
