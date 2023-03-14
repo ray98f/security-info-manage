@@ -2,6 +2,8 @@ package com.security.info.manage.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.security.info.manage.dto.req.DangerReqDTO;
+import com.security.info.manage.dto.req.NewEReqDTO;
+import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.EntryPlate;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,6 +33,8 @@ public interface DangerMapper {
     List<EntryPlate.Entry> listEntry(String plateId);
 
     Integer addEntry(EntryPlate.Entry entry);
+
+
 
     Integer modifyEntry(EntryPlate.Entry entry);
 

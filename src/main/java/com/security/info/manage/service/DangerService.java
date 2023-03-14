@@ -30,6 +30,8 @@ public interface DangerService {
 
     void addEntry(EntryPlate.Entry entry);
 
+    void syncEntry();
+
     void modifyEntry(EntryPlate.Entry entry);
 
     void deleteEntry(EntryPlate.Entry entry);

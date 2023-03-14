@@ -5,6 +5,8 @@ import com.github.pagehelper.PageHelper;
 import com.google.common.base.Joiner;
 import com.security.info.manage.dto.PageReqDTO;
 import com.security.info.manage.dto.req.DangerReqDTO;
+import com.security.info.manage.dto.req.NewEReqDTO;
+import com.security.info.manage.dto.req.NewUserReqDTO;
 import com.security.info.manage.dto.req.VxSendTextMsgReqDTO;
 import com.security.info.manage.dto.res.*;
 import com.security.info.manage.entity.EntryPlate;
@@ -19,9 +21,18 @@ import com.security.info.manage.service.DangerService;
 import com.security.info.manage.service.DeptService;
 import com.security.info.manage.service.MsgService;
 import com.security.info.manage.utils.ExcelPortUtil;
+import com.security.info.manage.utils.FileUtils;
 import com.security.info.manage.utils.ObjectUtils;
 import com.security.info.manage.utils.TokenUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,12 +42,14 @@ import org.springframework.transaction.annotation.Transactional;;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.security.info.manage.utils.Constants.XLS;
+import static com.security.info.manage.utils.Constants.XLSX;
 
 /**
  * @author frp
@@ -47,6 +60,9 @@ public class DangerServiceImpl implements DangerService {
 
     public static final String SERIAL_NUMBER_WT_DANGER = ":serial:num:danger:wt";
     public static final String WT_DANGER_NO = "ZTT-WT-";
+
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
 
     @Autowired
     private DangerMapper dangerMapper;
@@ -145,6 +161,50 @@ public class DangerServiceImpl implements DangerService {
         if (result < 0) {
             throw new CommonException(ErrorCode.INSERT_ERROR);
         }
+    }
+
+    @Override
+    public void syncEntry() {
+        //TODO 
+        File ff = new File("C:\\import.xlsx");
+        SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH,false);
+        try{
+            Workbook workbook;
+            FileInputStream fileInputStream = new FileInputStream(ff);
+            workbook = new XSSFWorkbook(fileInputStream);
+
+            Sheet sheet = workbook.getSheetAt(0);
+            List<EntryPlate.Entry> temp = new ArrayList<>();
+
+            for (Row cells : sheet) {
+                if (cells.getRowNum() < 1) {
+                    continue;
+                }
+                EntryPlate.Entry reqDTO = new EntryPlate.Entry();
+                cells.getCell(0).setCellType(1);
+                reqDTO.setId(cells.getCell(0).getStringCellValue());
+                cells.getCell(1).setCellType(1);
+                reqDTO.setPlateId(cells.getCell(1).getStringCellValue());
+                cells.getCell(2).setCellType(1);
+                reqDTO.setContent(cells.getCell(2).getStringCellValue());
+
+                temp.add(reqDTO);
+            }
+            fileInputStream.close();
+            DangerMapper dangerMapper = sqlSession.getMapper(DangerMapper.class);
+            for (EntryPlate.Entry s : temp) {
+                dangerMapper.addEntry(s);
+            }
+
+
+            sqlSession.commit();
+            sqlSession.flushStatements();
+            sqlSession.clearCache();
+            sqlSession.close();
+        }catch (Exception e){
+
+        }
+
     }
 
     @Override

@@ -82,6 +82,13 @@ public class DangerController {
         return DataResponse.success();
     }
 
+    @GetMapping("/syncEntry")
+    @ApiOperation(value = "新增隐患词条")
+    public DataResponse<T> syncEntry() {
+        dangerService.syncEntry();
+        return DataResponse.success();
+    }
+
     @PostMapping("/modifyEntry")
     @ApiOperation(value = "修改隐患词条")
     public DataResponse<T> modifyEntry(@RequestBody EntryPlate.Entry entry) {
