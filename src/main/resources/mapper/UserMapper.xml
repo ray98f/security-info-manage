@@ -220,4 +220,11 @@
         </if>
         group by u.id
     </select>
+
+    <select id="selectUserRole" resultType="java.lang.String">
+        SELECT r.role_name
+        FROM sys_user_role as ur
+        left join sys_role as r on r.id=ur.role_id and r.is_delete=0 and r.status=0
+        where ur.user_id=#{userId}
+    </select>
 </mapper>

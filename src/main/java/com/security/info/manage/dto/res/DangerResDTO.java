@@ -169,4 +169,6 @@ public class DangerResDTO {
     )
     private Date createDate;
 
+    private Integer userRole;
+
 }

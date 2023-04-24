@@ -13,10 +13,7 @@ import com.security.info.manage.entity.EntryPlate;
 import com.security.info.manage.entity.User;
 import com.security.info.manage.enums.ErrorCode;
 import com.security.info.manage.exception.CommonException;
-import com.security.info.manage.mapper.DeptMapper;
-import com.security.info.manage.mapper.FileMapper;
-import com.security.info.manage.mapper.DangerMapper;
-import com.security.info.manage.mapper.SysMapper;
+import com.security.info.manage.mapper.*;
 import com.security.info.manage.service.DangerService;
 import com.security.info.manage.service.DeptService;
 import com.security.info.manage.service.MsgService;
@@ -24,6 +21,7 @@ import com.security.info.manage.utils.ExcelPortUtil;
 import com.security.info.manage.utils.FileUtils;
 import com.security.info.manage.utils.ObjectUtils;
 import com.security.info.manage.utils.TokenUtil;
+import jdk.nashorn.internal.parser.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -81,6 +79,9 @@ public class DangerServiceImpl implements DangerService {
 
     @Autowired
     private MsgService msgService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Value("${vx-business.jumppage}")
     private String jumppage;
@@ -240,6 +241,7 @@ public class DangerServiceImpl implements DangerService {
         }
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
+            List<String> userRoles = userMapper.selectUserRole(TokenUtil.getCurrentPersonNo());
             for (DangerResDTO resDTO : list) {
                 if (resDTO.getBeforePic() != null && !"".equals(resDTO.getBeforePic())) {
                     resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
@@ -263,6 +265,13 @@ public class DangerServiceImpl implements DangerService {
                     }
                 }
                 resDTO.setDangerRectify(dangerRectify);
+                if (userRoles != null && !userRoles.isEmpty()) {
+                    if (userRoles.contains("系统管理员")) {
+                        resDTO.setUserRole(1);
+                    } else {
+                        resDTO.setUserRole(0);
+                    }
+                }
             }
         }
         page.setRecords(list);

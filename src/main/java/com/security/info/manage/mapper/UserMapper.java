@@ -113,4 +113,6 @@ public interface UserMapper {
     Integer modifyUserPost(PostReqDTO postReqDTO);
 
     Page<UserResDTO> selectLeaveUser(Page<UserResDTO> page, String name);
+
+    List<String> selectUserRole(String userId);
 }
