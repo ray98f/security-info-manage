@@ -265,7 +265,9 @@
             #{c.date}, #{c.sort}, #{c.no}, (select id from sys_dept where org_name=#{c.orgName} and is_delete=0),
             #{c.startTime}, #{c.endTime}, #{c.isDay}, #{c.name}, #{c.region},
             #{c.electricArrange}, #{c.protectMeasures}, #{c.coordinationRequirement},
-            (select user_id from sys_user_ext where real_name=#{c.userName} and is_delete=0),
+            (select ue.user_id from sys_user_ext as ue
+            left join sys_user as u on u.id=ue.user_id and u.is_delete=0
+            where ue.real_name=#{c.userName} and u.mobile=#{c.phone} and ue.is_delete=0),
             #{c.phone}, #{c.remark}, #{c.createBy})
         </foreach>
         ;
