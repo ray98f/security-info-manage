@@ -106,7 +106,7 @@ pro:
 ztt-4g:
   url: 192.168.30.58
   port: 1854
-  address: 183.249.1.202
+  address: 122.228.42.74
   user: admin
   password: Zttddjxb123
   path: https://192.168.30.58:1854

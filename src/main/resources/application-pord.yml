@@ -104,9 +104,9 @@ pro:
   name: security-info-manage
 
 ztt-4g:
-  url: 183.249.1.202
+  url: 122.228.42.74
   port: 1854
-  address: 183.249.1.202
+  address: 122.228.42.74
   user: admin
   password: Zttddjxb123
   path: https://security.zttgs.com:3443
