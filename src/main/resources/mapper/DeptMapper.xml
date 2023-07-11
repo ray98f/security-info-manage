@@ -67,22 +67,7 @@
     </select>
 
     <select id="upRecursion" resultType="java.lang.String">
-        SELECT
-        T2.id
-        FROM
-        (
-        SELECT
-        @r AS _id,
-        (SELECT @r := parent_id FROM sys_dept WHERE id = _id ) AS 2v2,
-        @l := @l + 1 AS lvl
-        FROM
-        ( SELECT @r := #{deptId}, @l := 0 ) vars,
-        sys_dept h
-        ) T1
-        LEFT JOIN sys_dept T2 ON T1._id = T2.id
-        WHERE
-        T2.parent_id="1" and T2.id is not null
-
+        select parent_id from sys_dept where id=#{deptId}
     </select>
 
     <select id="downRecursion" resultType="java.lang.String">

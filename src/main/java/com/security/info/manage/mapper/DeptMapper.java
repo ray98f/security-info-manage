@@ -31,7 +31,6 @@ public interface DeptMapper {
 
     List<UserResDTO> selectDepartmentUser(String deptId, String dangerId, Integer type);
 
-    @SqlParser(filter = true)
     String upRecursion(@Param("deptId") String deptId);
 
     @SqlParser(filter = true)

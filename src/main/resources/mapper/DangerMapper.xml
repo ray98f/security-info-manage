@@ -495,7 +495,10 @@
     </select>
 
     <select id="selectUserType" resultType="com.security.info.manage.dto.res.DangerExamineResDTO">
-        select id, max(user_type) as user_type from t_danger_examine where danger_id=#{dangerId} and is_delete=0 and status=0
+        select id, user_type from t_danger_examine
+        where danger_id=#{dangerId} and is_delete=0 and status=0
+        order by user_type desc
+        limit 1
     </select>
 
     <select id="selectCheckUserId" resultType="java.lang.String">

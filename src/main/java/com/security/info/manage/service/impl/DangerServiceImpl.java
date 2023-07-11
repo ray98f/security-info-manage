@@ -472,9 +472,11 @@ public class DangerServiceImpl implements DangerService {
 
     @Override
     public List<UserResDTO> examineUserList(String deptId, Integer userType) {
-        String res = deptMapper.upRecursion(deptId);
-        if (res != null) {
-            List<String> ids = deptMapper.downRecursion(res);
+        while (!"1".equals(deptMapper.upRecursion(deptId)) && deptMapper.upRecursion(deptId) != null) {
+            deptId = deptMapper.upRecursion(deptId);
+        }
+        if (deptId != null) {
+            List<String> ids = deptMapper.downRecursion(deptId);
             if (ids != null && !ids.isEmpty()) {
                 List<UserResDTO> list = dangerMapper.examineUserList(ids, userType);
                 if (!Objects.isNull(list) && !list.isEmpty()) {

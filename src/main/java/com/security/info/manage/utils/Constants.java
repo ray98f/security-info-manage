@@ -43,21 +43,21 @@ public class Constants {
 
     public static final String VX_GET_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?type=agent_config";
 
-    public static final String ZTT_4G_LOGIN = "/icvs/login";
+    public static final String ZTT_4G_LOGIN = "/icvs2/login";
 
-    public static final String ZTT_4G_LIST_EQUIPMENT = "/icvs/CAS/C_CAS_QueryPUIDSets";
+    public static final String ZTT_4G_LIST_EQUIPMENT = "/icvs2/CAS/C_CAS_QueryPUIDSets";
 
-    public static final String ZTT_4G_LIST_VIDEO = "/icvs/CAS/C_CAS_QueryPUIDRes";
+    public static final String ZTT_4G_LIST_VIDEO = "/icvs2/CAS/C_CAS_QueryPUIDRes";
 
-    public static final String ZTT_4G_LIVE_STREAM = "/icvs/stream.flv";
+    public static final String ZTT_4G_LIVE_STREAM = "/icvs2/stream.flv";
 
-    public static final String ZTT_4G_PLAYBACK_FILES = "/icvs/CSS/C_CSS_QueryStorageFiles";
+    public static final String ZTT_4G_PLAYBACK_FILES = "/icvs2/CSS/C_CSS_QueryStorageFiles";
 
-    public static final String ZTT_4G_PLAYBACK_STREAM = "/icvs/CSS/VODFile.flv";
+    public static final String ZTT_4G_PLAYBACK_STREAM = "/icvs2/CSS/VODFile.flv";
 
-    public static final String ZTT_4G_START_TALK = "/icvs/audio/startTalk";
+    public static final String ZTT_4G_START_TALK = "/icvs2/audio/startTalk";
 
-    public static final String ZTT_4G_STOP_TALK = "/icvs/audio/stopTalk";
+    public static final String ZTT_4G_STOP_TALK = "/icvs2/audio/stopTalk";
 
     public static final String XLS = "xls";
 

@@ -189,7 +189,7 @@ public class SafeExpectServiceImpl implements SafeExpectService {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
             }
         }
-        if (safeExpectModifyReqDTO.getSafeExpectInfo().getIsTemplate() == 1) {
+        if (safeExpectModifyReqDTO.getSafeExpectInfo() != null && safeExpectModifyReqDTO.getSafeExpectInfo().getIsTemplate() == 1) {
             Integer result = safeExpectMapper.selectSafeExpectTemplateNum(TokenUtil.getCurrentPersonNo());
             if (result >= safeExpectTemplateNum) {
                 throw new CommonException(ErrorCode.SAFE_EXPECT_TEMPLATE_NUM_MAX, safeExpectTemplateNum.toString());

@@ -109,6 +109,7 @@ public class Ztt4gServiceImpl implements Ztt4gService {
         String url = "http://" + monitorUrl + ":" + monitorPort + Constants.ZTT_4G_PLAYBACK_FILES
                 + "?token=" + login() + "&puid=" + puid + "&idx=" + idx + "&type=" + type + "&offset=" + offset
                 + "&count=" + count + "&domainRoadID=" + domainRoadId + "&begin=" + begin + "&end=" + end;
+        System.out.println(url);
         UriComponents uriComponents = UriComponentsBuilder.fromUriString(url)
                 .build()
                 .expand()
