@@ -260,9 +260,11 @@ public class SafeExpectServiceImpl implements SafeExpectService {
     public void vxSignSafeExpectUser(String id, Integer isSign) {
         SafeExpectResDTO safeExpectResDTO = safeExpectMapper.getSafeExpectDetail(id);
         Date now = new Date(System.currentTimeMillis());
-        Date timeDate = afterTwentyMinutesToNowDate(safeExpectResDTO.getTime());
-        if (now.after(timeDate)) {
-            throw new CommonException(ErrorCode.SIGN_TIME_ERROR);
+        if (safeExpectResDTO.getTime() != null) {
+            Date timeDate = afterTwentyMinutesToNowDate(safeExpectResDTO.getTime());
+            if (now.after(timeDate)) {
+                throw new CommonException(ErrorCode.SIGN_TIME_ERROR);
+            }
         }
         Integer result = safeExpectMapper.vxSignSafeExpectUser(id, isSign, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
