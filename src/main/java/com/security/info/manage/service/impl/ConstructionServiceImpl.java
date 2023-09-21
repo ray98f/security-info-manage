@@ -272,12 +272,20 @@ public class ConstructionServiceImpl implements ConstructionService {
                 reqDTO.setOrgName(cells.getCell(2) == null ? null : cells.getCell(2).getStringCellValue());
                 cells.getCell(3).setCellType(1);
                 String workDate = cells.getCell(3) == null ? null : cells.getCell(3).getStringCellValue();
-                if (Objects.requireNonNull(workDate).contains("次日")) {
+                workDate = Objects.requireNonNull(workDate).replaceAll("-", "~");
+                if (workDate.contains("次")) {
                     reqDTO.setIsDay(1);
-                    workDate = workDate.replaceAll("次日", "");
-                    reqDTO.setStartTime(sdf.parse(day + " " + workDate.split("~")[0]));
-                    cal.add(Calendar.DAY_OF_MONTH, 1);
-                    reqDTO.setEndTime(sdf.parse(dayDate.format(cal.getTime()) + " " + workDate.split("~")[1]));
+                    if (workDate.startsWith("次")) {
+                        workDate = workDate.replaceAll("次日", "").replaceAll("次", "");
+                        cal.add(Calendar.DAY_OF_MONTH, 1);
+                        reqDTO.setStartTime(sdf.parse(dayDate.format(cal.getTime()) + " " + workDate.split("~")[0]));
+                        reqDTO.setEndTime(sdf.parse(dayDate.format(cal.getTime()) + " " + workDate.split("~")[1]));
+                    } else {
+                        workDate = workDate.replaceAll("次日", "").replaceAll("次", "");
+                        reqDTO.setStartTime(sdf.parse(day + " " + workDate.split("~")[0]));
+                        cal.add(Calendar.DAY_OF_MONTH, 1);
+                        reqDTO.setEndTime(sdf.parse(dayDate.format(cal.getTime()) + " " + workDate.split("~")[1]));
+                    }
                 } else {
                     reqDTO.setIsDay(0);
                     reqDTO.setStartTime(sdf.parse(day + " " + workDate.split("~")[0]));
