@@ -36,7 +36,7 @@
 
     <select id="selectPlateIsExist" resultType="java.lang.Integer">
         select count(1) from sys_entry_plate
-        where plate_name=#{plateName} and type=#{type}
+        where plate_name=#{plateName} and type=#{type} and dept_id=#{deptId}
         <if test="id!=null and id!=''">
             and id!=#{id}
         </if>
