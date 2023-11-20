@@ -273,6 +273,7 @@ public class ConstructionServiceImpl implements ConstructionService {
                 cells.getCell(3).setCellType(1);
                 String workDate = cells.getCell(3) == null ? null : cells.getCell(3).getStringCellValue();
                 workDate = Objects.requireNonNull(workDate).replaceAll("-", "~");
+                workDate = workDate.replaceAll("：", ":");
                 if (workDate.contains("次")) {
                     reqDTO.setIsDay(1);
                     if (workDate.startsWith("次")) {
