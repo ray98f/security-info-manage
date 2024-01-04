@@ -24,7 +24,7 @@ public class ExcelPortUtil {
      */
     public static void excelPort(String sheetName, List<String> listName, List<Map<String, String>> list, List<Map<Integer, String>> listBottom, HttpServletResponse response) {
         try {
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 throw new BackingStoreException("数据为空");
             }
             // 声明一个工作簿

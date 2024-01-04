@@ -395,7 +395,7 @@ public class DangerServiceImpl implements DangerService {
             }
         }
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-        if (dangerReqDTO.getCheckUserId() == null || "".equals(dangerReqDTO.getCheckUserId())) {
+        if (dangerReqDTO.getCheckUserId() == null || dangerReqDTO.getCheckUserId().isEmpty()) {
             dangerReqDTO.setCheckUserId(TokenUtil.getCurrentPersonNo());
             dangerReqDTO.setCheckDeptId(TokenUtil.getCurrentPersonDeptId());
             dangerReqDTO.setCheckTime(new Date(System.currentTimeMillis()));
@@ -407,7 +407,7 @@ public class DangerServiceImpl implements DangerService {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
-                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/problemRecord/myApproval/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -453,7 +453,7 @@ public class DangerServiceImpl implements DangerService {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(dangerReqDTO.getExamineUserId());
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
-                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/problemRecord/myApproval/index&type=4&id=" + dangerReqDTO.getId() + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
     }
@@ -488,7 +488,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void examineDanger(String dangerId, String userId, String opinion, Integer status) {
         String checkUserId = dangerMapper.selectCheckUserId(dangerId);
         if (Objects.isNull(checkUserId)) {
@@ -504,22 +504,22 @@ public class DangerServiceImpl implements DangerService {
             Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, checkUserId);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
-            } else if (!"".equals(checkUserId) && status == 1) {
+            } else if (!checkUserId.isEmpty() && status == 1) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(checkUserId);
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查待下发，请前往小程序查看处理。" +
-                        "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+                        "<a href=\"" + jumppage + "?page=pages/problemRecord/distribute/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         } else {
             Integer result = dangerMapper.examineDanger(res.getId(), opinion, status, TokenUtil.getCurrentPersonNo(), dangerId, res.getUserType() + 1, userId);
             if (result < 0) {
                 throw new CommonException(ErrorCode.UPDATE_ERROR);
-            } else if (userId != null && !"".equals(userId) && status == 1) {
+            } else if (userId != null && !userId.isEmpty() && status == 1) {
                 VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
                 vxSendTextMsgReqDTO.setTouser(userId);
                 vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患排查审批通知，请前往小程序查看处理。" +
-                        "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+                        "<a href=\"" + jumppage + "?page=pages/problemRecord/myApproval/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
                 msgService.sendTextMsg(vxSendTextMsgReqDTO);
             }
         }
@@ -534,7 +534,7 @@ public class DangerServiceImpl implements DangerService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void issueDanger(String dangerId, String deptId, String userId, String rectifyTerm, String opinion) {
         DeptTreeResDTO res = deptMapper.selectParent(deptId);
         if (!Objects.isNull(res) && !"1".equals(res.getId())) {
@@ -553,12 +553,12 @@ public class DangerServiceImpl implements DangerService {
         VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
         vxSendTextMsgReqDTO.setTouser(userId.replaceAll(",", "|"));
         vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改通知，请前往小程序查看处理。" +
-                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=5&id=" + dangerId + "\">跳转小程序</a>"));
+                "<a href=\"" + jumppage + "?page=pages/problemRecord/myRectification/index&type=5&id=" + dangerId + "\">跳转小程序</a>"));
         msgService.sendTextMsg(vxSendTextMsgReqDTO);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void rectifyDanger(String dangerId, String userId, String rectifyMeasure, String afterPic) {
         Integer result = dangerMapper.rectifyDanger(dangerId, userId, rectifyMeasure, afterPic, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
@@ -567,25 +567,24 @@ public class DangerServiceImpl implements DangerService {
         VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
         vxSendTextMsgReqDTO.setTouser(userId);
         vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改审批通知，请前往小程序查看处理。" +
-                "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=6&id=" + dangerId + "\">跳转小程序</a>"));
+                "<a href=\"" + jumppage + "?page=pages/problemRecord/myApproval/index&type=6&id=" + dangerId + "\">跳转小程序</a>"));
         msgService.sendTextMsg(vxSendTextMsgReqDTO);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void rectifyExamineDanger(String dangerId, Integer status) {
         Integer result = dangerMapper.rectifyExamineDanger(dangerId, status, TokenUtil.getCurrentPersonNo());
         if (result < 0) {
             throw new CommonException(ErrorCode.UPDATE_ERROR);
         }
-
         //20220922 addBy zhangxin 部长驳回通知
         if (status == 2) {
             String rectifyUserId = dangerMapper.selectRectifyUserId(dangerId);
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(rectifyUserId);
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您有一条新的隐患整改被退回，请前往小程序查看处理。" +
-                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=5&id=" + dangerId + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/problemRecord/myRectification/index&type=5&id=" + dangerId + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         } else if (status == 1) {
             //整改完成通知
@@ -593,14 +592,14 @@ public class DangerServiceImpl implements DangerService {
             VxSendTextMsgReqDTO vxSendTextMsgReqDTO = new VxSendTextMsgReqDTO();
             vxSendTextMsgReqDTO.setTouser(checkUserId);
             vxSendTextMsgReqDTO.setText(new VxSendTextMsgReqDTO.Content("您上报的隐患已整改完成，请前往小程序审核。" +
-                    "<a href=\"" + jumppage + "?page=pages/reportProblems/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
+                    "<a href=\"" + jumppage + "?page=pages/problemRecord/myApproval/index&type=4&id=" + dangerId + "\">跳转小程序</a>"));
             msgService.sendTextMsg(vxSendTextMsgReqDTO);
         }
 
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void rectifyPassDanger(String dangerId, String condition, Integer status) {
         Integer result = dangerMapper.rectifyPassDanger(dangerId, condition, status, TokenUtil.getCurrentPersonNo());
         if (result < 0) {

@@ -6,7 +6,7 @@ server:
     context-path: /securityInfo/manage
 spring:
   profiles:
-    active: pord
+    active: prod
   messages:
     basename: i18n/messages
   application:
