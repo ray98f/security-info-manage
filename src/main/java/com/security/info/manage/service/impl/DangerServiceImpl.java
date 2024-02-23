@@ -240,27 +240,22 @@ public class DangerServiceImpl implements DangerService {
         if (list != null && !list.isEmpty()) {
             List<String> userRoles = userMapper.selectUserRole(TokenUtil.getCurrentPersonNo());
             for (DangerResDTO resDTO : list) {
-                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && !StringUtils.isBlank(resDTO.getBeforePic())) {
-                    resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
-                }
+//                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && StringUtils.isNotBlank(resDTO.getBeforePic())) {
+//                    List<String> beforePicList = Arrays.asList(resDTO.getBeforePic().split(","));
+//                    if (!beforePicList.isEmpty()) {
+//                        resDTO.setBeforePicFile(fileMapper.selectFileInfo(beforePicList));
+//                    }
+//                }
                 resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
-                if (resDTO.getStatus() == 3) {
-                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
-                } else if (resDTO.getStatus() == 4) {
-                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
-                } else if (resDTO.getStatus() == 5) {
-                    resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-                } else if (resDTO.getStatus() == 0) {
-                    resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-                } else {
-                    resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-                }
                 DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
-                if (!Objects.isNull(dangerRectify)) {
-                    if (dangerRectify.getAfterPic() != null && !dangerRectify.getAfterPic().isEmpty()) {
-                        dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(Arrays.asList(dangerRectify.getAfterPic().split(","))));
-                    }
-                }
+//                if (!Objects.isNull(dangerRectify)) {
+//                    if (dangerRectify.getAfterPic() != null && !dangerRectify.getAfterPic().isEmpty() && StringUtils.isNotBlank(dangerRectify.getAfterPic())) {
+//                        List<String> afterPicList = Arrays.asList(dangerRectify.getAfterPic().split(","));
+//                        if (!afterPicList.isEmpty()) {
+//                            dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(afterPicList));
+//                        }
+//                    }
+//                }
                 resDTO.setDangerRectify(dangerRectify);
                 if (userRoles != null && !userRoles.isEmpty()) {
                     if (userRoles.contains("系统管理员")) {
@@ -268,6 +263,23 @@ public class DangerServiceImpl implements DangerService {
                     } else {
                         resDTO.setUserRole(0);
                     }
+                }
+                switch (resDTO.getStatus()) {
+                    case 3:
+                        resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
+                        break;
+                    case 4:
+                        resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+                        break;
+                    case 5:
+                        resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                        break;
+                    case 0:
+                        resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                        break;
+                    default:
+                        resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                        break;
                 }
             }
         }
@@ -282,28 +294,40 @@ public class DangerServiceImpl implements DangerService {
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (DangerResDTO resDTO : list) {
-                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && !StringUtils.isBlank(resDTO.getBeforePic())) {
-                    resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
-                }
+//                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && StringUtils.isNotBlank(resDTO.getBeforePic())) {
+//                    List<String> beforePicList = Arrays.asList(resDTO.getBeforePic().split(","));
+//                    if (!beforePicList.isEmpty()) {
+//                        resDTO.setBeforePicFile(fileMapper.selectFileInfo(beforePicList));
+//                    }
+//                }
                 resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
-                if (resDTO.getStatus() == 3) {
-                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
-                } else if (resDTO.getStatus() == 4) {
-                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
-                } else if (resDTO.getStatus() == 5) {
-                    resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-                } else if (resDTO.getStatus() == 0) {
-                    resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-                } else {
-                    resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-                }
                 DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
-                if (!Objects.isNull(dangerRectify)) {
-                    if (dangerRectify.getAfterPic() != null && !"".equals(dangerRectify.getAfterPic())) {
-                        dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(Arrays.asList(dangerRectify.getAfterPic().split(","))));
-                    }
-                }
+//                if (!Objects.isNull(dangerRectify)) {
+//                    if (dangerRectify.getAfterPic() != null && !dangerRectify.getAfterPic().isEmpty() && StringUtils.isNotBlank(dangerRectify.getAfterPic())) {
+//                        List<String> afterPicList = Arrays.asList(dangerRectify.getAfterPic().split(","));
+//                        if (!afterPicList.isEmpty()) {
+//                            dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(afterPicList));
+//                        }
+//                    }
+//                }
                 resDTO.setDangerRectify(dangerRectify);
+                switch (resDTO.getStatus()) {
+                    case 3:
+                        resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
+                        break;
+                    case 4:
+                        resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+                        break;
+                    case 5:
+                        resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                        break;
+                    case 0:
+                        resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                        break;
+                    default:
+                        resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                        break;
+                }
             }
         }
         page.setRecords(list);
@@ -318,21 +342,13 @@ public class DangerServiceImpl implements DangerService {
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (DangerResDTO resDTO : list) {
-                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && !StringUtils.isBlank(resDTO.getBeforePic())) {
-                    resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
+                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && StringUtils.isNotBlank(resDTO.getBeforePic())) {
+                    List<String> beforePicList = Arrays.asList(resDTO.getBeforePic().split(","));
+                    if (!beforePicList.isEmpty()) {
+                        resDTO.setBeforePicFile(fileMapper.selectFileInfo(beforePicList));
+                    }
                 }
 //                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
-//                if (resDTO.getStatus() == 3) {
-//                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
-//                } else if (resDTO.getStatus() == 4) {
-//                    resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
-//                } else if (resDTO.getStatus() == 5) {
-//                    resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-//                } else if (resDTO.getStatus() == 0) {
-//                    resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-//                } else {
-//                    resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-//                }
 //                DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
 //                if (!Objects.isNull(dangerRectify)) {
 //                    if (dangerRectify.getAfterPic() != null && !"".equals(dangerRectify.getAfterPic())) {
@@ -340,6 +356,23 @@ public class DangerServiceImpl implements DangerService {
 //                    }
 //                }
 //                resDTO.setDangerRectify(dangerRectify);
+//                switch (resDTO.getStatus()) {
+//                    case 3:
+//                        resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
+//                        break;
+//                    case 4:
+//                        resDTO.setUserStatus(dangerMapper.selectExamineUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+//                        break;
+//                    case 5:
+//                        resDTO.setUserStatus(dangerMapper.selectCheckUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+//                        break;
+//                    case 0:
+//                        resDTO.setUserStatus(dangerMapper.selectCreateUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+//                        break;
+//                    default:
+//                        resDTO.setUserStatus(dangerMapper.selectUserStatus(resDTO.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+//                        break;
+//                }
             }
         }
         page.setRecords(list);
@@ -352,31 +385,43 @@ public class DangerServiceImpl implements DangerService {
         if (Objects.isNull(res)) {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
-        if (res.getBeforePic() != null && !res.getBeforePic().isEmpty() && !StringUtils.isBlank(res.getBeforePic())) {
-            res.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(res.getBeforePic().split(","))));
+        if (res.getBeforePic() != null && !res.getBeforePic().isEmpty() && StringUtils.isNotBlank(res.getBeforePic())) {
+            List<String> beforePicList = Arrays.asList(res.getBeforePic().split(","));
+            if (!beforePicList.isEmpty()) {
+                res.setBeforePicFile(fileMapper.selectFileInfo(beforePicList));
+            }
         }
         res.setDangerExamines(dangerMapper.listDangerExamine(id));
-        if (res.getStatus() == 3) {
-            res.setUserStatus(dangerMapper.selectExamineUserStatus(res.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
-        } else if (res.getStatus() == 4) {
-            res.setUserStatus(dangerMapper.selectExamineUserStatus(res.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
-        } else if (res.getStatus() == 5) {
-            res.setUserStatus(dangerMapper.selectCheckUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-        } else if (res.getStatus() == 0) {
-            res.setUserStatus(dangerMapper.selectCreateUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-        } else {
-            res.setUserStatus(dangerMapper.selectUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
-        }
         if ("0".equals(res.getBuildDeptId())) {
             res.setBuildDeptName("公共板块");
         }
         DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(id);
         if (!Objects.isNull(dangerRectify)) {
-            if (dangerRectify.getAfterPic() != null && !"".equals(dangerRectify.getAfterPic())) {
-                dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(Arrays.asList(dangerRectify.getAfterPic().split(","))));
+            if (dangerRectify.getAfterPic() != null && !dangerRectify.getAfterPic().isEmpty() && StringUtils.isNotBlank(dangerRectify.getAfterPic())) {
+                List<String> afterPicList = Arrays.asList(dangerRectify.getAfterPic().split(","));
+                if (!afterPicList.isEmpty()) {
+                    dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(afterPicList));
+                }
             }
         }
         res.setDangerRectify(dangerRectify);
+        switch (res.getStatus()) {
+            case 3:
+                res.setUserStatus(dangerMapper.selectExamineUserStatus(res.getId(), TokenUtil.getCurrentPersonNo(), 1) == 0 ? 1 : 0);
+                break;
+            case 4:
+                res.setUserStatus(dangerMapper.selectExamineUserStatus(res.getId(), TokenUtil.getCurrentPersonNo(), 2) == 0 ? 1 : 0);
+                break;
+            case 5:
+                res.setUserStatus(dangerMapper.selectCheckUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                break;
+            case 0:
+                res.setUserStatus(dangerMapper.selectCreateUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                break;
+            default:
+                res.setUserStatus(dangerMapper.selectUserStatus(res.getId(), TokenUtil.getCurrentPersonNo()) == 0 ? 1 : 0);
+                break;
+        }
         return res;
     }
 
