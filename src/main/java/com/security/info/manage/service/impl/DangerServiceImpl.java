@@ -17,10 +17,7 @@ import com.security.info.manage.mapper.*;
 import com.security.info.manage.service.DangerService;
 import com.security.info.manage.service.DeptService;
 import com.security.info.manage.service.MsgService;
-import com.security.info.manage.utils.ExcelPortUtil;
-import com.security.info.manage.utils.FileUtils;
-import com.security.info.manage.utils.ObjectUtils;
-import com.security.info.manage.utils.TokenUtil;
+import com.security.info.manage.utils.*;
 import jdk.nashorn.internal.parser.Token;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.ExecutorType;
@@ -243,7 +240,7 @@ public class DangerServiceImpl implements DangerService {
         if (list != null && !list.isEmpty()) {
             List<String> userRoles = userMapper.selectUserRole(TokenUtil.getCurrentPersonNo());
             for (DangerResDTO resDTO : list) {
-                if (resDTO.getBeforePic() != null && !"".equals(resDTO.getBeforePic())) {
+                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && !StringUtils.isBlank(resDTO.getBeforePic())) {
                     resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
                 }
                 resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
@@ -260,7 +257,7 @@ public class DangerServiceImpl implements DangerService {
                 }
                 DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
                 if (!Objects.isNull(dangerRectify)) {
-                    if (dangerRectify.getAfterPic() != null && !"".equals(dangerRectify.getAfterPic())) {
+                    if (dangerRectify.getAfterPic() != null && !dangerRectify.getAfterPic().isEmpty()) {
                         dangerRectify.setAfterPicFile(fileMapper.selectFileInfo(Arrays.asList(dangerRectify.getAfterPic().split(","))));
                     }
                 }
@@ -285,7 +282,7 @@ public class DangerServiceImpl implements DangerService {
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (DangerResDTO resDTO : list) {
-                if (resDTO.getBeforePic() != null && !"".equals(resDTO.getBeforePic())) {
+                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && !StringUtils.isBlank(resDTO.getBeforePic())) {
                     resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
                 }
                 resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
@@ -321,7 +318,7 @@ public class DangerServiceImpl implements DangerService {
         List<DangerResDTO> list = page.getRecords();
         if (list != null && !list.isEmpty()) {
             for (DangerResDTO resDTO : list) {
-                if (resDTO.getBeforePic() != null && !"".equals(resDTO.getBeforePic())) {
+                if (resDTO.getBeforePic() != null && !resDTO.getBeforePic().isEmpty() && !StringUtils.isBlank(resDTO.getBeforePic())) {
                     resDTO.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(resDTO.getBeforePic().split(","))));
                 }
 //                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
@@ -355,7 +352,7 @@ public class DangerServiceImpl implements DangerService {
         if (Objects.isNull(res)) {
             throw new CommonException(ErrorCode.RESOURCE_NOT_EXIST);
         }
-        if (res.getBeforePic() != null && !"".equals(res.getBeforePic())) {
+        if (res.getBeforePic() != null && !res.getBeforePic().isEmpty() && !StringUtils.isBlank(res.getBeforePic())) {
             res.setBeforePicFile(fileMapper.selectFileInfo(Arrays.asList(res.getBeforePic().split(","))));
         }
         res.setDangerExamines(dangerMapper.listDangerExamine(id));
@@ -441,7 +438,7 @@ public class DangerServiceImpl implements DangerService {
         dangerReqDTO.setNo(WT_DANGER_NO + today + "-" + str);
         stringRedisTemplate.opsForValue().set(no, String.valueOf(num + 1), 0);
         dangerReqDTO.setCreateBy(TokenUtil.getCurrentPersonNo());
-        if (dangerReqDTO.getCheckUserId() == null || "".equals(dangerReqDTO.getCheckUserId())) {
+        if (dangerReqDTO.getCheckUserId() == null || dangerReqDTO.getCheckUserId().isEmpty()) {
             dangerReqDTO.setCheckUserId(TokenUtil.getCurrentPersonNo());
             dangerReqDTO.setCheckDeptId(TokenUtil.getCurrentPersonDeptId());
             dangerReqDTO.setCheckTime(new Date(System.currentTimeMillis()));

@@ -2,6 +2,7 @@ server:
   port: 9500
   tomcat:
     uri-encoding: UTF-8
+    relaxedQueryChars: <,>,[,],^,`,{,|,}
   servlet:
     context-path: /securityInfo/manage
 spring:

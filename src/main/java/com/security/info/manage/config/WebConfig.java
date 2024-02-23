@@ -3,7 +3,10 @@ package com.security.info.manage.config;
 import com.security.info.manage.config.filter.CorsFilter;
 import com.security.info.manage.config.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -25,10 +28,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
 
     @Autowired
     ConfigResource configResource;
-
-    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-            "classpath:/META-INF/resources/", "classpath:/resources/",
-            "classpath:/static/", "classpath:/public/"};
 
     @Bean
     public FilterRegistrationBean<JwtFilter> jwtFilterRegistration() {
@@ -74,5 +73,16 @@ public class WebConfig extends WebMvcConfigurationSupport {
             String[] resources = r.getResourceLocations().split(REGEX);
             registry.addResourceHandler(paths).addResourceLocations(resources);
         });
+    }
+
+    /**
+     * http头验证特殊字符合法
+     * @return tomcatServletWebServerFactory
+     */
+    @Bean(name="webServerFactory")
+    public ServletWebServerFactory webServerFactory() {
+        TomcatServletWebServerFactory tomcatServletWebServerFactory= new TomcatServletWebServerFactory();
+        tomcatServletWebServerFactory.addConnectorCustomizers((TomcatConnectorCustomizer) connector -> connector.setProperty("relaxedQueryChars", "[]{}"));
+        return tomcatServletWebServerFactory;
     }
 }
