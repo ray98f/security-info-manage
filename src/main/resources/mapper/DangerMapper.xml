@@ -163,11 +163,9 @@
         select distinct d.id, d.no, d.region_id, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
         d.address, d.content,d.remarks, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
-        d.is_build_prob, d.build_entry_id, e1.content as build_content, ep1.dept_id as build_dept_id, ep1.id as build_plate_id, ep1.plate_name as build_plate_name,
-        d2.org_name as build_dept_name, ep1.proportion as build_proportion, d.build_score, d.build_conversion_score, d.is_prod_prob,
-        d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push, d.status, ep2.dept_id as prod_dept_id,
-        ep2.id as prod_plate_id, ep2.plate_name as prod_plate_name, d3.org_name as prod_dept_name, d.prod_category, e2.content as prod_content,
-        d.response_unit, d.response_work_area
+        d.is_build_prob, d.build_entry_id, d.build_score, d.build_conversion_score, d.is_prod_prob,
+        d.prod_entry_id, d.prod_entry_score, d.is_danger_prob, d.level, d.danger_category, d.is_push,
+        d.status, d.prod_category, d.response_unit, d.response_work_area
         from t_danger as d
         left join sys_user_ext as ue on d.check_user_id=ue.user_id and ue.status=0 and ue.is_delete=0
         left join sys_dept as d1 on d1.id=d.check_dept_id and d1.is_delete=0
@@ -175,14 +173,8 @@
         left join t_region as r2 on r2.id=r.parent_id and r2.is_delete=0 and r2.status=0
         <if test="userId!=null and userId!=''">
             left join t_danger_examine as de on de.danger_id=d.id and de.is_delete=0
-            left join t_danger_rectify as dr on dr.danger_id=d.id and de.is_delete=0
+            left join t_danger_rectify as dr on dr.danger_id=d.id and dr.is_delete=0
         </if>
-        left join sys_entry as e1 on e1.id=d.build_entry_id
-        left join sys_entry_plate as ep1 on ep1.id=e1.plate_id
-        left join sys_dept as d2 on d2.id=ep1.dept_id and d2.is_delete=0
-        left join sys_entry as e2 on e2.id=d.prod_entry_id
-        left join sys_entry_plate as ep2 on ep2.id=e2.plate_id
-        left join sys_dept as d3 on d3.id=ep2.dept_id and d3.is_delete=0
         where d.is_delete=0
         <if test="status !=null">
             and d.status=#{status}
