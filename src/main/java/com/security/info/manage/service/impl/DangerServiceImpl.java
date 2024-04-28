@@ -652,10 +652,9 @@ public class DangerServiceImpl implements DangerService {
     @Override
     public void exportDanger(Integer type, Integer status, String name, HttpServletResponse response) {
         List<String> listName = Arrays.asList("编号", "时间", "地点", "检查部门", "检查人", "问题", "标准化工区建设-版块",
-                "标准化工区建设-标准化词条", "标准化工区建设-扣除分值", "标准化工区建设-换算分值", "安全生产标准化-版块",
-                "安全生产标准化-类别", "安全生产标准化-词条", "安全生产标准化-考核分值", "安全隐患排查与治理-隐患类别",
-                "安全隐患排查与治理-隐患等级", "图片", "整改时限", "是否销项", "整改/防护措施", "整改后图片", "责任部门",
-                "责任工区", "整改责任人", "状态", "备注");
+                "标准化工区建设-标准化词条", "标准化工区建设-扣除分值", "标准化工区建设-换算分值", "安全生产标准化-版块", "安全生产标准化-类别",
+                "安全生产标准化-词条", "安全生产标准化-考核分值", "安全隐患排查与治理-隐患类别", "安全隐患排查与治理-隐患等级", "整改时限",
+                "是否销项", "整改/防护措施", "责任部门", "责任工区", "整改责任人", "状态", "备注");
         List<DangerExportResDTO> exportDanger;
         if (sysMapper.selectIfAdmin(TokenUtil.getCurrentPersonNo()) == 1) {
             exportDanger = dangerMapper.exportDanger(type, status, name, null);
@@ -687,11 +686,9 @@ public class DangerServiceImpl implements DangerService {
                                         resDTO.getDangerCategory() == 4 ? "作业环境" :
                                                 resDTO.getDangerCategory() == 5 ? "作业行为" : "其他") : "");
                 map.put("安全隐患排查与治理-隐患等级", resDTO.getLevel() != null ? (resDTO.getLevel() == 1 ? "一般" : "重大") : "");
-                map.put("图片", resDTO.getBeforePic());
                 map.put("整改时限", resDTO.getRectifyTerm() == null ? "" : sdf.format(resDTO.getRectifyTerm()));
                 map.put("是否销项", resDTO.getIsEliminate() == null ? "" : resDTO.getIsEliminate() == 0 ? "否" : "是");
                 map.put("整改/防护措施", resDTO.getRectifyMeasure());
-                map.put("整改后图片", resDTO.getAfterPic());
                 map.put("责任部门", resDTO.getResponseUnit());
                 map.put("责任工区", resDTO.getResponseWorkArea());
                 map.put("整改责任人", resDTO.getRectifyUserName());
