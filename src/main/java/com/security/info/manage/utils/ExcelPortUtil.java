@@ -168,7 +168,7 @@ public class ExcelPortUtil {
 //            response.reset();
             response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-Disposition",
-                    "attchement;filename=" + new String((sheetName + ".xls").getBytes(StandardCharsets.UTF_8), "ISO8859-1"));
+                    "attachment;filename=" + new String((sheetName + ".xls").getBytes(StandardCharsets.UTF_8), "ISO8859-1"));
             wb.write(response.getOutputStream());
             wb.close();
         } catch (Exception e) {
