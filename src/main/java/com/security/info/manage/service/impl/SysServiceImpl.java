@@ -118,6 +118,9 @@ public class SysServiceImpl implements SysService {
         if (Objects.isNull(resDTO) || Objects.isNull(resDTO.getId()) || !MyAESUtil.decrypt(loginReqDTO.getPassword()).equals(MyAESUtil.decrypt(resDTO.getPassword()))) {
             throw new CommonException(ErrorCode.LOGIN_PASSWORD_ERROR);
         }
+        if (StringUtils.isEmpty(resDTO.getUserRoles())) {
+            throw new CommonException(ErrorCode.ROLE_NOT_EXIST);
+        }
         Map<String, Object> data = new HashMap<>(16);
         data.put("userInfo", resDTO);
         data.put(TOKEN, TokenUtil.createSimpleToken(resDTO));

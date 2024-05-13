@@ -127,6 +127,7 @@ public enum ErrorCode {
     USER_EXIST(32000060, "user.exist"),
     USER_NOT_EXIST(32000060, "user.not.exist"),
     ROLE_EXIST(32100006, "role.exist"),
+    ROLE_NOT_EXIST(32100007, "role.not.exist"),
     USER_DISABLE(32000060, "user.disable"),
     LOGIN_PASSWORD_ERROR(32000061, "login.password.error"),
     USER_PWD_CHANGE_FAIL(32000062, "user.pwd.change.fail"),
