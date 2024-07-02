@@ -74,7 +74,7 @@ public class TokenUtil {
      * @param unicode 待转换字符串
      */
     public static String unicodeToString(String unicode) {
-        StringBuffer string = new StringBuffer();
+        StringBuilder string = new StringBuilder();
         String[] hex = unicode.split("\\\\u");
         for (int i = 1; i < hex.length; i++) {
             // 转换出每一个代码点
@@ -102,7 +102,7 @@ public class TokenUtil {
      * @throws Exception Token校验失败
      */
     public static String createSimpleToken(UserResDTO item) {
-        return createSimpleToken(item, 60 * 60 * 2 * 1000);
+        return createSimpleToken(item, 60 * 60 * 24 * 1000);
     }
 
     public static String createLongTermToken(UserResDTO item) {

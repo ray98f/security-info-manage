@@ -229,8 +229,8 @@ public class DangerServiceImpl implements DangerService {
 
     @Override
     public Page<DangerResDTO> listDanger(Integer type,Integer status, String name, PageReqDTO pageReqDTO) {
-        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         Page<DangerResDTO> page;
+        PageHelper.startPage(pageReqDTO.getPageNo(), pageReqDTO.getPageSize());
         if (sysMapper.selectIfAdmin(TokenUtil.getCurrentPersonNo()) == 1) {
             page = dangerMapper.listDanger(pageReqDTO.of(), type, status, name, null);
         } else {
@@ -246,8 +246,8 @@ public class DangerServiceImpl implements DangerService {
 //                        resDTO.setBeforePicFile(fileMapper.selectFileInfo(beforePicList));
 //                    }
 //                }
-                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
-                DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
+//                resDTO.setDangerExamines(dangerMapper.listDangerExamine(resDTO.getId()));
+//                DangerRectifyResDTO dangerRectify = dangerMapper.getDangerRectify(resDTO.getId());
 //                if (!Objects.isNull(dangerRectify)) {
 //                    if (dangerRectify.getAfterPic() != null && !dangerRectify.getAfterPic().isEmpty() && StringUtils.isNotBlank(dangerRectify.getAfterPic())) {
 //                        List<String> afterPicList = Arrays.asList(dangerRectify.getAfterPic().split(","));
@@ -256,7 +256,7 @@ public class DangerServiceImpl implements DangerService {
 //                        }
 //                    }
 //                }
-                resDTO.setDangerRectify(dangerRectify);
+//                resDTO.setDangerRectify(dangerRectify);
                 if (userRoles != null && !userRoles.isEmpty()) {
                     if (userRoles.contains("系统管理员")) {
                         resDTO.setUserRole(1);

@@ -159,7 +159,68 @@
         group by dr.danger_id
     </select>
 
-    <select id="listDanger" resultType="com.security.info.manage.dto.res.DangerResDTO">
+    <resultMap id="dangerList" type="com.security.info.manage.dto.res.DangerResDTO">
+        <id property="id" column="id"/>
+        <result property="no" column="no"/>
+        <result property="regionId" column="region_id"/>
+        <result property="regionName" column="region_name"/>
+        <result property="address" column="address"/>
+        <result property="content" column="content"/>
+        <result property="remarks" column="remarks"/>
+        <result property="beforePic" column="before_pic"/>
+        <result property="rectifyTerm" column="rectify_term"/>
+        <result property="isUse" column="is_use"/>
+        <result property="responsibilityDeptId" column="responsibility_dept_id"/>
+        <result property="checkDeptId" column="check_dept_id"/>
+        <result property="checkDeptName" column="check_dept_name"/>
+        <result property="checkUserId" column="check_user_id"/>
+        <result property="checkUserName" column="check_user_name"/>
+        <result property="checkTime" column="check_time"/>
+        <result property="createDate" column="create_date"/>
+        <result property="isBuildProb" column="is_build_prob"/>
+        <result property="buildEntryId" column="build_entry_id"/>
+        <result property="buildScore" column="build_score"/>
+        <result property="buildConversionScore" column="build_conversion_score"/>
+        <result property="isProdProb" column="is_prod_prob"/>
+        <result property="prodEntryId" column="prod_entry_id"/>
+        <result property="prodEntryScore" column="prod_entry_score"/>
+        <result property="isDangerProb" column="is_danger_prob"/>
+        <result property="level" column="level"/>
+        <result property="dangerCategory" column="danger_category"/>
+        <result property="isPush" column="is_push"/>
+        <result property="status" column="status"/>
+        <result property="prodCategory" column="prod_category"/>
+        <result property="responseUnit" column="response_unit"/>
+        <result property="responseWorkArea" column="response_work_area"/>
+        <collection property="dangerExamines" javaType="java.util.ArrayList" ofType="com.security.info.manage.dto.res.DangerExamineResDTO" select="listDangerExamine" column="id">
+            <id property="dangerExamines.id" column="id"/>
+            <result property="dangerExamines.dangerId" column="danger_id"/>
+            <result property="dangerExamines.userType" column="user_type"/>
+            <result property="dangerExamines.examineUserId" column="examine_user_id"/>
+            <result property="dangerExamines.examineTime" column="examine_time"/>
+            <result property="dangerExamines.opinion" column="opinion"/>
+            <result property="dangerExamines.status" column="status"/>
+            <result property="dangerExamines.examineUserName" column="examine_user_name"/>
+            <result property="dangerExamines.postName" column="post_name"/>
+            <result property="dangerExamines.deptName" column="dept_name"/>
+        </collection>
+        <collection property="dangerRectify" javaType="com.security.info.manage.dto.res.DangerRectifyResDTO" select="getDangerRectify" column="id">
+            <id property="dangerRectify.id" column="id"/>
+            <result property="dangerRectify.dangerId" column="danger_id"/>
+            <result property="dangerRectify.rectifyUserId" column="rectify_user_id"/>
+            <result property="dangerRectify.rectifyTime" column="rectify_time"/>
+            <result property="dangerRectify.rectifyMeasure" column="rectify_measure"/>
+            <result property="dangerRectify.afterPic" column="after_pic"/>
+            <result property="dangerRectify.examineUserId" column="examine_user_id"/>
+            <result property="dangerRectify.examineTime" column="examine_time"/>
+            <result property="dangerRectify.status" column="status"/>
+            <result property="dangerRectify.isEliminate" column="is_eliminate"/>
+            <result property="dangerRectify.rectifyUserName" column="rectify_user_name"/>
+            <result property="dangerRectify.examineUserName" column="examine_user_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="listDanger" resultMap="dangerList">
         select distinct d.id, d.no, d.region_id, (case when r2.name is null then r.name else concat(r2.name,'-',r.name) end) as region_name,
         d.address, d.content,d.remarks, d.before_pic, d.rectify_term, d.is_use, d.responsibility_dept_id,
         d.check_dept_id, d1.org_name as check_dept_name, d.check_user_id, ue.real_name as check_user_name, d.check_time, d.create_date,
